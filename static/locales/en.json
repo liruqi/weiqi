@@ -1,0 +1,255 @@
+{
+  "general": {
+    "yes": "Yes",
+    "no": "No"
+  },
+
+  "game": {
+    "black": "Black",
+    "white": "White",
+    "result": "Result",
+    "size": "Size",
+    "date": "Date",
+    "observers": "Observers",
+    "started": "Started",
+    "demo": "Demo",
+    "resign": "Resign",
+    "confirmResign": "Really resign?",
+    "pass": "Pass",
+    "confirmPass": "Are you sure you want to pass?<br>Note that you must fill all neutral points (Chinese Ruleset).",
+    "confirmScore": "Confirm Score",
+    "willStartIn": "Game will start in ...",
+    "backToGame": "Back to game"
+  },
+
+  "demo": {
+    "title": "Title"
+  },
+
+  "user": {
+    "viewProfile": "View profile",
+    "sendMessage": "Send message"
+  },
+
+  "header": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "help": "Help"
+  },
+
+  "sidebar": {
+    "search": "Search",
+    "play": "Play",
+    "searchingAutomatch": "Searching game ...",
+    "signIn": "Sign in",
+    "createDemo": "Create Demo",
+    "uploadSGF": "Upload SGF",
+
+    "games": "Games",
+    "noGames": "You have no open games",
+    "activeGames": "Active Games",
+    "rooms": "Rooms",
+    "people": "People",
+    "noDirectRooms": "You have no open chats"
+  },
+
+  "signIn": {
+    "header": "Sign in",
+    "cancel": "Cancel",
+    "error": "Invalid username or password",
+    "usernameEmail": "Username or Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "forgot": "Forgot your password?",
+    "or": "or",
+    "newAccount": "New account"
+  },
+
+  "signUp": {
+    "header": "Sign up",
+    "userInfo": "Your user info",
+    "username": "Pick a username",
+    "usernameExists": "Username already taken",
+    "usernameInvalid": "Only letters and numbers. 2-12 characters.",
+    "email": "Your email",
+    "emailExists": "E-Mail address already registered",
+    "password": "Create a password",
+    "rank": {
+      "header": "Rank",
+      "r20k": "I never played before",
+      "r19k": "19k",
+      "r18k": "18k",
+      "r17k": "17k",
+      "r16k": "16k",
+      "r15k": "(15k) I know the rules and played a few times on the big board",
+      "r14k": "14k",
+      "r13k": "13k",
+      "r12k": "12k",
+      "r11k": "11k",
+      "r10k": "(10k) At the club many are still stronger than me",
+      "r9k": "9k",
+      "r8k": "8k",
+      "r7k": "7k",
+      "r6k": "6k",
+      "r5k": "5k",
+      "r4k": "4k",
+      "r3k": "3k",
+      "r2k": "2k",
+      "r1k": "1k",
+      "r1d": "1d",
+      "r2d": "2d",
+      "r3d": "3d"
+    },
+    "recaptcha": "Verify that you are human",
+    "signUp": "Sign up"
+  },
+
+  "forgotPassword": {
+    "header": "Forgot password",
+    "email": "Your email address",
+    "reset": "Reset password",
+    "instructions": "Instructions for resetting your password have been emailed to you."
+  },
+
+  "play": {
+    "header": "Play",
+    "play": "Play",
+    "cancel": "Cancel",
+
+    "fast": {
+      "header": "Fast",
+      "l1": "up to 30 minute playtime",
+      "l2": "5min + 10s/move"
+    },
+
+    "medium": {
+      "header": "Medium",
+      "l1": "up to 1 hour playtime",
+      "l2": "10min + 20s/move"
+    },
+
+    "slow": {
+      "header": "Slow",
+      "l1": "about 1-2 hours playtime",
+      "l2": "15min + 30s/move"
+    },
+
+    "options": {
+      "maxHC": "Max Handicap",
+      "noHC": "No Handicap"
+    }
+  },
+
+  "roomLogs": {
+    "chat": "Chat",
+    "signIn": "Sign in",
+    "toChat": "to chat",
+    "typeMsg": "Type a message ..."
+  },
+
+  "roomUsers": {
+    "username": "Users",
+    "rank": "Rank"
+  },
+
+  "gamelist": {
+    "header": "Active Games"
+  },
+
+  "faq": {
+    "header": "F.A.Q.",
+    "subheader": "Frequently Asked Questions",
+    "ratings": {
+      "header": "How does the rating system work?",
+      "text": {
+        "p1": "We use <a href=\"http://www.glicko.net/glicko.html\" target=\"_blank\">Glicko-2</a> as rating system. On top of that we bundle game results in rating periods of several days/weeks.",
+        "p2": "The displayed rank/rating is based on a projection of the current rating period."
+      }
+    },
+    "contribute": {
+      "header": "How can I contribute?",
+      "text": {
+        "p1": "weiqi.gs is fully open source, which means anyone who wishes to contribute has the chance to do so.",
+        "p2": "Even if you are not a programmer, there are many ways to contribute. If you are interested please check our <a href=\"http://gitlab.com/mibitzi/weiqi.gs#contribute\" target=\"_blank\">GitHub repository</a> for more information."
+      }
+    },
+    "bug": {
+      "header": "I found a bug",
+      "text": {
+        "p1": "Please report all bugs on our <a href=\"http://gitlab.com/mibitzi/weiqi.gs/issues\" target=\"_blank\">issue tracker</a> on GitHub.",
+        "p2": "Please also check if there is already an existing issue covering this problem before opening a new one."
+      }
+    },
+    "featureX": {
+      "header": "Please add feature X!",
+      "text": {
+        "p1": "If you have an idea for improvements or new features you can create an issue on our <a href=\"http://gitlab.com/mibitzi/weiqi.gs/issues\" target=\"_blank\">issue tracker</a> on GitHub.",
+        "p2": "Please check if there is already an existing issue for your idea before opening a new one."
+      }
+    },
+    "avatar": {
+      "header": "Why do I have this profile picture?",
+      "text": "For every user a unique <em>Identicon</em> is generated. If the user has not uploaded his or her own profile picture the identicon will be displayed instead."
+    }
+  },
+
+  "userDetail": {
+    "memberSince": "Member since",
+    "rank": "Rank",
+    "games": "Games"
+  },
+
+  "settings": {
+    "header": "Settings",
+
+    "info": {
+      "header": "User info",
+      "email": "Email"
+    },
+
+    "password": {
+      "change": "Change password",
+      "new": "Password",
+      "newConfirm": "Confirm Password"
+    },
+
+    "avatar": {
+      "header": "Profile picture",
+      "new": "Upload new picture",
+      "delete": "Delete my picture",
+      "confirmDelete": "Are you sure you want to DELETE your profile picture?<br><br>Note that you cannot delete your default picture.",
+      "cropHelp": "You can move and zoom your picture to your liking. Everything outside the highlighted box will be cropped.",
+      "cancel": "Cancel"
+    },
+
+    "save": "Save"
+  },
+
+  "createDemo": {
+    "header": "Create Demo",
+    "title": "Title of your demo",
+    "create": "Create",
+    "cancel": "Cancel"
+  },
+
+  "uploadSGF": {
+    "header": "Upload SGF",
+    "upload": "Upload",
+    "chooseFile": "SGF file",
+    "cancel": "Cancel"
+  },
+
+  "passwordResetConfirm": {
+    "header": "Password reset",
+    "sent": "An email with your new password has been sent to you.",
+    "failed": "This link is not valid anymore."
+  },
+
+  "disconnected": {
+    "header": "Oops, looks like we lost connection ...",
+    "body": "Somehow we got disconnected from the server.<br>You can refresh the page and retry, or wait here until the server is available again.",
+    "refresh": "Refresh",
+    "tryingConnect": "Trying to reconnect ..."
+  }
+}

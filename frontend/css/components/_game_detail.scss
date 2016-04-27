@@ -1,0 +1,70 @@
+.game-detail-left {
+  height: $main-height;
+  padding-bottom: 10px;
+}
+
+.game-detail-right {
+  height: $main-height;
+  display: flex;
+  flex-flow: column;
+
+  > .room-users {
+    flex: 0 0 auto;
+    height: 120px;
+    overflow: auto;
+    resize: vertical;
+  }
+
+  > .room-logs {
+    flex: 1 1 auto;
+    margin-bottom: 0;
+  }
+}
+
+.game-navigation {
+  height: 100px;
+  min-height: 50px;
+  margin-bottom: 5px;
+
+  border: 1px solid $gray-lighter;
+
+  resize: vertical;
+  overflow: auto;
+
+  * {
+    @include user-select(none);
+  }
+
+  .game-nav-node {
+    margin-left: 20px;
+
+    .game-nav-node-label {
+      cursor: pointer;
+      display: block;
+      margin-left: 20px;
+
+      &:hover, &.active {
+        font-weight: bold;
+      }
+    }
+  }
+
+  > .game-nav-node {
+    margin-left: 2px;
+  }
+
+  .game-nav-node-plus-minus {
+    cursor: pointer;
+    float: left;
+  }
+}
+
+.game-nav-buttons {
+  margin-bottom: 5px;
+
+  .btn {
+    width: calc(25% - 5px);
+    margin-left: 1px;
+    margin-right: 1px;
+  }
+}

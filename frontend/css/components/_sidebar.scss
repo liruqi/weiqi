@@ -1,0 +1,153 @@
+.sidebar {
+    background: $sidebar-background;
+    color: $sidebar-color;
+    border-right: 1px solid #d2d6de;
+
+    a {
+        text-decoration: none;
+        color: $sidebar-color;
+        outline: none;
+    }
+
+    .user-panel {
+        padding: 10px;
+        padding-top: 15px;
+        @include clearfix();
+
+        > .image img {
+            width: 45px;
+            height: 45px;
+        }
+
+        > .info {
+            font-weight: 600;
+            padding: 5px 5px 5px 15px;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        > .info > p {
+            margin-bottom: 9px;
+        }
+
+        > .info > a {
+            text-decoration: none;
+            padding-right: 5px;
+            margin-top: 3px;
+            font-size: 11px;
+            font-weight: normal;
+
+            > .fa {
+                margin-right: 3px;
+            }
+        }
+
+        > .info, > .info > a {
+            color: $sidebar-color;
+        }
+
+        .user-buttons {
+            margin-top: 5px;
+        }
+    }
+
+    .sidebar-form {
+        border-radius: 3px;
+        border: 1px solid darken($sidebar-background, 5%);
+        margin: 10px 10px;
+
+        input:focus {
+            border-color: transparent!important;
+        }
+
+        input[type="text"],
+        .btn {
+            box-shadow: none;
+            background-color: #fff;
+            border: 1px solid transparent;
+            height: 35px;
+        }
+
+        input[type="text"] {
+            color: #666;
+            border-radius: 2px 0 2px 0 !important;
+            &:focus,
+            &:focus + .input-group-btn .btn {
+                background-color: #fff;
+                color: #666;
+            }
+            &:focus + .input-group-btn .btn {
+                border-left-color: #fff;
+            }
+        }
+        .btn {
+            color: #999;
+            border-radius: 0 2px 0 2px !important;
+        }
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        > li {
+            position: relative;
+            margin: 0;
+            padding: 0;
+
+            > a {
+                display: block;
+                padding: 12px 5px 12px 15px;
+
+                > .fa {
+                    width: 20px;
+                }
+            }
+
+            &:hover > a,
+            &.active > a {
+                color: $sidebar-hover-color;
+                background: $sidebar-hover-bg;
+            }
+
+            &.active > a {
+                font-weight: 600;
+            }
+
+            &.header {
+                padding: 10px 25px 10px 15px;
+                margin-top: 10px;
+
+                font-weight: 600;
+                text-transform: uppercase;
+                text-shadow: 1px 1px 1px #ccc;
+                color: lighten($text-color, 30%);
+            }
+        }
+    }
+
+    .sidebar-text {
+        display: block;
+        padding: 10px 25px 10px 15px;
+        font-size: 12px;
+    }
+
+    &::-webkit-scrollbar {
+        background-color: rgba(255,255,255,0.5);
+    }
+}
+
+.sidebar-item-action {
+    margin-right: 5px;
+    display: none;
+    color: $text-muted;
+
+    a:hover & {
+        display: inline-block;
+    }
+
+    &:hover {
+        color: $text-color;
+    }
+}

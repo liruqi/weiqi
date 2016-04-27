@@ -1,0 +1,118 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.main-wrapper {
+  min-height: 100%;
+  position: relative;
+  overflow-x: hidden;
+  $sidebar-width: 200px;
+
+  .main-header {
+    .navbar {
+      box-shadow: 0 2px 1.5px 0 rgba(0,0,0,.12),0 0px 4px 0 rgba(0,0,0,.12);
+      border: none;
+    }
+
+    .navbar-brand {
+      float: none;
+      line-height: 40px;
+    }
+
+    .sidebar-toggle {
+      margin: 0 9px;
+
+      .divider:first-child {
+        margin-left: 0;
+      }
+
+      .divider:last-child {
+        margin-right: 0;
+      }
+
+      .toggle {
+        font-family: fontAwesome;
+        line-height: $navbar-height;
+        color: $navbar-default-color;
+
+        padding: 0 5px;
+        padding-right: 4px;
+        display: inline-block;
+
+        &:before {
+          content: "\f0c9";
+        }
+      }
+    }
+
+    .navbar-text {
+      display: inline-block;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+
+    span.divider {
+      height: $main-header-height;
+      vertical-align: middle;
+      display: inline-block;
+      margin: 0 9px;
+      border-left: 1px solid darken($navbar-default-bg, 10%);
+      border-right: 1px solid lighten($navbar-default-bg, 15%);
+    }
+  }
+
+  .main-sidebar, .main-content {
+    transition: all $transition-speed $transition-fn;
+  }
+
+  .main-sidebar {
+    position: fixed;
+    top: $main-header-height;
+    bottom: 0;
+    overflow-y: auto;
+
+    left: -$sidebar-width;
+    width: $sidebar-width;
+
+    z-index: 2;
+  }
+
+  .main-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: $main-header-height;
+
+    padding: $main-content-padding;
+
+    z-index: 1;
+  }
+
+  &.sidebar-out {
+    .main-sidebar {
+      left: 0;
+    }
+
+    @media(min-width: $screen-md-min) {
+      .main-content {
+        left: $sidebar-width;
+      }
+    }
+  }
+}
+
+a:hover,
+a:active,
+a:focus,
+button {
+  outline: none !important;
+  text-decoration: none;
+}

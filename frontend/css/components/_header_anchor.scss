@@ -1,0 +1,18 @@
+a.header-anchor {
+	visibility: hidden;
+	text-decoration: none;
+	padding-left: 15px;
+
+	&:after {
+		content: "\F0C1";
+		font-family: FontAwesome;
+		font-weight: normal;
+		font-size: .8em;
+	}
+}
+
+h1, h2, h3, h4 {
+	&:hover a.header-anchor {
+		visibility: visible;
+	}
+}

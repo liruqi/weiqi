@@ -1,0 +1,50 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
+
+$font-family-sans-serif:  'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$font-family-base:        $font-family-sans-serif;
+
+$light-blue: #3c8dbc;  //Primary
+$red:        #dd4b39;  //Danger
+$green:      #00a65a;  //Success
+$aqua:       #00c0ef;  //Info
+$yellow:     #f39c12;  //Warning
+$blue:       #0073b7;
+$navy:       #001F3F;
+$teal:       #39CCCC;
+$olive:      #3D9970;
+$lime:       #01FF70;
+$orange:     #FF851B;
+$fuchsia:    #F012BE;
+$purple:     #605ca8;
+$maroon:     #D81B60;
+$black:      #111;
+
+$brand-primary: $light-blue;
+$brand-danger: $red;
+$brand-success: $green;
+$brand-info: $aqua;
+$brand-warning: $yellow;
+
+$body-bg: #eee;
+
+$transition-speed: .3s;
+$transition-fn: cubic-bezier(0.32,1.25,0.375,1.15);
+
+$main-content-padding: 20px;
+$navbar-height: 40px;
+
+$navbar-default-bg: #25272c;
+$navbar-default-color: #fff;
+$navbar-default-link-color: #fff;
+$navbar-default-link-hover-color: #fff;
+$navbar-default-link-active-color: #fff;
+$navbar-default-border: none;
+$navbar-default-brand-color: #fff;
+
+$main-header-height: $navbar-height;
+$main-height: calc(100vh - #{$main-header-height} - #{$main-content-padding}*2);
+
+$sidebar-background: #fff;
+$sidebar-hover-bg: darken($sidebar-background, 5%);
+$sidebar-color: #333;
+$sidebar-hover-color: #333;

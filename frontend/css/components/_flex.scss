@@ -1,0 +1,25 @@
+.flex-row, .flex-column {
+  display: flex;
+  min-height: 0; // Required for firefox, somehow?
+}
+
+.flex-row {
+  flex-flow: row;
+}
+
+.flex-column {
+  flex-flow: column;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+.flex-fixed {
+  flex: 0 0 auto;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}

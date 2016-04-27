@@ -1,0 +1,11 @@
+.page-load-spinner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 9999999;
+	text-align: center;
+	background: $body-bg;
+	padding-top: 20%;
+}

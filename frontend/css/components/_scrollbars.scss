@@ -1,0 +1,24 @@
+// Firefox does currently not support css on scrollbars.
+// See this issue, which exists since 2001 (!)
+// https://bugzilla.mozilla.org/show_bug.cgi?id=77790
+
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: rgba(0,0,0,0);
+  -webkit-border-radius: 100px;
+}
+
+::-webkit-scrollbar:hover {
+  background-color: rgba(0, 0, 0, 0.09);
+}
+
+/* The scrollbar 'thumb' ...that marque oval shape in a scrollbar */
+::-webkit-scrollbar-thumb:vertical {
+  background: rgba(0,0,0,0.25);
+  -webkit-border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:vertical:active {
+  background: rgba(0,0,0,0.50);
+  -webkit-border-radius: 100px;
+}

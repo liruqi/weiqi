@@ -1,0 +1,7 @@
+/*.iml
+/*.idea
+__pycache__
+/.vagrant
+/venv
+/node_modules
+/static/dist
