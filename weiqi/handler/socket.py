@@ -17,18 +17,32 @@
 from tornado.websocket import WebSocketHandler
 import zlib
 import json
+from weiqi.handler.base import BaseHandler
+from weiqi.db import session
 
 
-class SocketHandler(WebSocketHandler):
+class SocketHandler(WebSocketHandler, BaseHandler):
     def open(self):
-        print('WebSocket opened')
-        self.write_message({'method': 'ConnectionData', 'data': {}})
+        self._send_connection_data()
 
     def on_message(self, message):
         pass
 
     def on_close(self):
-        print("WebSocket closed")
+        pass
 
-    def write_message(self, message, binary=True):
-        super().write_message(zlib.compress(json.dumps(message).encode()), binary=True)
+    def send_message(self, method, data):
+        message = {'method': method, 'data': data}
+        message = json.dumps(message)
+        message = zlib.compress(message.encode())
+        self.write_message(message, binary=True)
+
+    def _send_connection_data(self):
+        data = {}
+
+        with session() as db:
+            if self.current_user:
+                user = self.query_current_user(db)
+                data['UserID'] = user.display
+
+        self.send_message('connection_data', data)

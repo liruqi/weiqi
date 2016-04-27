@@ -17,16 +17,21 @@
 import tornado.web
 from weiqi import settings
 from weiqi.db import create_db
-from weiqi.handler.main import MainHandler
-from weiqi.handler.socket import SocketHandler
+from weiqi.handler import auth, socket, main as main_handler
 
 
 def main():
     create_db()
 
     handlers = [
-        (r'/api/socket', SocketHandler),
-        (r'.*', MainHandler),
+        (r'/api/ping', main_handler.PingHandler),
+        (r'/api/socket', socket.SocketHandler),
+        (r'/api/auth/user-exists', auth.UserExistsHandler),
+        (r'/api/auth/email-exists', auth.EmailExistsHandler),
+        (r'/api/auth/sign-up', auth.SignUpHandler),
+        (r'/api/auth/sign-in', auth.SignInHandler),
+        (r'/api/auth/logout', auth.LogoutHandler),
+        (r'.*', main_handler.MainHandler),
     ]
 
     app = tornado.web.Application(

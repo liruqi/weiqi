@@ -14,18 +14,34 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from weiqi import settings
 
-_engine = create_engine(settings.DB_URL, echo=True)
-
 Base = declarative_base()
-Session = sessionmaker(bind=_engine)
+Session = None
 
 
 def create_db():
+    global Session
     from weiqi import models
-    global _engine
-    Base.metadata.create_all(_engine)
+
+    engine = create_engine(settings.DB_URL, echo=True)
+    Session = sessionmaker(bind=engine)
+    Base.metadata.create_all(engine)
+
+
+@contextmanager
+def session():
+    session = Session()
+
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()

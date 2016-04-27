@@ -14,9 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from tornado.web import RequestHandler
+from weiqi.handler.base import BaseHandler
 
 
-class MainHandler(RequestHandler):
+class MainHandler(BaseHandler):
     def get(self):
         self.render("index.html")
+
+
+class PingHandler(BaseHandler):
+    def get(self):
+        self.write('pong')

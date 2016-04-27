@@ -1,5 +1,5 @@
 export const serverMessages = {
-    "ConnectionData": makeAction('MSG_CONNECTION_DATA'),
+    "connection_data": makeAction('MSG_CONNECTION_DATA'),
     "RoomMessage": makeAction('MSG_ROOM_MESSAGE'),
     "RoomUser": makeAction('MSG_ROOM_USER'),
     "RoomUserLeft": makeAction('MSG_ROOM_USER_LEFT'),

@@ -14,7 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy.orm import validates
+from datetime import datetime
+import re
+import bcrypt
 from weiqi.db import Base
 
 
@@ -22,5 +26,30 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    email = Column(String)
-    name = Column(String)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
+
+    display = Column(String, nullable=False, default='')
+    rating = Column(Float, nullable=False, default=0)
+
+    def set_password(self, pw):
+        self.password = bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
+
+    def check_password(self, pw):
+        return bcrypt.hashpw(pw.encode(), self.password.encode()) == self.password.encode()
+
+    @validates('email')
+    def validate_email(self, key, val):
+        if not re.match(r'^[^@]+@[^@]+\.[^@]+$', val):
+            raise ValueError('invalid email address')
+        return val
+
+    @validates('display')
+    def validate_display(self, key, val):
+        if not re.match(r'^[a-zA-Z0-9_-]{2,12}$', val):
+            raise ValueError('invalid display name')
+        return val

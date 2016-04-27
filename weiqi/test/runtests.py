@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # weiqi.gs
 # Copyright (C) 2016 Michael Bitzi
 #
@@ -14,17 +15,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import unittest
+import tornado.testing
 import os.path
+import sys
 
-BASE_DIR = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+BASE_DIR = os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
 
-DEBUG = True
+sys.path.append(BASE_DIR)
 
-SECRET = 'secret'
-COOKIE_NAME = 'weiqi'
 
-TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
-STATIC_PATH = os.path.join(BASE_DIR, 'static')
+def all():
+    return unittest.defaultTestLoader.discover(os.path.join(BASE_DIR, 'weiqi', 'test'), pattern='*.py')
 
-LISTEN_PORT = 8080
-DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
+
+def main():
+    from weiqi import settings
+    from weiqi.db import create_db
+
+    settings.DB_URL = 'sqlite://'
+    create_db()
+
+    tornado.testing.main()
+
+
+if __name__ == '__main__':
+    main()

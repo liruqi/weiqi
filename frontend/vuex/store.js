@@ -38,7 +38,7 @@ const state = {
 
 const mutations = {
     MSG_CONNECTION_DATA(state, data) {
-        state.auth.user.loggedIn = data.UserID != "";
+        state.auth.user.loggedIn = !!data.UserID;
         state.auth.user.userID = data.UserID;
         state.auth.user.avatarURL = '/api/users/' + data.UserID + '/avatar';
         state.auth.user.automatch = data.Automatch;
