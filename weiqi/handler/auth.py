@@ -16,7 +16,6 @@
 
 from tornado.web import HTTPError
 from weiqi.handler.base import BaseHandler
-from weiqi import settings
 from weiqi.db import session
 from weiqi.models import User
 
@@ -61,4 +60,5 @@ class SignInHandler(BaseHandler):
 
 class LogoutHandler(BaseHandler):
     def get(self):
-        self.set_secure_cookie(settings.COOKIE_NAME, None)
+        self.clear_all_cookies()
+        self.redirect('/')
