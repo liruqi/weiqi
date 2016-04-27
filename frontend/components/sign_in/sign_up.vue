@@ -3,17 +3,16 @@
         <form @submit.prevent="signUp" novalidate>
             <label>{{$t('signUp.userInfo')}}</label>
 
-            <div class="form-group" :class="formGroupClasses($signUp.username)">
+            <div class="form-group" :class="formGroupClasses($signUp.display)">
                 <input type="text" class="form-control"
-                       placeholder="{{$t('signUp.username')}}"
-                       v-model="username"
-                       v-validate:username="{required: true,
-                            username:{rule: true, initial: 'off'},
-                            userExists:{rule: true, initial: 'off'}}"
+                       placeholder="{{$t('signUp.display')}}"
+                       v-model="display"
+                       v-validate:display="{required: true,
+                            display_name:{rule: true, initial: 'off'}}"
                        autofocus>
 
-                <p class="help-block" v-if="$signUp.username.userExists">{{$t('signUp.usernameExists')}}</p>
-                <p class="help-block" v-if="$signUp.username.username">{{$t('signUp.usernameInvalid')}}</p>
+                <p class="help-block">{{$t('signUp.displayHelp')}}</p>
+                <p class="help-block" v-if="$signUp.display.display_name">{{$t('signUp.displayInvalid')}}</p>
             </div>
 
             <div class="form-group" :class="formGroupClasses($signUp.email)">
@@ -83,7 +82,7 @@
 
         data() {
             return {
-                'username': '',
+                'display': '',
                 'email': '',
                 'password': '',
                 'rank': '20k',
@@ -92,18 +91,6 @@
         },
 
         validators: {
-            userExists(userID) {
-                return Vue.http.post('/api/auth/user-exists', {userID: userID}).then(function(res) {
-                    if(res.data === false) {
-                        return Promise.resolve();
-                    } else {
-                        return Promise.reject();
-                    }
-                }, function() {
-                    return Promise.reject();
-                });
-            },
-
             emailExists(email) {
                 return Vue.http.post('/api/auth/email-exists', {email: email}).then(function(res) {
                     if(res.data === false) {
@@ -120,7 +107,7 @@
         methods: {
             signUp() {
                 var data = {
-                    username: this.username,
+                    display: this.display,
                     email: this.email,
                     password: this.password,
                     rank: this.rank,

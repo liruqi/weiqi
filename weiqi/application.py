@@ -17,7 +17,7 @@
 import tornado.web
 from weiqi import settings
 from weiqi.db import create_db
-from weiqi.handler import auth, socket, main as main_handler
+from weiqi.handler import auth, socket, main as main_handler, room
 
 
 def main():
@@ -26,11 +26,15 @@ def main():
     handlers = [
         (r'/api/ping', main_handler.PingHandler),
         (r'/api/socket', socket.SocketHandler),
-        (r'/api/auth/user-exists', auth.UserExistsHandler),
         (r'/api/auth/email-exists', auth.EmailExistsHandler),
         (r'/api/auth/sign-up', auth.SignUpHandler),
         (r'/api/auth/sign-in', auth.SignInHandler),
         (r'/api/auth/logout', auth.LogoutHandler),
+
+        (r'/api/rooms/(.*?)/message', room.MessageHandler),
+        (r'/api/rooms/(.*?)/users', room.UsersHandler),
+        (r'/api/rooms/(.*?)/mark-read', room.MarkReadHandler),
+
         (r'.*', main_handler.MainHandler),
     ]
 

@@ -69,9 +69,9 @@
   "signUp": {
     "header": "Sign up",
     "userInfo": "Your user info",
-    "username": "Pick a username",
-    "usernameExists": "Username already taken",
-    "usernameInvalid": "Only letters and numbers. 2-12 characters.",
+    "display": "Pick a display name",
+    "displayInvalid": "Only letters and numbers. 2-12 characters.",
+    "displayHelp": "You can still change this later on.",
     "email": "Your email",
     "emailExists": "E-Mail address already registered",
     "password": "Create a password",
