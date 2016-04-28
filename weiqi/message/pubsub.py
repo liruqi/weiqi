@@ -31,7 +31,7 @@ class PubSub:
         data = message.get('data')
 
         for sub in self._subs[topic]:
-            sub(data)
+            sub(topic, data)
 
     def publish(self, topic, data):
         message = json.dumps({

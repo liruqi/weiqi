@@ -8,7 +8,7 @@
             </div>
             <div class="pull-left info">
                 <p>
-                    <a v-link="{name:'user', params:{user_id:user.user_id}}">{{user.user_id}}</a>
+                    <a v-link="{name:'user', params:{user_id:user.user_id}}">{{user.user_display}}</a>
                 </p>
 
                 <span v-if="user.logged_in">

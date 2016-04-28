@@ -63,6 +63,7 @@ class Ampq:
     def on_message(self, channel, basic_deliver, properties, body):
         self._channel.basic_ack(basic_deliver.delivery_tag)
 
+        body = body.decode()
         for handler in self._handler:
             handler(body)
 

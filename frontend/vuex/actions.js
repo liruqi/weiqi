@@ -1,14 +1,14 @@
 export const serverMessages = {
     "connection_data": makeAction('MSG_CONNECTION_DATA'),
-    "RoomMessage": makeAction('MSG_ROOM_MESSAGE'),
-    "RoomUser": makeAction('MSG_ROOM_USER'),
-    "RoomUserLeft": makeAction('MSG_ROOM_USER_LEFT'),
-    "AutomatchStatus": makeAction('MSG_AUTOMATCH_STATUS'),
-    "GameStarted": makeAction('MSG_GAME_STARTED'),
-    "GameFinished": makeAction('MSG_GAME_FINISHED'),
-    "GameData": makeAction('MSG_GAME_DATA'),
-    "GameUpdate": makeAction('MSG_GAME_UPDATE'),
-    "LoadDirectRoom": makeAction('MSG_LOAD_DIRECT_ROOM')
+    "room_message": makeAction('MSG_ROOM_MESSAGE'),
+    "room_user": makeAction('MSG_ROOM_USER'),
+    "room_user_left": makeAction('MSG_ROOM_USER_LEFT'),
+    "automatch_status": makeAction('MSG_AUTOMATCH_STATUS'),
+    "game_started": makeAction('MSG_GAME_STARTED'),
+    "game_finished": makeAction('MSG_GAME_FINISHED'),
+    "game_data": makeAction('MSG_GAME_DATA'),
+    "game_update": makeAction('MSG_GAME_UPDATE'),
+    "load_direct_room": makeAction('MSG_LOAD_DIRECT_ROOM')
 };
 
 export const updateRoute = makeAction('UPDATE_ROUTE');

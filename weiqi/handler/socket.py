@@ -22,17 +22,36 @@ from weiqi.handler.base import BaseHandler
 
 
 class SocketHandler(WebSocketHandler, BaseHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.subs = set()
+
     def open(self):
         self._send_connection_data()
+        self._subscribe('room_message')
 
     def on_message(self, message):
         pass
 
     def on_close(self):
-        pass
+        for topic in self.subs:
+            self.pubsub.unsubscribe(topic, self._on_pubsub)
 
-    def send_message(self, method, data):
-        message = {'method': method, 'data': data}
+    def _subscribe(self, topic):
+        if topic not in self.subs:
+            self.pubsub.subscribe(topic, self._on_pubsub)
+            self.subs.add(topic)
+
+    def _unsubscribe(self, topic):
+        if topic in self.subs:
+            self.pubsub.unsubscribe(topic, self._on_pubsub)
+            self.subs.remove(topic)
+
+    def _on_pubsub(self, topic, data):
+        self._send_message(topic, data)
+
+    def _send_message(self, topic, data):
+        message = {'method': topic, 'data': data}
         message = json.dumps(message)
         message = zlib.compress(message.encode())
         self.write_message(message, binary=True)
@@ -42,9 +61,10 @@ class SocketHandler(WebSocketHandler, BaseHandler):
 
         if self.current_user:
             user = self.query_current_user()
-            data['user_id'] = user.display
+            data['user_id'] = user.id
+            data['user_display'] = user.display
 
-        self.send_message('connection_data', data)
+        self._send_message('connection_data', data)
 
     def _connection_data_rooms(self):
         rooms = []

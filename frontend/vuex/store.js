@@ -40,6 +40,7 @@ const mutations = {
     MSG_CONNECTION_DATA(state, data) {
         state.auth.user.logged_in = !!data.user_id;
         state.auth.user.user_id = data.user_id;
+        state.auth.user.user_display = data.user_display;
         state.auth.user.avatar_url = '/api/users/' + data.user_id + '/avatar';
         state.auth.user.automatch = data.automatch;
         state.auth.user.wins = data.wins;
@@ -258,7 +259,7 @@ const mutations = {
         }
 
         Vue.http.get('/api/rooms/'+room_id+'/users').then(function(res) {
-            Vue.set(state.room_users, room_id, res.data);
+            Vue.set(state.room_users, room_id, res.data.users);
         });
     },
     

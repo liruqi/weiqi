@@ -33,9 +33,14 @@ class MessageHandler(BaseHandler):
         self.db.add(msg)
         self.db.commit()
 
+        self.pubsub.publish('room_message', msg.to_frontend())
+
+
 class UsersHandler(BaseHandler):
-    def get(self):
-        self.write('false')
+    def get(self, room_id):
+        room = self.db.query(Room).get(room_id)
+        users = [ru.user.to_frontend() for ru in room.users]
+        self.write({'users': users})
 
 
 class MarkReadHandler(BaseHandler):

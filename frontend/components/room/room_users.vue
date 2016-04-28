@@ -9,8 +9,8 @@
             </thead>
             <tbody>
                 <tr v-for="user in users">
-                    <td><qi-user-context :user_id="user.user_id"></qi-user-context></td>
-                    <td><qi-rating-rank :rating="user.Rating"></qi-rating-rank></td>
+                    <td><qi-user-context :user_id="user.id" :display="user.display"></qi-user-context></td>
+                    <td><qi-rating-rank :rating="user.rating"></qi-rating-rank></td>
                 </tr>
             </tbody>
         </table>

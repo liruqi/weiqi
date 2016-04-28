@@ -38,6 +38,7 @@ class User(Base):
 
     rooms = relationship('RoomUser', back_populates='user')
     messages = relationship('RoomMessage', back_populates='user')
+    connections = relationship('Connection', back_populates='user')
 
     def set_password(self, pw):
         self.password = bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
@@ -56,6 +57,26 @@ class User(Base):
         if not re.match(r'^[a-zA-Z0-9_-]{2,12}$', val):
             raise ValueError('invalid display name')
         return val
+
+    def to_frontend(self):
+        return {
+            'id': self.id,
+            'display': self.display,
+            'rating': self.rating,
+        }
+
+
+class Connection(Base):
+    __tablename__ = 'connections'
+
+    id = Column(Integer, primary_key=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user_id = Column(ForeignKey('users.id'), nullable=False)
+    user = relationship('User', back_populates='connections')
+
+    ip = Column(String)
 
 
 class Room(Base):
@@ -87,7 +108,7 @@ class RoomUser(Base):
     user_id = Column(ForeignKey('users.id'), primary_key=True)
 
     room = relationship('Room', back_populates='users')
-    user = relationship('User', back_populates='rooms')
+    user = relationship('User', back_populates='rooms', lazy='joined')
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
