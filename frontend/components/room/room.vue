@@ -3,10 +3,10 @@
         <section class="content">
             <div class="row">
                 <div class="flex-column col-sm-9 col-lg-10">
-                    <qi-room-logs :room-id="$route.params.roomID"></qi-room-logs>
+                    <qi-room-logs :room_id="$route.params.room_id"></qi-room-logs>
                 </div>
                 <div class="flex-column col-sm-3 col-lg-2">
-                    <qi-room-users :room-id="$route.params.roomID"></qi-room-users>
+                    <qi-room-users :room_id="$route.params.room_id"></qi-room-users>
                 </div>
             </div>
         </section>
@@ -25,11 +25,11 @@
 
         computed: {
             windowTitle() {
-                return this.room.Name;
+                return this.room.name;
             },
 
             room() {
-                return this.rooms.find(room => { return room.ID == this.$route.params.roomID; }) || {};
+                return this.rooms.find(room => { return room.id == this.$route.params.room_id; }) || {};
             }
         }
     }

@@ -10,7 +10,7 @@
                 required: true
             },
 
-            forceNodeID: false,
+            force_node_id: false,
 
             coordinates: {
                 type: Boolean,
@@ -73,8 +73,8 @@
 
         computed: {
             currentNodeID() {
-                if(this.forceNodeID !== false) {
-                    return this.forceNodeID;
+                if(this.force_node_id !== false) {
+                    return this.force_node_id;
                 }
                 return this.board.CurrentNodeID;
             },

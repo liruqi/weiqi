@@ -17,8 +17,8 @@
 from tornado.websocket import WebSocketHandler
 import zlib
 import json
+from weiqi.models import Room
 from weiqi.handler.base import BaseHandler
-from weiqi.db import session
 
 
 class SocketHandler(WebSocketHandler, BaseHandler):
@@ -38,11 +38,20 @@ class SocketHandler(WebSocketHandler, BaseHandler):
         self.write_message(message, binary=True)
 
     def _send_connection_data(self):
-        data = {}
+        data = self._connection_data_rooms()
 
-        with session() as db:
-            if self.current_user:
-                user = self.query_current_user(db)
-                data['UserID'] = user.display
+        if self.current_user:
+            user = self.query_current_user()
+            data['user_id'] = user.display
 
         self.send_message('connection_data', data)
+
+    def _connection_data_rooms(self):
+        rooms = []
+        logs = {}
+
+        for room in self.db.query(Room):
+            rooms.append(room.to_frontend())
+            logs[room.id] = [m.to_frontend() for m in room.messages]
+
+        return {'rooms': rooms, 'room_logs': logs}

@@ -1,6 +1,4 @@
-<template>
-    {{rank}}
-</template>
+<template>{{rank}}</template>
 
 <script>
     export default {

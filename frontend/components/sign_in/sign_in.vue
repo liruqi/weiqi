@@ -17,8 +17,8 @@
 
                         <form @submit.prevent="signIn" novalidate>
                             <div class="form-group has-feedback" :class="{'has-error': loginFailed}">
-                                <input class="form-control input-lg" type="text" v-model="user" required autofocus
-                                    placeholder="{{$t('signIn.usernameEmail')}}">
+                                <input class="form-control input-lg" type="text" v-model="email" required autofocus
+                                    placeholder="{{$t('signIn.email')}}">
                                 <span class="fa fa-user form-control-feedback"></span>
                             </div>
 
@@ -82,7 +82,7 @@
         data() {
             return {
                 stage: 'signIn',
-                user: '',
+                email: '',
                 password: '',
                 loginFailed: false
             }
@@ -98,7 +98,7 @@
             signIn() {
                 this.loginFailed = false;
 
-                this.$http.post('/api/auth/sign-in', {user: this.user, password: this.password}).then(function() {
+                this.$http.post('/api/auth/sign-in', {email: this.email, password: this.password}).then(function() {
                     document.location.reload();
                 }, function() {
                     this.loginFailed = true;

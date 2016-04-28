@@ -17,7 +17,7 @@
                 <i v-if="color=='white'" class="fa fa-circle-thin"></i>
                 <i v-else class="fa fa-circle"></i>
                 &nbsp;&nbsp;
-                <qi-user-context :user-id="player" :rating="rating"></qi-user-context>
+                <qi-user-context :user_id="player" :rating="rating"></qi-user-context>
             </p>
             <p class="text-center" v-if="stage=='playing'">
                 {{time}}

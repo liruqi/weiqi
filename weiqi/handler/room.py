@@ -14,13 +14,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from tornado.web import authenticated
 from weiqi.handler.base import BaseHandler
+from weiqi.models import Room, RoomMessage
 
 
 class MessageHandler(BaseHandler):
-    def post(self):
-        self.write('false')
+    @authenticated
+    def post(self, room_id):
+        room = self.db.query(Room).get(room_id)
+        user = self.query_current_user()
+        msg = RoomMessage(room=room,
+                          user=user,
+                          user_display=user.display,
+                          user_rating=user.rating,
+                          message=self.get_body_argument('message'))
 
+        self.db.add(msg)
+        self.db.commit()
 
 class UsersHandler(BaseHandler):
     def get(self):

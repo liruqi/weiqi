@@ -56,7 +56,7 @@
             upload() {
                 this.$http.post('/api/play/upload-sgf', {sgf: this.sgf}).then(function(res) {
                     jQuery('#qi-upload-sgf').modal('hide');
-                    this.$router.go({name: 'game', params: {gameID: res.data}});
+                    this.$router.go({name: 'game', params: {game_id: res.data}});
                 }.bind(this), function() {
                     this.error = 'error';
                     this.sgf = '';

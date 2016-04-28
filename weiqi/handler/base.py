@@ -16,13 +16,22 @@
 
 from tornado.web import RequestHandler
 from weiqi import settings
+from weiqi.db import session
 from weiqi.models import User
 
 
 class BaseHandler(RequestHandler):
+    def initialize(self, pubsub):
+        self.pubsub = pubsub
+
     def get_current_user(self):
         id = self.get_secure_cookie(settings.COOKIE_NAME)
         return int(id) if id else None
 
-    def query_current_user(self, db):
-        return db.query(User).filter(User.id == self.current_user).one()
+    def query_current_user(self):
+        return self.db.query(User).get(self.current_user)
+
+    def _execute(self, *args, **kwargs):
+        with session() as db:
+            self.db = db
+            super()._execute(*args, **kwargs)

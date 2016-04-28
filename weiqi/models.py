@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Enum
 from sqlalchemy.orm import validates, relationship
 from datetime import datetime
 import re
@@ -33,7 +33,7 @@ class User(Base):
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
 
-    display = Column(String, nullable=False, default='')
+    display = Column(String, nullable=False)
     rating = Column(Float, nullable=False, default=0)
 
     rooms = relationship('RoomUser', back_populates='user')
@@ -67,9 +67,17 @@ class Room(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     name = Column(String, nullable=False, default='Room')
+    type = Column(Enum('main', 'direct', 'game', name='room_type'), nullable=False)
 
     users = relationship('RoomUser', back_populates='room')
     messages = relationship('RoomMessage', back_populates='room')
+
+    def to_frontend(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'type': self.type,
+        }
 
 
 class RoomUser(Base):
@@ -99,4 +107,22 @@ class RoomMessage(Base):
     user_id = Column(ForeignKey('users.id'), nullable=False)
     user = relationship('User', back_populates='messages')
 
+    user_display = Column(String, nullable=False)
+    user_rating = Column(Float, nullable=False)
+
     message = Column(String, nullable=False)
+
+    def to_frontend(self):
+        return {
+            'id': self.id,
+            'created_at': datetime_to_frontend(self.created_at),
+            'room_id': self.room_id,
+            'user_id': self.user_id,
+            'user_display': self.user_display,
+            'user_rating': self.user_rating,
+            'message': self.message
+        }
+
+
+def datetime_to_frontend(date):
+    return date.isoformat()

@@ -48,7 +48,7 @@
             create() {
                 this.$http.post('/api/play/create-demo', {title: this.title, size: this.size}).then(function(res) {
                     jQuery('#qi-create-demo').modal('hide');
-                    this.$router.go({name: 'game', params: {gameID: res.data}});
+                    this.$router.go({name: 'game', params: {game_id: res.data}});
                 }.bind(this));
             }
         }

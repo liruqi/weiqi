@@ -14,28 +14,37 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
 import tornado.web
 from weiqi import settings
 from weiqi.db import create_db
 from weiqi.handler import auth, socket, main as main_handler, room
+from weiqi.message.pubsub import PubSub
+from weiqi.message.broker import Ampq
 
 
 def main():
     create_db()
 
+    broker = Ampq(settings.AMPQ_URL)
+    pubsub = PubSub(broker)
+
+    def handler(route, cls):
+        return route, cls, dict(pubsub=pubsub)
+
     handlers = [
-        (r'/api/ping', main_handler.PingHandler),
-        (r'/api/socket', socket.SocketHandler),
-        (r'/api/auth/email-exists', auth.EmailExistsHandler),
-        (r'/api/auth/sign-up', auth.SignUpHandler),
-        (r'/api/auth/sign-in', auth.SignInHandler),
-        (r'/api/auth/logout', auth.LogoutHandler),
+        handler(r'/api/ping', main_handler.PingHandler),
+        handler(r'/api/socket', socket.SocketHandler),
+        handler(r'/api/auth/email-exists', auth.EmailExistsHandler),
+        handler(r'/api/auth/sign-up', auth.SignUpHandler),
+        handler(r'/api/auth/sign-in', auth.SignInHandler),
+        handler(r'/api/auth/logout', auth.LogoutHandler),
 
-        (r'/api/rooms/(.*?)/message', room.MessageHandler),
-        (r'/api/rooms/(.*?)/users', room.UsersHandler),
-        (r'/api/rooms/(.*?)/mark-read', room.MarkReadHandler),
+        handler(r'/api/rooms/(.*?)/message', room.MessageHandler),
+        handler(r'/api/rooms/(.*?)/users', room.UsersHandler),
+        handler(r'/api/rooms/(.*?)/mark-read', room.MarkReadHandler),
 
-        (r'.*', main_handler.MainHandler),
+        handler(r'.*', main_handler.MainHandler),
     ]
 
     app = tornado.web.Application(
@@ -47,4 +56,6 @@ def main():
         static_path=settings.STATIC_PATH)
 
     app.listen(settings.LISTEN_PORT)
+
+    tornado.ioloop.IOLoop.current().add_timeout(time.time() + .1, broker.run)
     tornado.ioloop.IOLoop.current().start()

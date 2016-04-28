@@ -16,20 +16,19 @@
 
 from tornado.web import HTTPError
 from weiqi.handler.base import BaseHandler
-from weiqi.db import session
 from weiqi.models import User
 
 
 class SignUpHandler(BaseHandler):
     def post(self):
-        with session() as db:
-            user = User(display=self.get_body_argument('username'),
-                        email=self.get_body_argument('email'),
-                        rating=100)
+        user = User(display=self.get_body_argument('display'),
+                    email=self.get_body_argument('email'),
+                    rating=100)
 
-            user.set_password(self.get_body_argument('password'))
+        user.set_password(self.get_body_argument('password'))
 
-            db.add(user)
+        self.db.add(user)
+        self.db.commit()
 
         self.write({})
 
@@ -37,24 +36,21 @@ class SignUpHandler(BaseHandler):
 class EmailExistsHandler(BaseHandler):
     def post(self):
         email = self.get_body_argument('email')
-
-        with session() as db:
-            exists = db.query(User).filter(User.email == email).count() > 0
-            self.write('true' if exists else 'false')
+        exists = self.db.query(User).filter(User.email == email).count() > 0
+        self.write('true' if exists else 'false')
 
 
 class SignInHandler(BaseHandler):
     def post(self):
-        email = self.get_body_argument('user')
+        email = self.get_body_argument('email')
         password = self.get_body_argument('password')
 
-        with session() as db:
-            user = db.query(User).filter(User.email == email).one()
+        user = self.db.query(User).filter(User.email == email).one()
 
-            if not user.check_password(password):
-                raise HTTPError(403, 'invalid username or password')
+        if not user.check_password(password):
+            raise HTTPError(403, 'invalid username or password')
 
-            self.set_secure_cookie('weiqi', str(user.id))
+        self.set_secure_cookie('weiqi', str(user.id))
 
 
 class LogoutHandler(BaseHandler):

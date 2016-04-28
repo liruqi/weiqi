@@ -5,37 +5,37 @@
                 <i class="fa fa-comments-o"></i>
                 <span v-if="title">{{title}}</span>
                 <span v-else>
-                    <span v-if="room.Type=='global'">{{room.Name}}</span>
-                    <span v-else>{{$t('roomLogs.chat')}}</span>
+                    <span v-if="room.type=='main'">{{room.name}}</span>
+                    <span v-else>{{$t('room_logs.chat')}}</span>
                 </span>
             </h3>
         </div>
 
         <div class="panel-body chat flex-auto">
-            <div class="item" v-for="log in roomLogs">
-                <img class="avatar" :src="'/api/users/' + log.UserID + '/avatar'">
+            <div class="item" v-for="log in room_logs">
+                <img class="avatar" :src="'/api/users/' + log.user_id + '/avatar'">
 
                 <p class="message">
                     <span class="name">
-                        <qi-user-context :user-id="log.UserID" :rating="log.Rating"></qi-user-context>
+                        <qi-user-context :user_id="log.user_id" :display="log.user_display" :rating="log.user_rating"></qi-user-context>
 
-                        <small class="text-muted pull-right" title="{{moment(log.CreatedAt).format('YYYY-MM-DD HH:mm:ss')}}">
+                        <small class="text-muted pull-right" title="{{moment(log.created_at).format('YYYY-MM-DD HH:mm:ss')}}">
                             <i class="fa fa-clock-o"></i>
-                            {{moment(log.CreatedAt).format('HH:mm')}}
+                            {{moment(log.created_at).format('HH:mm')}}
                         </small>
                     </span>
 
-                    {{log.Message}}
+                    {{log.message}}
                 </p>
             </div>
         </div>
 
         <div class="panel-footer flex-fixed">
-            <div v-if="loggedIn">
-                <form @submit.prevent="sendMessage">
+            <div v-if="logged_in">
+                <form @submit.prevent="send_message">
                     <div class="input-group">
                         <input type="text" class="form-control" name="message"
-                               v-model="message" placeholder="{{$t('roomLogs.typeMsg')}}"
+                               v-model="message" placeholder="{{$t('room_logs.type_msg')}}"
                                autocomplete="off">
                         <div class="input-group-btn">
                             <button class="btn btn-success"><i class="fa fa-plus"></i></button>
@@ -45,8 +45,8 @@
             </div>
 
             <span v-else>
-                <a href="#" data-toggle="modal" data-target="#qi-sign-in">{{$t('roomLogs.signIn')}}</a>
-                {{$t('roomLogs.toChat')}}
+                <a href="#" data-toggle="modal" data-target="#qi-sign-in">{{$t('room_logs.signIn')}}</a>
+                {{$t('room_logs.toChat')}}
             </span>
         </div>
     </div>
@@ -54,10 +54,10 @@
 
 <script>
     import moment from 'moment';
-    import { clearRoomUpdate } from '../../vuex/actions';
+    import { clear_room_update } from '../../vuex/actions';
 
     export default {
-        props: ['roomID', 'title', 'showOnlyUserIDs'],
+        props: ['room_id', 'title', 'show_only_user_ids'],
 
         data() {
             return {
@@ -67,27 +67,27 @@
 
         vuex: {
             getters: {
-                loggedIn: function(state) { return state.auth.user.loggedIn; },
+                logged_in: function(state) { return state.auth.user.logged_in; },
                 rooms: function(state) { return state.rooms; },
-                allLogs: function(state) { return state.roomLogs; },
-                roomHasUpdate: function(state) { return state.roomHasUpdate; }
+                all_logs: function(state) { return state.room_logs; },
+                room_has_update: function(state) { return state.room_has_update; }
             },
             actions: {
-                clearRoomUpdate
+                clear_room_update
             }
         },
 
         computed: {
             room() {
-                return this.rooms.find(room => { return room.ID == this.roomID; }) || {};
+                return this.rooms.find(room => { return room.id == this.room_id; }) || {};
             },
 
-            roomLogs() {
-                var logs = this.allLogs[this.roomID] || [];
+            room_logs() {
+                var logs = this.all_logs[this.room_id] || [];
 
-                if((this.showOnlyUserIDs || []).length > 0) {
+                if((this.show_only_user_ids || []).length > 0) {
                     logs = logs.filter(function(log) {
-                        return this.showOnlyUserIDs.includes(log.UserID);
+                        return this.show_only_user_ids.includes(log.user_id);
                     }.bind(this))
                 }
 
@@ -96,32 +96,32 @@
         },
 
         watch: {
-            'roomLogs': function() {
-                this.scrollBottom();
-                this.clearRoomUpdate(this.roomID);
+            'room_logs': function() {
+                this.scroll_bottom();
+                this.clear_room_update(this.room_id);
             },
 
-            'roomID': function() {
-                this.scrollBottom(true);
-                this.clearRoomUpdate(this.roomID);
+            'room_id': function() {
+                this.scroll_bottom(true);
+                this.clear_room_update(this.room_id);
             }
         },
 
         ready() {
-            this.scrollBottom(true);
-            this.clearRoomUpdate(this.roomID);
+            this.scroll_bottom(true);
+            this.clear_room_update(this.room_id);
         },
 
         methods: {
-            sendMessage() {
-                this.$http.post('/api/rooms/'+this.roomID+'/message', {
+            send_message() {
+                this.$http.post('/api/rooms/'+this.room_id+'/message', {
                     message: this.message
                 });
 
                 this.message = '';
             },
 
-            scrollBottom(force) {
+            scroll_bottom(force) {
                 var el = jQuery(this.$el).find('.chat');
                 var innerHeight = el.innerHeight();
                 var scrollHeight = el.prop("scrollHeight");

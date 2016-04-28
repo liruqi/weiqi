@@ -2,16 +2,16 @@
     <aside class="main-sidebar sidebar">
         <div class="user-panel">
             <div class="pull-left image">
-                <a v-link="{name:'user', params:{userID:user.userID}}">
-                    <img :src="user.avatarURL" class="avatar">
+                <a v-link="{name:'user', params:{user_id:user.user_id}}">
+                    <img :src="user.avatar_url" class="avatar">
                 </a>
             </div>
             <div class="pull-left info">
                 <p>
-                    <a v-link="{name:'user', params:{userID:user.userID}}">{{user.userID}}</a>
+                    <a v-link="{name:'user', params:{user_id:user.user_id}}">{{user.user_id}}</a>
                 </p>
 
-                <span v-if="user.loggedIn">
+                <span v-if="user.logged_in">
                     <i class="fa fa-trophy"></i>
                     {{user.wins}}
                     &mdash;
@@ -22,13 +22,13 @@
             <div class="clearfix"></div>
 
             <div class="user-buttons">
-                <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#qi-sign-in" v-if="!user.loggedIn">
+                <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#qi-sign-in" v-if="!user.logged_in">
                     {{$t('sidebar.signIn')}}
                 </button>
 
-                <div class="btn-group btn-block" v-if="user.loggedIn">
+                <div class="btn-group btn-block" v-if="user.logged_in">
                     <template v-if="user.automatch">
-                        <button type="button" class="btn btn-primary col-xs-10" @click="cancelAutomatch">
+                        <button type="button" class="btn btn-primary col-xs-10" @click="cancel_automatch">
                             <i class="fa fa-spinner fa-spin"></i>&nbsp;&nbsp;
                             {{$t('sidebar.searchingAutomatch')}}
                         </button>
@@ -62,9 +62,9 @@
 
         <ul class="sidebar-menu">
             <li v-link-active>
-                <a v-link="{name:'activeGames', exact: true}">
+                <a v-link="{name:'active_games', exact: true}">
                     <i class="fa fa-globe"></i>
-                    {{$t('sidebar.activeGames')}}
+                    {{$t('sidebar.active_games')}}
                 </a>
             </li>
         </ul>
@@ -72,53 +72,53 @@
         <ul class="sidebar-menu">
             <li class="header">{{$t('sidebar.games')}}</li>
 
-            <template v-for="game in sortedGames">
+            <template v-for="game in sorted_games">
                 <li v-link-active>
-                    <a v-link="{name: 'game', params:{gameID: game.ID}}">
-                        <i :class="{'text-info': game.Stage!='finished' && !gameHasUpdate[game.ID],
-                            'text-warning': game.Stage!='finished' && gameHasUpdate[game.ID]}"
+                    <a v-link="{name: 'game', params:{game_id: game.id}}">
+                        <i :class="{'text-info': game.stage!='finished' && !game_has_update[game.id],
+                            'text-warning': game.stage!='finished' && game_has_update[game.id]}"
                             class="fa fa-circle"></i>
 
                         <span v-if="game.Demo">{{game.DemoOwner}}</span>
                         <span v-else>{{game.MatchWhite}} &mdash; {{game.MatchBlack}}</span>
 
-                        <span class="sidebar-item-action pull-right" v-if="canCloseGame(game.ID)" @click.prevent="closeGame(game.ID)">
+                        <span class="sidebar-item-action pull-right" v-if="can_close_game(game.id)" @click.prevent="closeGame(game.id)">
                             <i class="fa fa-times-circle"></i>
                         </span>
                     </a>
                 </li>
             </template>
 
-            <li v-if="openGames.length == 0">
-                <span class="sidebar-text">{{$t('sidebar.noGames')}}</span>
+            <li v-if="open_games.length == 0">
+                <span class="sidebar-text">{{$t('sidebar.no_games')}}</span>
             </li>
         </ul>
 
         <ul class="sidebar-menu">
             <li class="header">{{$t('sidebar.rooms')}}</li>
-            <template v-for="room in globalRooms">
-                <li v-if="room.Type=='global'" v-link-active :class="{highlight: roomHasUpdate[room.ID]}">
-                    <a v-link="{name:'room', params:{roomID: room.ID}}">
-                        <i :class="{'text-info': roomHasUpdate[room.ID]}" class="fa fa-users"></i>
-                        {{room.Name}}
+            <template v-for="room in main_rooms">
+                <li v-if="room.type=='main'" v-link-active :class="{highlight: room_has_update[room.id]}">
+                    <a v-link="{name:'room', params:{room_id: room.id}}">
+                        <i :class="{'text-info': room_has_update[room.id]}" class="fa fa-users"></i>
+                        {{room.name}}
                     </a>
                 </li>
             </template>
         </ul>
 
-        <ul class="sidebar-menu" v-if="user.loggedIn">
+        <ul class="sidebar-menu" v-if="user.logged_in">
             <li class="header">{{$t('sidebar.people')}}</li>
 
-            <template v-for="room in directRooms">
-                <li v-link-active :class="{highlight: roomHasUpdate[room.RoomID]}">
-                    <a v-link="{name:'userMessage', params:{userID:$key}}">
-                        <i :class="{'text-success': room.IsOnline, 'text-info': roomHasUpdate[room.RoomID]}" class="fa fa-user"></i> {{$key}}
+            <template v-for="room in direct_rooms">
+                <li v-link-active :class="{highlight: room_has_update[room.room_id]}">
+                    <a v-link="{name:'user_message', params:{user_id:$key}}">
+                        <i :class="{'text-success': room.IsOnline, 'text-info': room_has_update[room.room_id]}" class="fa fa-user"></i> {{$key}}
                     </a>
                 </li>
             </template>
 
-            <li v-if="noDirectRooms">
-                <span class="sidebar-text">{{$t('sidebar.noDirectRooms')}}</span>
+            <li v-if="no_direct_rooms">
+                <span class="sidebar-text">{{$t('sidebar.no_direct_rooms')}}</span>
             </li>
         </ul>
 
@@ -148,10 +148,10 @@
             getters: {
                 user: function(state) { return state.auth.user; },
                 rooms: function(state) { return state.rooms; },
-                directRooms: function(state) { return state.directRooms; },
-                openGames: function(state) { return state.openGames; },
-                roomHasUpdate: function(state) { return state.roomHasUpdate; },
-                gameHasUpdate: function(state) { return state.gameHasUpdate; }
+                direct_rooms: function(state) { return state.direct_rooms; },
+                open_games: function(state) { return state.open_games; },
+                room_has_update: function(state) { return state.room_has_update; },
+                game_has_update: function(state) { return state.game_has_update; }
             },
             actions: {
                 closeGame
@@ -159,30 +159,30 @@
         },
 
         computed: {
-            globalRooms() {
+            main_rooms() {
                 return this.rooms.filter(function(room) {
-                    return room.Type == 'global';
+                    return room.type == 'main';
                 });
             },
 
-            sortedGames() {
-                return this.openGames.sort(function(g1, g2) {
-                    return g1.ID < g2.ID;
+            sorted_games() {
+                return this.open_games.sort(function(g1, g2) {
+                    return g1.id < g2.id;
                 });
             },
 
-            noDirectRooms() {
-                return !this.directRooms || Object.keys(this.directRooms).length==0
+            no_direct_rooms() {
+                return !this.direct_rooms || Object.keys(this.direct_rooms).length==0
             }
         },
 
         methods: {
-            cancelAutomatch() {
+            cancel_automatch() {
                 this.$http.post('/api/play/automatch/cancel');
             },
 
-            canCloseGame(gameID) {
-                return !(this.$route.name == "game" && this.$route.params.gameID == gameID);
+            can_close_game(game_id) {
+                return !(this.$route.name == "game" && this.$route.params.game_id == game_id);
             }
         }
     }

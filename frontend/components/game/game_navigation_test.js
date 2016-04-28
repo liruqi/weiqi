@@ -9,13 +9,13 @@ describe('game_navigation.vue', function() {
         return new Vue({
             components: {'qi-nav': require('./game_navigation.vue')},
             template: '<div><qi-nav v-ref:component :game="game" :is-player="isPlayer" :has-control="hasControl" '
-                + ':force-node-id.sync="forceNodeID"></qi-nav></div>',
+                + ':force_node_id.sync="force_node_id"></qi-nav></div>',
             data() {
                 return {
                     game: createGame(),
                     isPlayer: false,
                     hasControl: false,
-                    forceNodeID: false
+                    force_node_id: false
                 }
             }
         }).$mount();

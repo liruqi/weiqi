@@ -2,7 +2,7 @@
     <div class="room-page">
         <div class="flex-column">
             <template v-if="room">
-                <qi-room-logs :room-id="room.RoomID" :title="$route.params.userID"></qi-room-logs>
+                <qi-room-logs :room_id="room.room_id" :title="$route.params.user_id"></qi-room-logs>
             </template>
             <template v-else>
                 <div id="page-load-spinner">
@@ -21,7 +21,7 @@
 
         vuex: {
             getters: {
-                directRooms: function(state) { return state.directRooms }
+                direct_rooms: function(state) { return state.direct_rooms }
             },
             actions: {
                 loadDirectRoom
@@ -34,22 +34,22 @@
 
         data() {
             return {
-                roomID: null
+                room_id: null
             }
         },
 
         computed: {
             windowTitle() {
-                return this.$route.params.userID;
+                return this.$route.params.user_id;
             },
 
             room() {
-                return this.directRooms[this.$route.params.userID];
+                return this.direct_rooms[this.$route.params.user_id];
             }
         },
 
         ready() {
-            this.loadDirectRoom(this.$route.params.userID);
+            this.loadDirectRoom(this.$route.params.user_id);
         }
     }
 </script>

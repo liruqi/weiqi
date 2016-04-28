@@ -3,13 +3,13 @@
         <table class="table table-hover table-striped table-condensed flex-auto">
             <thead>
                 <tr>
-                    <th>{{$t('roomUsers.username')}}</th>
-                    <th>{{$t('roomUsers.rank')}}</th>
+                    <th>{{$t('room_users.username')}}</th>
+                    <th>{{$t('room_users.rank')}}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="user in users">
-                    <td><qi-user-context :user-id="user.UserID"></qi-user-context></td>
+                    <td><qi-user-context :user_id="user.user_id"></qi-user-context></td>
                     <td><qi-rating-rank :rating="user.Rating"></qi-rating-rank></td>
                 </tr>
             </tbody>
@@ -18,29 +18,29 @@
 </template>
 
 <script>
-    import { loadRoomUsers } from '../../vuex/actions';
+    import { load_room_users } from '../../vuex/actions';
 
     export default {
-        props: ['roomID'],
+        props: ['room_id'],
 
         vuex: {
             getters: {
                 rooms: function(state) { return state.rooms; },
-                roomUsers: function(state) { return state.roomUsers; }
+                room_users: function(state) { return state.room_users; }
             },
             actions: {
-                loadRoomUsers
+                load_room_users
             }
         },
 
         computed: {
             users() {
-                return this.roomUsers[this.roomID] || [];
+                return this.room_users[this.room_id] || [];
             }
         },
 
         ready() {
-            this.loadRoomUsers(this.roomID);
+            this.load_room_users(this.room_id);
         }
     }
 </script>

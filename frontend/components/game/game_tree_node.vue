@@ -1,5 +1,5 @@
 <template>
-    <div id="game-nav-node-{{node.ID}}">
+    <div id="game-nav-node-{{node.id}}">
         <span class="game-nav-node-plus-minus" v-if="children.length>1 || (!isSingle && children.length>=1)" @click="toggleNode">
             <i v-if="isExpanded" class="fa fa-minus-square-o fa-fw"></i>
             <i v-else class="fa fa-plus-square-o fa-fw"></i>
@@ -8,7 +8,7 @@
             <i class="fa fa-fw"></i>
         </span>
 
-        <span class="game-nav-node-label" @click="navigate(node.ID)" @dblclick="toggleNode" :class="{active: isActive}">
+        <span class="game-nav-node-label" @click="navigate(node.id)" @dblclick="toggleNode" :class="{active: isActive}">
             <i v-if="color=='white'" class="fa fa-circle-thin"></i>
             <i v-else class="fa fa-circle"></i>
             {{moveNr}}
@@ -62,7 +62,7 @@
             },
 
             isExpanded() {
-                return this.node && !!this.expanded['n' + this.node.ID];
+                return this.node && !!this.expanded['n' + this.node.id];
             },
 
             isActive() {
@@ -70,7 +70,7 @@
                     return false;
                 }
 
-                return this.activeNode.ID == this.node.ID;
+                return this.activeNode.id == this.node.id;
             }
         },
 
@@ -85,7 +85,7 @@
                 }
 
                 // Keys cannot begin with a number, so prefix with 'n'
-                var nodeID = 'n' + this.node.ID;
+                var nodeID = 'n' + this.node.id;
                 this.$set('expanded.'+nodeID, !this.expanded[nodeID]);
             }
         }

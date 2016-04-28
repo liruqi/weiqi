@@ -1,10 +1,10 @@
 <template>
-    <span v-if="!rating">{{userID}}</span>
-    <span v-else>{{userID}} (<qi-rating-rank :rating="rating"></qi-rating-rank>)</span>
+    <span v-if="!rating">{{display}}</span>
+    <span v-else>{{display}} (<qi-rating-rank :rating="rating"></qi-rating-rank>)</span>
 </template>
 
 <script>
     export default {
-        props: ['userID', 'rating'],
+        props: ['display', 'rating'],
     }
 </script>

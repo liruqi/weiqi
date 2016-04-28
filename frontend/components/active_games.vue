@@ -17,23 +17,23 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="game in sortedGames" v-link="{name:'game', params:{gameID: game.ID}}">
+                <tr v-for="game in sortedGames" v-link="{name:'game', params:{game_id: game.id}}">
                     <template v-if="game.Demo">
                         <td colspan="2">
-                            <qi-username-rank :user-id="game.DemoOwner" :rating="game.DemoOwnerRating"></qi-username-rank>
+                            <qi-username-rank :user_id="game.DemoOwner" :rating="game.DemoOwnerRating"></qi-username-rank>
                             <span v-if="game.DemoTitle">&mdash; {{game.DemoTitle}}</span>
                         </td>
                     </template>
                     <template v-else>
                         <td>
-                            <qi-username-rank :user-id="game.MatchWhite" :rating="game.MatchWhiteRating"></qi-username-rank>
+                            <qi-username-rank :user_id="game.MatchWhite" :rating="game.MatchWhiteRating"></qi-username-rank>
                         </td>
                         <td>
-                            <qi-username-rank :user-id="game.MatchBlack" :rating="game.MatchBlackRating"></qi-username-rank>
+                            <qi-username-rank :user_id="game.MatchBlack" :rating="game.MatchBlackRating"></qi-username-rank>
                         </td>
                     </template>
                     <td>{{game.Size}}x{{game.Size}}</td>
-                    <td>{{started[game.ID]}}</td>
+                    <td>{{started[game.id]}}</td>
                 </tr>
             </tbody>
         </table>
@@ -56,7 +56,7 @@
 
         vuex: {
             getters: {
-                activeGames: function(state) { return state.activeGames; }
+                active_games: function(state) { return state.active_games; }
             }
         },
 
@@ -73,7 +73,7 @@
                     return Math.max(g.MatchBlackRating, g.MatchWhiteRating);
                 };
 
-                return this.activeGames.slice().sort(function(a, b) {
+                return this.active_games.slice().sort(function(a, b) {
                     return calcRating(b) - calcRating(a);
                 });
             }
@@ -90,8 +90,8 @@
 
         methods: {
             updateTiming() {
-                this.activeGames.forEach(function(game) {
-                    Vue.set(this.started, game.ID, moment(game.CreatedAt).fromNow());
+                this.active_games.forEach(function(game) {
+                    Vue.set(this.started, game.id, moment(game.created_at).fromNow());
                 }.bind(this));
             }
         }

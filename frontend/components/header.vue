@@ -18,9 +18,9 @@
                             <i class="fa fa-cog fa-fw"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <template v-if="user.loggedIn">
+                            <template v-if="user.logged_in">
                                 <li>
-                                    <a v-link="{name:'user', params:{userID:user.userID}}">
+                                    <a v-link="{name:'user', params:{user_id:user.user_id}}">
                                        <i class="fa fa-user fa-fw"></i> {{$t('header.profile')}}
                                     </a>
                                 </li>
@@ -45,7 +45,7 @@
                                 </a>
                             </li>
 
-                            <template v-if="user.loggedIn">
+                            <template v-if="user.logged_in">
                                 <li class="divider"></li>
 
                                 <li>

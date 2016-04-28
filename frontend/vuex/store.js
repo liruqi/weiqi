@@ -12,10 +12,10 @@ const state = {
     
     auth: {
         user: {
-            loggedIn: false,
-            userID: "",
+            logged_in: false,
+            user_id: "",
             rating: null,
-            avatarURL: "",
+            avatar_url: "",
             automatch: false,
             wins: 0
         }
@@ -26,31 +26,31 @@ const state = {
     },
     
     rooms: [],
-    roomLogs: {},
-    roomUsers: {},
-    openGames: [],
-    activeGames: [],
-    directRooms: {},
+    room_logs: {},
+    room_users: {},
+    open_games: [],
+    active_games: [],
+    direct_rooms: {},
 
-    roomHasUpdate: {},
-    gameHasUpdate: {}
+    room_has_update: {},
+    game_has_update: {}
 };
 
 const mutations = {
     MSG_CONNECTION_DATA(state, data) {
-        state.auth.user.loggedIn = !!data.UserID;
-        state.auth.user.userID = data.UserID;
-        state.auth.user.avatarURL = '/api/users/' + data.UserID + '/avatar';
-        state.auth.user.automatch = data.Automatch;
-        state.auth.user.wins = data.Wins;
-        state.auth.user.rating = data.Rating;
+        state.auth.user.logged_in = !!data.user_id;
+        state.auth.user.user_id = data.user_id;
+        state.auth.user.avatar_url = '/api/users/' + data.user_id + '/avatar';
+        state.auth.user.automatch = data.automatch;
+        state.auth.user.wins = data.wins;
+        state.auth.user.rating = data.rating;
 
-        Vue.set(state, 'rooms', data.Rooms);
-        Vue.set(state, 'roomLogs', data.RoomLogs);
-        Vue.set(state, 'openGames', data.OpenGames || []);
-        Vue.set(state, 'activeGames', data.ActiveGames || []);
+        Vue.set(state, 'rooms', data.rooms);
+        Vue.set(state, 'room_logs', data.room_logs);
+        Vue.set(state, 'open_games', data.open_games || []);
+        Vue.set(state, 'active_games', data.active_games || []);
 
-        (data.DirectRooms || []).forEach(function(direct) {
+        (data.direct_rooms || []).forEach(function(direct) {
             mutations.MSG_LOAD_DIRECT_ROOM(state, direct);
         });
 
@@ -58,42 +58,42 @@ const mutations = {
     },
 
     MSG_ROOM_MESSAGE(state, data) {
-        if(!state.roomLogs[data.RoomID]) {
-            Vue.set(state.roomLogs, data.RoomID, []);
+        if(!state.room_logs[data.room_id]) {
+            Vue.set(state.room_logs, data.room_id, []);
         }
 
-        state.roomLogs[data.RoomID].push(data);
+        state.room_logs[data.room_id].push(data);
 
-        Vue.set(state.roomHasUpdate, data.RoomID, true);
+        Vue.set(state.room_has_update, data.room_id, true);
     },
 
     MSG_ROOM_USER(state, data) {
-        if(data.UserID == state.auth.user.userID) {
+        if(data.user_id == state.auth.user.user_id) {
             state.auth.user.rating = data.Rating;
         }
 
-        if(state.directRooms[data.UserID]) {
-            state.directRooms[data.UserID].IsOnline = data.IsOnline;
+        if(state.direct_rooms[data.user_id]) {
+            state.direct_rooms[data.user_id].IsOnline = data.IsOnline;
         }
 
-        if(!state.roomUsers[data.RoomID]) {
+        if(!state.room_users[data.room_id]) {
             return;
         }
 
-        state.roomUsers[data.RoomID] = state.roomUsers[data.RoomID].filter(function (user) {
-            return user.UserID != data.UserID;
+        state.room_users[data.room_id] = state.room_users[data.room_id].filter(function (user) {
+            return user.user_id != data.user_id;
         });
         
-        state.roomUsers[data.RoomID].push(data);
+        state.room_users[data.room_id].push(data);
     },
     
     MSG_ROOM_USER_LEFT(state, data) {
-        if(!state.roomUsers[data.RoomID]) {
+        if(!state.room_users[data.room_id]) {
             return;
         }
         
-        state.roomUsers[data.RoomID] = state.roomUsers[data.RoomID].filter(function (user) {
-            return user.UserID != data.UserID;
+        state.room_users[data.room_id] = state.room_users[data.room_id].filter(function (user) {
+            return user.user_id != data.user_id;
         });
     },
 
@@ -102,58 +102,58 @@ const mutations = {
     },
     
     MSG_GAME_STARTED(state, data) {
-        var game = state.activeGames.find(function(game) {
-            return game.ID == data.ID;
+        var game = state.active_games.find(function(game) {
+            return game.id == data.id;
         });
         
         if(game && game.Demo) {
-            game.Stage = 'playing';
+            game.stage = 'playing';
         } else if(!game) {
-            state.activeGames.push(data);
+            state.active_games.push(data);
         }
 
-        if(!data.Demo && (data.MatchBlack == state.auth.user.userID || data.MatchWhite == state.auth.user.userID)) {
-            state.route.router.go({name: 'game', params: {gameID: data.ID}});
+        if(!data.Demo && (data.MatchBlack == state.auth.user.user_id || data.MatchWhite == state.auth.user.user_id)) {
+            state.route.router.go({name: 'game', params: {game_id: data.id}});
         }
     },
 
     MSG_GAME_FINISHED(state, data) {
-        var game = state.openGames.find(function(game) {
-            return game.ID == data.GameID;
+        var game = state.open_games.find(function(game) {
+            return game.id == data.game_id;
         });
 
         if(game) {
-            game.Stage = 'finished';
+            game.stage = 'finished';
             game.Result = data.Result;
         }
 
-        state.activeGames = state.activeGames.filter(function(game) {
-            return game.ID != data.GameID;
+        state.active_games = state.active_games.filter(function(game) {
+            return game.id != data.game_id;
         });
     },
 
     MSG_GAME_DATA(state, data) {
-        state.openGames = state.openGames.filter(function(game) {
-            return game.ID != data.ID;
+        state.open_games = state.open_games.filter(function(game) {
+            return game.id != data.id;
         });
 
-        state.openGames.push(data);
+        state.open_games.push(data);
 
-        Vue.set(state.gameHasUpdate, data.ID, true);
+        Vue.set(state.game_has_update, data.id, true);
 
-        mutations.UPDATE_GAME_TIME(state, data.ID);
+        mutations.UPDATE_GAME_TIME(state, data.id);
     },
 
     MSG_GAME_UPDATE(state, data) {
-        var game = state.openGames.find(function(game) {
-            return game.ID == data.GameID;
+        var game = state.open_games.find(function(game) {
+            return game.id == data.game_id;
         });
 
         if(!game) {
             return;
         }
 
-        game.Stage = data.Stage;
+        game.stage = data.Stage;
         game.Result = data.Result;
         game.Timing = data.Timing;
 
@@ -162,43 +162,43 @@ const mutations = {
                 Vue.set(game.Board, 'Tree', []);
             }
 
-            if (!game.Board.Tree[data.Node.ID]) {
+            if (!game.Board.Tree[data.Node.id]) {
                 // This value will be needed to detect if a game update created a new node.
                 // Useful for determining if a sound should be played.
-                Vue.set(game.Board, 'LastInsertedNodeID', data.Node.ID);
+                Vue.set(game.Board, 'LastInsertedNodeID', data.Node.id);
                 game.Board.Tree.push(data.Node);
             } else {
-                game.Board.Tree.$set(data.Node.ID, data.Node);
+                game.Board.Tree.$set(data.Node.id, data.Node);
             }
 
-            game.Board.CurrentNodeID = data.Node.ID;
+            game.Board.CurrentNodeID = data.Node.id;
 
             if(data.Node.ParentID >= 0) {
                 if (!game.Board.Tree[data.Node.ParentID].Children) {
                     Vue.set(game.Board.Tree[data.Node.ParentID], 'Children', []);
                 }
 
-                if(game.Board.Tree[data.Node.ParentID].Children.indexOf(data.Node.ID) == -1) {
-                    game.Board.Tree[data.Node.ParentID].Children.push(data.Node.ID);
+                if(game.Board.Tree[data.Node.ParentID].Children.indexOf(data.Node.id) == -1) {
+                    game.Board.Tree[data.Node.ParentID].Children.push(data.Node.id);
                 }
             }
         }
 
-        Vue.set(state.gameHasUpdate, data.GameID, true);
+        Vue.set(state.game_has_update, data.game_id, true);
 
-        mutations.UPDATE_GAME_TIME(state, data.GameID);
+        mutations.UPDATE_GAME_TIME(state, data.game_id);
     },
     
     MSG_LOAD_DIRECT_ROOM(state, room) {
-        Vue.set(state.directRooms, room.OtherUserID, {
-            RoomID: room.Room.ID,
-            OtherUserID: room.OtherUserID,
+        Vue.set(state.direct_rooms, room.Otheruser_id, {
+            room_id: room.Room.id,
+            Otheruser_id: room.Otheruser_id,
             IsOnline: room.IsOnline,
             IsActive: room.IsActive
         });
         
-        Vue.set(state.roomLogs, room.Room.ID, room.RoomLogs);
-        Vue.set(state.roomHasUpdate, room.Room.ID, room.HasUnread);
+        Vue.set(state.room_logs, room.Room.id, room.room_logs);
+        Vue.set(state.room_has_update, room.Room.id, room.HasUnread);
     },
     
     UPDATE_ROUTE(state, route) {
@@ -210,11 +210,11 @@ const mutations = {
     },
     
     UPDATE_GAME_TIME(state, id) {
-        var game = state.openGames.find(function(game) {
-            return game.ID == id;
+        var game = state.open_games.find(function(game) {
+            return game.id == id;
         });
 
-        if(!game || game.Demo || !game.Board.Tree || (!game.Demo && game.Stage == 'finished') ||
+        if(!game || game.Demo || !game.Board.Tree || (!game.Demo && game.stage == 'finished') ||
             moment(game.Timing.StartAt).diff(moment.utc()) > 0) {
             return;
         }
@@ -232,60 +232,60 @@ const mutations = {
         game.Timing.LastUpdateAt = moment.utc();
     },
 
-    OPEN_GAME(state, gameID) {
-        var game = state.openGames.find(function(game) {
-            return game.ID == gameID;
+    OPEN_GAME(state, game_id) {
+        var game = state.open_games.find(function(game) {
+            return game.id == game_id;
         });
 
         if(game && game.Board) {
             return;
         }
 
-        Vue.http.post('/api/games/'+gameID+'/open');
+        Vue.http.post('/api/games/'+game_id+'/open');
     },
 
-    CLOSE_GAME(state, gameID) {
-        Vue.http.post('/api/games/'+gameID+'/close');
+    CLOSE_GAME(state, game_id) {
+        Vue.http.post('/api/games/'+game_id+'/close');
 
-        state.openGames = state.openGames.filter(function(game) {
-            return game.ID != gameID;
+        state.open_games = state.open_games.filter(function(game) {
+            return game.id != game_id;
         });
     },
     
-    LOAD_ROOM_USERS(state, roomID) {
-        if(!roomID || !!state.roomUsers[roomID]) {
+    LOAD_ROOM_USERS(state, room_id) {
+        if(!room_id || !!state.room_users[room_id]) {
             return;
         }
 
-        Vue.http.get('/api/rooms/'+roomID+'/users').then(function(res) {
-            Vue.set(state.roomUsers, roomID, res.data);
+        Vue.http.get('/api/rooms/'+room_id+'/users').then(function(res) {
+            Vue.set(state.room_users, room_id, res.data);
         });
     },
     
     RELOAD_USER_AVATAR(state) {
-        state.auth.user.avatarURL = '/api/users/' + state.auth.user.userID + '/avatar?' + (new Date()).getTime();
+        state.auth.user.avatar_url = '/api/users/' + state.auth.user.user_id + '/avatar?' + (new Date()).getTime();
     },
     
-    LOAD_DIRECT_ROOM(state, userID) {
-        Vue.http.post('/api/users/' + userID + '/open-direct').then(function(res) {
+    LOAD_DIRECT_ROOM(state, user_id) {
+        Vue.http.post('/api/users/' + user_id + '/open-direct').then(function(res) {
             mutations.MSG_LOAD_DIRECT_ROOM(state, res.data);
         }, function() {})
     },
     
-    CLEAR_ROOM_UPDATE(state, roomID) {
-        Vue.set(state.roomHasUpdate, roomID, false);
+    CLEAR_ROOM_UPDATE(state, room_id) {
+        Vue.set(state.room_has_update, room_id, false);
 
-        var isDirect = Object.keys(state.directRooms).find(function(userID) {
-            return state.directRooms[userID].RoomID == roomID;
+        var isDirect = Object.keys(state.direct_rooms).find(function(user_id) {
+            return state.direct_rooms[user_id].room_id == room_id;
         });
 
         if(isDirect) {
-            Vue.http.post('/api/rooms/' + roomID + '/mark-read');
+            Vue.http.post('/api/rooms/' + room_id + '/mark-read');
         }
     },
     
-    CLEAR_GAME_UPDATE(state, gameID) {
-        Vue.set(state.gameHasUpdate, gameID, false);
+    CLEAR_GAME_UPDATE(state, game_id) {
+        Vue.set(state.game_has_update, game_id, false);
     }
 };
 

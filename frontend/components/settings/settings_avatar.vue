@@ -7,7 +7,7 @@
         <div class="box-body">
             <p class="text-center">
                 <br>
-                <img class="avatar" :src="user.avatarURL">
+                <img class="avatar" :src="user.avatar_url">
             </p>
 
             <p class="text-center">

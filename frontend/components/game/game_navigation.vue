@@ -1,5 +1,5 @@
 <template>
-    <div v-if="game.Demo || !isPlayer || game.Stage=='finished'">
+    <div v-if="game.Demo || !isPlayer || game.stage=='finished'">
         <div class="game-navigation">
             <div class="game-nav-node">
                 <qi-game-tree-node v-if="rootNode" :game="game" :active-node="currentNode" :node="rootNode"
@@ -22,7 +22,7 @@
 
 <script>
     export default {
-        props: ['game', 'isPlayer', 'hasControl', 'forceNodeID'],
+        props: ['game', 'isPlayer', 'hasControl', 'force_node_id'],
         components: {
             'qi-game-tree-node': require('./game_tree_node.vue')
         },
@@ -53,8 +53,8 @@
                     this.setNodeID(node.Children[0]);
                 }
 
-                if(this.forceNodeID == this.game.Board.CurrentNodeID) {
-                    this.forceNodeID = false;
+                if(this.force_node_id == this.game.Board.CurrentNodeID) {
+                    this.force_node_id = false;
                 }
             },
 
@@ -77,21 +77,21 @@
                     node = this.game.Board.Tree[node.Children[0]];
                 }
 
-                this.setNodeID(node.ID);
+                this.setNodeID(node.id);
             },
 
             backToGame() {
-                this.forceNodeID = false;
+                this.force_node_id = false;
             },
 
             setNodeID(nodeID) {
                 if(this.game.Demo && this.hasControl) {
-                    this.$http.post('/api/games/'+this.game.ID+'/set-current-node', {nodeID: nodeID});
+                    this.$http.post('/api/games/'+this.game.id+'/set-current-node', {nodeID: nodeID});
                 } else {
-                    this.forceNodeID = nodeID;
+                    this.force_node_id = nodeID;
 
-                    if(this.forceNodeID == this.game.Board.CurrentNodeID) {
-                        this.forceNodeID = false;
+                    if(this.force_node_id == this.game.Board.CurrentNodeID) {
+                        this.force_node_id = false;
                     }
                 }
             },
@@ -117,7 +117,7 @@
 
             scrollToNode(node) {
                 var nav = jQuery('.game-navigation');
-                var el = jQuery('#game-nav-node-' + node.ID);
+                var el = jQuery('#game-nav-node-' + node.id);
                 var labelH = el.find('.game-nav-node-label').first().height();
 
                 nav.animate({
@@ -132,7 +132,7 @@
             },
 
             'game-navigate': function(step) {
-                if(this.isPlayer && this.game.Stage != 'finished') {
+                if(this.isPlayer && this.game.stage != 'finished') {
                     return;
                 }
 
@@ -164,7 +164,7 @@
                     return null;
                 }
 
-                var nodeID = this.forceNodeID;
+                var nodeID = this.force_node_id;
 
                 if(nodeID === false) {
                     nodeID = this.game.Board.CurrentNodeID;

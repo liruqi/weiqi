@@ -1,22 +1,22 @@
 <template>
-    <div v-if="user.UserID" class="qi-profile">
+    <div v-if="user.user_id" class="qi-profile">
         <div class="row">
             <div class="col-sm-4 col-sm-push-8">
                 <p class="text-center">
-                    <img height="256" width="256" class="avatar" :src="'/api/users/'+user.UserID+'/avatar'">
+                    <img height="256" width="256" class="avatar" :src="'/api/users/'+user.user_id+'/avatar'">
                 </p>
             </div>
 
             <div class="col-sm-8 col-sm-pull-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h1 class="panel-title">{{user.UserID}}</h1>
+                        <h1 class="panel-title">{{user.user_id}}</h1>
                     </div>
 
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-xs-6">{{$t('userDetail.memberSince')}}</div>
-                            <div class="col-xs-6">{{moment(user.CreatedAt).format('YYYY-MM-DD HH:mm')}}</div>
+                            <div class="col-xs-6">{{moment(user.created_at).format('YYYY-MM-DD HH:mm')}}</div>
                         </div>
 
                         <div class="row">
@@ -55,19 +55,19 @@
                         </template>
                         <template v-else>
                             <td :class="{winner: game.Result.startsWith('W+')}">
-                                <qi-user-context :user-id="game.White" :rating="game.WhiteRating"></qi-user-context>
+                                <qi-user-context :user_id="game.White" :rating="game.WhiteRating"></qi-user-context>
                             </td>
                             <td :class="{winner: game.Result.startsWith('B+')}">
-                                <qi-user-context :user-id="game.Black" :rating="game.BlackRating"></qi-user-context>
+                                <qi-user-context :user_id="game.Black" :rating="game.BlackRating"></qi-user-context>
                             </td>
                         </template>
                         <td>{{game.Result || '-'}}</td>
                         <td>{{game.Size}}x{{game.Size}}</td>
-                        <td>{{moment(game.CreatedAt).format('YYYY-MM-DD HH:mm')}}</td>
+                        <td>{{moment(game.created_at).format('YYYY-MM-DD HH:mm')}}</td>
                         <td>
-                            <a v-link="{name:'game', params:{gameID:game.ID}}"><i class="fa fa-file"></i></a>
+                            <a v-link="{name:'game', params:{game_id:game.id}}"><i class="fa fa-file"></i></a>
                             &nbsp;&nbsp;&nbsp;
-                            <a :href="'/api/games/'+game.ID+'/sgf'" target="_blank"><i class="fa fa-download"></i></a>
+                            <a :href="'/api/games/'+game.id+'/sgf'" target="_blank"><i class="fa fa-download"></i></a>
                         </td>
                     </tr>
                 </tbody>
@@ -94,18 +94,18 @@
         },
 
         ready() {
-            this.$http.get('/api/users/' + this.$route.params.userID).then(function(data) {
+            this.$http.get('/api/users/' + this.$route.params.user_id).then(function(data) {
                 this.user = data.data;
             }.bind(this), function() {});
 
-            this.$http.get('/api/users/' + this.$route.params.userID + '/games').then(function(data) {
+            this.$http.get('/api/users/' + this.$route.params.user_id + '/games').then(function(data) {
                 this.games = data.data;
             }.bind(this), function() {});
         },
 
         computed: {
             windowTitle() {
-                return this.user.UserID;
+                return this.user.user_id;
             }
         },
 

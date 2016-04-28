@@ -14,12 +14,12 @@
     "started": "Started",
     "demo": "Demo",
     "resign": "Resign",
-    "confirmResign": "Really resign?",
+    "confirm_resign": "Really resign?",
     "pass": "Pass",
-    "confirmPass": "Are you sure you want to pass?<br>Note that you must fill all neutral points (Chinese Ruleset).",
-    "confirmScore": "Confirm Score",
-    "willStartIn": "Game will start in ...",
-    "backToGame": "Back to game"
+    "confirm_pass": "Are you sure you want to pass?<br>Note that you must fill all neutral points (Chinese Ruleset).",
+    "confirm_score": "Confirm Score",
+    "will_start_in": "Game will start in ...",
+    "back_to_game": "Back to game"
   },
 
   "demo": {
@@ -27,8 +27,8 @@
   },
 
   "user": {
-    "viewProfile": "View profile",
-    "sendMessage": "Send message"
+    "view_profile": "View profile",
+    "send_message": "Send message"
   },
 
   "header": {
@@ -41,39 +41,39 @@
   "sidebar": {
     "search": "Search",
     "play": "Play",
-    "searchingAutomatch": "Searching game ...",
-    "signIn": "Sign in",
-    "createDemo": "Create Demo",
-    "uploadSGF": "Upload SGF",
+    "searching_automatch": "Searching game ...",
+    "sign_in": "Sign in",
+    "create_demo": "Create Demo",
+    "upload_sgf": "Upload SGF",
 
     "games": "Games",
-    "noGames": "You have no open games",
-    "activeGames": "Active Games",
+    "no_games": "You have no open games",
+    "active_games": "Active Games",
     "rooms": "Rooms",
     "people": "People",
-    "noDirectRooms": "You have no open chats"
+    "no_direct_rooms": "You have no open chats"
   },
 
-  "signIn": {
+  "sign_in": {
     "header": "Sign in",
     "cancel": "Cancel",
     "error": "Invalid username or password",
-    "usernameEmail": "Username or Email",
+    "email": "E-Mail address",
     "password": "Password",
-    "signIn": "Sign in",
+    "sign_in": "Sign in",
     "forgot": "Forgot your password?",
     "or": "or",
-    "newAccount": "New account"
+    "new_account": "New account"
   },
 
-  "signUp": {
+  "sign_up": {
     "header": "Sign up",
-    "userInfo": "Your user info",
+    "user_info": "Your user info",
     "display": "Pick a display name",
-    "displayInvalid": "Only letters and numbers. 2-12 characters.",
-    "displayHelp": "You can still change this later on.",
+    "display_invalid": "Only letters and numbers. 2-12 characters.",
+    "display_help": "You can still change this later on.",
     "email": "Your email",
-    "emailExists": "E-Mail address already registered",
+    "email_exists": "E-Mail address already registered",
     "password": "Create a password",
     "rank": {
       "header": "Rank",
@@ -102,10 +102,10 @@
       "r3d": "3d"
     },
     "recaptcha": "Verify that you are human",
-    "signUp": "Sign up"
+    "sign_up": "Sign up"
   },
 
-  "forgotPassword": {
+  "forgot_password": {
     "header": "Forgot password",
     "email": "Your email address",
     "reset": "Reset password",
@@ -141,14 +141,14 @@
     }
   },
 
-  "roomLogs": {
+  "room_logs": {
     "chat": "Chat",
-    "signIn": "Sign in",
-    "toChat": "to chat",
-    "typeMsg": "Type a message ..."
+    "sign_in": "Sign in",
+    "to_chat": "to chat",
+    "type_msg": "Type a message ..."
   },
 
-  "roomUsers": {
+  "room_users": {
     "username": "Users",
     "rank": "Rank"
   },
@@ -194,8 +194,8 @@
     }
   },
 
-  "userDetail": {
-    "memberSince": "Member since",
+  "user_detail": {
+    "member_since": "Member since",
     "rank": "Rank",
     "games": "Games"
   },
@@ -211,36 +211,36 @@
     "password": {
       "change": "Change password",
       "new": "Password",
-      "newConfirm": "Confirm Password"
+      "new_confirm": "Confirm Password"
     },
 
     "avatar": {
       "header": "Profile picture",
       "new": "Upload new picture",
       "delete": "Delete my picture",
-      "confirmDelete": "Are you sure you want to DELETE your profile picture?<br><br>Note that you cannot delete your default picture.",
-      "cropHelp": "You can move and zoom your picture to your liking. Everything outside the highlighted box will be cropped.",
+      "confirm_delete": "Are you sure you want to DELETE your profile picture?<br><br>Note that you cannot delete your default picture.",
+      "crop_help": "You can move and zoom your picture to your liking. Everything outside the highlighted box will be cropped.",
       "cancel": "Cancel"
     },
 
     "save": "Save"
   },
 
-  "createDemo": {
+  "create_demo": {
     "header": "Create Demo",
     "title": "Title of your demo",
     "create": "Create",
     "cancel": "Cancel"
   },
 
-  "uploadSGF": {
+  "upload_sgf": {
     "header": "Upload SGF",
     "upload": "Upload",
-    "chooseFile": "SGF file",
+    "choose_file": "SGF file",
     "cancel": "Cancel"
   },
 
-  "passwordResetConfirm": {
+  "password_reset_confirm": {
     "header": "Password reset",
     "sent": "An email with your new password has been sent to you.",
     "failed": "This link is not valid anymore."
@@ -250,6 +250,6 @@
     "header": "Oops, looks like we lost connection ...",
     "body": "Somehow we got disconnected from the server.<br>You can refresh the page and retry, or wait here until the server is available again.",
     "refresh": "Refresh",
-    "tryingConnect": "Trying to reconnect ..."
+    "trying_connect": "Trying to reconnect ..."
   }
 }

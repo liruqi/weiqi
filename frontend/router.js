@@ -23,23 +23,23 @@ export default function configRouter() {
             name: 'faq',
             component: require('./components/faq.vue')
         },
-        '/rooms/:roomID': {
+        '/rooms/:room_id': {
             name: 'room',
             component: require('./components/room/room.vue')
         },
-        '/users/:userID': {
+        '/users/:user_id': {
             name: 'user',
             component: require('./components/user/profile.vue')
         },
-        '/users/:userID/message': {
-            name: 'userMessage',
+        '/users/:user_id/message': {
+            name: 'user_message',
             component: require('./components/user/message.vue')
         },
         '/games': {
-            name: 'activeGames',
+            name: 'active_games',
             component: require('./components/active_games.vue')
         },
-        '/games/:gameID': {
+        '/games/:game_id': {
             name: 'game',
             component: require('./components/game/game.vue')
         },
