@@ -15,28 +15,37 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from unittest import TestCase
-from tornado.testing import AsyncHTTPTestCase
-import urllib.parse
-from weiqi.db import session
-from weiqi.application import create_app
-from weiqi.models import User, RoomMessage, RoomUser, Room, Connection
+import json
+from weiqi import app, db
+from weiqi.models import User, Room, RoomMessage, RoomUser, Connection
 
 
 class BaseTestCase(TestCase):
     def setUp(self):
-        super().setUp()
+        self.app = app.test_client()
+        self.ctx = app.test_request_context()
+        self.ctx.push()
+        self.app.__enter__()
 
-        with session() as db:
-            db.query(User).delete()
-            db.query(RoomMessage).delete()
-            db.query(RoomUser).delete()
-            db.query(Room).delete()
-            db.query(Connection).delete()
+        RoomUser.query.delete()
+        RoomMessage.query.delete()
+        Connection.query.delete()
+        Room.query.delete()
+        User.query.delete()
 
+        db.session.commit()
 
-class BaseAsyncHTTPTestCase(BaseTestCase, AsyncHTTPTestCase):
-    def get_app(self):
-        return create_app()
+    def tearDown(self):
+        self.app.__exit__(None, None, None)
+        self.ctx.pop()
 
-    def post(self, url, data):
-        return self.fetch(url, method='POST', body=urllib.parse.urlencode(data))
+    def get_json(self, *args, **kwargs):
+        res = self.app.get(*args, **kwargs)
+        data = json.loads(res.data.decode())
+        return res, data
+
+    def login(self, user, password='pw'):
+        return self.app.post('/api/auth/sign-in', data={'email': user.email, 'password': password})
+
+    def logout(self):
+        return self.app.get('/api/auth/logout')

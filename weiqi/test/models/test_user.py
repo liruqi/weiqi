@@ -14,14 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi import app, init_app, db
-from .base import BaseTestCase
-
-app.config['TESTING'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-
-init_app()
+from weiqi.test import BaseTestCase
+from weiqi.models import User
 
 
-with app.test_request_context():
-    db.create_all()
+class TestUser(BaseTestCase):
+    def test_password(self):
+        user = User()
+        user.set_password('pw')
+
+        self.assertNotEqual(user.password, 'pw')
+        self.assertTrue(user.check_password('pw'))
+        self.assertFalse(user.check_password('invalid'))

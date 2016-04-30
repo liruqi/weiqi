@@ -14,14 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi import app, init_app, db
-from .base import BaseTestCase
-
-app.config['TESTING'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-
-init_app()
+from flask import render_template
+from weiqi import app
 
 
-with app.test_request_context():
-    db.create_all()
+@app.route('/', defaults={'path': '/'})
+@app.route('/<path:path>')
+def index(path):
+    return render_template('index.html')
+
+
+@app.route('/api/ping')
+def ping():
+    return 'pong'

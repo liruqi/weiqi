@@ -14,14 +14,21 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi import app, init_app, db
-from .base import BaseTestCase
+from flask_script import Manager
+from flask_migrate import MigrateCommand
 
-app.config['TESTING'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+from weiqi import app, init_app, socketio, db
+from weiqi.models import Connection
 
 init_app()
 
+manager = Manager(app)
+manager.add_command('db', MigrateCommand)
 
-with app.test_request_context():
-    db.create_all()
+
+@manager.command
+def runserver():
+    Connection.query.delete()
+    db.session.commit()
+
+    socketio.run(app, debug=app.config['DEBUG'])

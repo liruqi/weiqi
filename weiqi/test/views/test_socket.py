@@ -14,14 +14,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi import app, init_app, db
-from .base import BaseTestCase
-
-app.config['TESTING'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-
-init_app()
+from weiqi.test import BaseTestCase
+from weiqi import app, socketio
 
 
-with app.test_request_context():
-    db.create_all()
+class TestSocket(BaseTestCase):
+    """Currently `test_client()` does not use `current_user` from Flask-Login, so tests are limited. See:
+    https://github.com/miguelgrinberg/Flask-SocketIO/issues/231
+    """
+    def test_connection_data(self):
+        client = socketio.test_client(app)
+        recv = client.get_received()
+
+        self.assertEqual(len(recv), 1)
+        self.assertEqual(recv[0]['name'], 'connection_data')

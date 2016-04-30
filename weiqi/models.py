@@ -14,34 +14,32 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Enum
-from sqlalchemy.orm import validates, relationship
 from datetime import datetime
 import re
 import bcrypt
-import uuid
-from weiqi.db import Base, GUID
+from flask_login import UserMixin
+from weiqi import db
 
 
-class User(Base):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    email = Column(String, nullable=False, unique=True)
-    password = Column(String, nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
+    password = db.Column(db.String, nullable=False)
 
-    display = Column(String, nullable=False)
-    rating = Column(Float, nullable=False, default=0)
+    display = db.Column(db.String, nullable=False)
+    rating = db.Column(db.Float, nullable=False, default=0)
 
-    is_online = Column(Boolean, nullable=False, default=False)
+    is_online = db.Column(db.Boolean, nullable=False, default=False)
 
-    rooms = relationship('RoomUser', back_populates='user')
-    messages = relationship('RoomMessage', back_populates='user')
-    connections = relationship('Connection', back_populates='user')
+    rooms = db.relationship('RoomUser', back_populates='user')
+    messages = db.relationship('RoomMessage', back_populates='user')
+    connections = db.relationship('Connection', back_populates='user')
 
     def set_password(self, pw):
         self.password = bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
@@ -49,13 +47,13 @@ class User(Base):
     def check_password(self, pw):
         return bcrypt.hashpw(pw.encode(), self.password.encode()) == self.password.encode()
 
-    @validates('email')
+    @db.validates('email')
     def validate_email(self, key, val):
         if not re.match(r'^[^@]+@[^@]+\.[^@]+$', val):
             raise ValueError('invalid email address')
         return val
 
-    @validates('display')
+    @db.validates('display')
     def validate_display(self, key, val):
         if not re.match(r'^[a-zA-Z0-9_-]{2,12}$', val):
             raise ValueError('invalid display name')
@@ -69,32 +67,32 @@ class User(Base):
         }
 
 
-class Connection(Base):
+class Connection(db.Model):
     __tablename__ = 'connections'
 
-    id = Column(GUID, default=uuid.uuid4, primary_key=True)
+    id = db.Column(db.String, primary_key=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user_id = Column(ForeignKey('users.id'), nullable=True)
-    user = relationship('User', back_populates='connections')
+    user_id = db.Column(db.ForeignKey('users.id'), nullable=True)
+    user = db.relationship('User', back_populates='connections')
 
-    ip = Column(String)
+    ip = db.Column(db.String)
 
 
-class Room(Base):
+class Room(db.Model):
     __tablename__ = 'rooms'
 
-    id = Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    name = Column(String, nullable=False, default='Room')
-    type = Column(Enum('main', 'direct', 'game', name='room_type'), nullable=False)
+    name = db.Column(db.String, nullable=False, default='Room')
+    type = db.Column(db.Enum('main', 'direct', 'game', name='room_type'), nullable=False)
 
-    users = relationship('RoomUser', back_populates='room')
-    messages = relationship('RoomMessage', back_populates='room')
+    users = db.relationship('RoomUser', back_populates='room')
+    messages = db.relationship('RoomMessage', back_populates='room')
 
     def to_frontend(self):
         return {
@@ -104,19 +102,19 @@ class Room(Base):
         }
 
 
-class RoomUser(Base):
+class RoomUser(db.Model):
     __tablename__ = 'room_users'
 
-    room_id = Column(ForeignKey('rooms.id'), primary_key=True)
-    user_id = Column(ForeignKey('users.id'), primary_key=True)
+    room_id = db.Column(db.ForeignKey('rooms.id'), primary_key=True)
+    user_id = db.Column(db.ForeignKey('users.id'), primary_key=True)
 
-    room = relationship('Room', back_populates='users')
-    user = relationship('User', back_populates='rooms', lazy='joined')
+    room = db.relationship('Room', back_populates='users')
+    user = db.relationship('User', back_populates='rooms', lazy='joined')
 
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    has_unread = Column(Boolean, nullable=False, default=False)
+    has_unread = db.Column(db.Boolean, nullable=False, default=False)
 
     def to_frontend(self):
         return {
@@ -127,22 +125,28 @@ class RoomUser(Base):
         }
 
 
-class RoomMessage(Base):
+class RoomMessage(db.Model):
     __tablename__ = 'room_messages'
 
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    room_id = Column(ForeignKey('rooms.id'), nullable=False)
-    room = relationship('Room', back_populates='messages')
+    room_id = db.Column(db.ForeignKey('rooms.id'), nullable=False)
+    room = db.relationship('Room', back_populates='messages')
 
-    user_id = Column(ForeignKey('users.id'), nullable=False)
-    user = relationship('User', back_populates='messages')
+    user_id = db.Column(db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', back_populates='messages')
 
-    user_display = Column(String, nullable=False)
-    user_rating = Column(Float, nullable=False)
+    user_display = db.Column(db.String, nullable=False)
+    user_rating = db.Column(db.Float, nullable=False)
 
-    message = Column(String, nullable=False)
+    message = db.Column(db.String, nullable=False)
+
+    @db.validates('message')
+    def validate_message(self, key, val):
+        if not val or not val.strip():
+            raise ValueError('message cannot be empty')
+        return val.strip()
 
     def to_frontend(self):
         return {

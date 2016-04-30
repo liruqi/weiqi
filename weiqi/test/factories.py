@@ -17,24 +17,27 @@
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy import FuzzyText
+from weiqi import db
 from weiqi.models import User, Room, RoomUser
-from weiqi.db import session
 
 
 class UserFactory(SQLAlchemyModelFactory):
     class Meta:
         model = User
+        sqlalchemy_session = db.session
 
     id = factory.Sequence(lambda n: n)
     email = FuzzyText(suffix='@test.test')
     password = factory.PostGenerationMethodCall('set_password', 'pw')
     display = FuzzyText()
     is_online = True
+    rating = 100
 
 
 class RoomFactory(SQLAlchemyModelFactory):
     class Meta:
         model = Room
+        sqlalchemy_session = db.session
 
     id = factory.Sequence(lambda n: n)
     name = FuzzyText()
@@ -44,16 +47,9 @@ class RoomFactory(SQLAlchemyModelFactory):
 class RoomUserFactory(SQLAlchemyModelFactory):
     class Meta:
         model = RoomUser
+        sqlalchemy_session = db.session
 
     room = factory.SubFactory(RoomFactory)
     user = factory.SubFactory(UserFactory)
 
     has_unread = False
-
-
-def setup_factories():
-    factories = [UserFactory, RoomFactory, RoomUserFactory]
-
-    with session() as db:
-        for f in factories:
-            f._meta.sqlalchemy_session = db

@@ -13,7 +13,7 @@ var karma = require('karma');
 
 gulp.task('scripts', function() {
     browserify({
-        entries: './frontend/main.js',
+        entries: './weiqi/frontend/main.js',
         debug: true
     })
         .transform('babelify', {presets: ['es2015']})
@@ -22,26 +22,27 @@ gulp.task('scripts', function() {
         .pipe(source('all.js'))
         //.pipe(buffer())
         //.pipe(uglify())
-        .pipe(gulp.dest('./static/dist'));
+        .pipe(gulp.dest('./weiqi/static/dist'));
 });
 
 gulp.task('sass', function() {
-    return gulp.src('./frontend/css/**/*.scss')
+    return gulp.src('./weiqi/frontend/css/**/*.scss')
         .pipe(sass())
-        .pipe(gulp.dest('./static/dist'))
+        .pipe(gulp.dest('./weiqi/static/dist'))
 });
 
 gulp.task('scripts:watch', function() {
-    gulp.watch(['./frontend/**/*.vue', './frontend/**/*.js'], ['scripts']);
+    gulp.watch(['./weiqi/frontend/**/*.vue', './weiqi/frontend/**/*.js'], ['scripts']);
 });
 
 gulp.task('sass:watch', function() {
-    gulp.watch('./frontend/css/**/*.scss', ['sass']);
+    gulp.watch('./weiqi/frontend/css/**/*.scss', ['sass']);
 });
 
 gulp.task('server', function() {
     var spawn = require('child_process').spawn;
-    spawn('python', ['-m', 'tornado.autoreload', 'main.py'], {stdio: 'inherit'})
+    //spawn('python', ['-m', 'tornado.autoreload', 'main.py'], {stdio: 'inherit'})
+    spawn('./manage.py', ['runserver'], {stdio: 'inherit'})
 });
 
 gulp.task('testjs', function(done) {
@@ -50,4 +51,4 @@ gulp.task('testjs', function(done) {
     }, done).start();
 });
 
-gulp.task('default', ['scripts', 'scripts:watch', 'sass', 'sass:watch', 'server', 'testjs']);
+gulp.task('default', ['scripts', 'scripts:watch', 'sass', 'sass:watch', 'server']);

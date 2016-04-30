@@ -14,14 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi import app, init_app, db
-from .base import BaseTestCase
-
-app.config['TESTING'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-
-init_app()
+from weiqi import app
+from . import auth, index, socket, rooms
 
 
-with app.test_request_context():
-    db.create_all()
+app.register_blueprint(auth.bp, url_prefix='/api/auth')
+app.register_blueprint(rooms.bp, url_prefix='/api/rooms')

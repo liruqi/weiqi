@@ -20,12 +20,7 @@ BASE_DIR = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file_
 
 DEBUG = True
 
-SECRET = 'secret'
-COOKIE_NAME = 'weiqi'
+SECRET_KEY = b'j$\x1eM\xe2K\xda\xc0zndD\x80\x10\xc0\x8c\xba\xa1\xaeC\x01y\xe7\xe1'
 
-TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
-STATIC_PATH = os.path.join(BASE_DIR, 'static')
-
-LISTEN_PORT = 8080
-DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
-AMPQ_URL = 'amqp://guest:guest@localhost:5672/'
+SQLALCHEMY_DATABASE_URI = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
+SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -5,11 +5,11 @@ module.exports = function(config) {
         frameworks: ['browserify', 'jasmine'],
 
         files: [
-            'frontend/**/*_test.js'
+            'weiqi/frontend/**/*_test.js'
         ],
 
         preprocessors: {
-            'frontend/**/*_test.js': ['browserify']
+            'weiqi/frontend/**/*_test.js': ['browserify']
         },
 
         browserify: {
