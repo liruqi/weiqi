@@ -15,11 +15,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from unittest import TestCase
+from tornado.testing import AsyncHTTPTestCase
+import urllib.parse
 from weiqi.db import session
-from weiqi.models import User
+from weiqi.application import create_app
+from weiqi.models import User, RoomMessage, RoomUser, Room, Connection
 
 
 class BaseTestCase(TestCase):
     def setUp(self):
+        super().setUp()
+
         with session() as db:
             db.query(User).delete()
+            db.query(RoomMessage).delete()
+            db.query(RoomUser).delete()
+            db.query(Room).delete()
+            db.query(Connection).delete()
+
+
+class BaseAsyncHTTPTestCase(BaseTestCase, AsyncHTTPTestCase):
+    def get_app(self):
+        return create_app()
+
+    def post(self, url, data):
+        return self.fetch(url, method='POST', body=urllib.parse.urlencode(data))

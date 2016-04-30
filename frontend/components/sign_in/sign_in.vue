@@ -4,70 +4,70 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">
-                        {{(stage=='signIn' ? $t('signIn.header') :
-                            (stage=='signUp' ? $t('signUp.header') : $t('forgotPassword.header')))}}
+                        {{(stage=='sign_in' ? $t('sign_in.header') :
+                            (stage=='sign_up' ? $t('sign_up.header') : $t('forgot_password.header')))}}
                     </h4>
                 </div>
 
                 <div class="modal-body signin-dialog">
-                    <template v-if="stage=='signIn'">
+                    <template v-if="stage=='sign_in'">
                         <p v-if="loginFailed" class="text-danger">
-                            {{$t('signIn.error')}}
+                            {{$t('sign_in.error')}}
                         </p>
 
-                        <form @submit.prevent="signIn" novalidate>
+                        <form @submit.prevent="sign_in" novalidate>
                             <div class="form-group has-feedback" :class="{'has-error': loginFailed}">
                                 <input class="form-control input-lg" type="text" v-model="email" required autofocus
-                                    placeholder="{{$t('signIn.email')}}">
+                                    placeholder="{{$t('sign_in.email')}}">
                                 <span class="fa fa-user form-control-feedback"></span>
                             </div>
 
                             <div class="form-group has-feedback" :class="{'has-error': loginFailed}">
                                 <input class="form-control input-lg" type="password" v-model="password" required
-                                    placeholder="{{$t('signIn.password')}}">
+                                    placeholder="{{$t('sign_in.password')}}">
                                 <span class="fa fa-lock form-control-feedback"></span>
                             </div>
 
                             <button type="submit" class="btn btn-lg btn-block btn-success" :disabled="signingIn">
                                 <i v-if="signingIn" class="fa fa-spinner fa-spin"></i>
-                                <span v-else>{{$t('signIn.signIn')}}</span>
+                                <span v-else>{{$t('sign_in.sign_in')}}</span>
                             </button>
 
                             <br/>
 
                             <p class="text-center">
-                                <a href="javascript:void(0)" @click="stage='forgotPassword'">
-                                    {{$t('signIn.forgot')}}
+                                <a href="javascript:void(0)" @click="stage='forgot_password'">
+                                    {{$t('sign_in.forgot')}}
                                 </a>
                             </p>
 
                             <div class="signup-or-separator">
-                                <h6 class="text">{{$t('signIn.or')}}</h6>
+                                <h6 class="text">{{$t('sign_in.or')}}</h6>
                                 <hr>
                             </div>
 
-                            <button type="button" class="btn btn-lg  btn-block btn-info" @click="stage='signUp'">
-                                {{$t('signIn.newAccount')}}
+                            <button type="button" class="btn btn-lg  btn-block btn-info" @click="stage='sign_up'">
+                                {{$t('sign_in.new_account')}}
                             </button>
                         </form>
                     </template>
 
-                    <template v-if="stage=='signUp'">
+                    <template v-if="stage=='sign_up'">
                         <qi-sign-up></qi-sign-up>
                     </template>
 
-                    <template v-if="stage=='forgotPassword'">
+                    <template v-if="stage=='forgot_password'">
                         <qi-forgot-password></qi-forgot-password>
                     </template>
 
-                    <template v-if="stage=='passwordReset'">
+                    <template v-if="stage=='password_reset'">
                         <qi-pasword-reset></qi-pasword-reset>
                     </template>
                 </div>
 
                 <div class="modal-footer">
                     <button class="btn btn-default" data-dismiss="modal">
-                        {{$t('signIn.cancel')}}
+                        {{$t('sign_in.cancel')}}
                     </button>
                 </div>
             </div>
@@ -76,12 +76,10 @@
 </template>
 
 <script>
-    import { showModalSignIn, hideModalSignIn } from './../../vuex/actions';
-
     export default {
         data() {
             return {
-                stage: 'signIn',
+                stage: 'sign_in',
                 email: '',
                 password: '',
                 loginFailed: false
@@ -90,12 +88,12 @@
 
         ready() {
             jQuery('#qi-sign-in').on('hidden.bs.modal', () => {
-                this.stage = 'signIn';
+                this.stage = 'sign_in';
             });
         },
 
         methods: {
-            signIn() {
+            sign_in() {
                 this.loginFailed = false;
 
                 this.$http.post('/api/auth/sign-in', {email: this.email, password: this.password}).then(function() {

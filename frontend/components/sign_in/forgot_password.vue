@@ -3,9 +3,9 @@
         <template v-if="!sent">
             <validator name="reset">
                 <form @submit.prevent="resetPassword" novalidate>
-                    <div class="form-group" :class="formGroupClasses($reset.email)">
+                    <div class="form-group" :class="form_group_classes($reset.email)">
                         <input type="email" class="form-control input-lg"
-                               placeholder="{{$t('forgotPassword.email')}}"
+                               placeholder="{{$t('forgot_password.email')}}"
                                v-model="email"
                                v-validate:email="{required: true, email: true}">
 
@@ -13,14 +13,14 @@
                     </div>
 
                     <button type="submit" class="btn btn-lg btn-block btn-success" :disabled="!$reset.valid">
-                        {{$t('forgotPassword.reset')}}
+                        {{$t('forgot_password.reset')}}
                     </button>
                 </form>
             </validator>
         </template>
         <template v-else>
             <p>
-                {{$t('forgotPassword.instructions')}}
+                {{$t('forgot_password.instructions')}}
             </p>
         </template>
     </div>

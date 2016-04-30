@@ -7,13 +7,13 @@
         <validator name="settings">
             <form @submit.prevent="save" novalidate>
                 <div class="panel-body">
-                    <div class="form-group has-feedback" :class="formGroupClasses($settings.email)">
+                    <div class="form-group has-feedback" :class="form_group_classes($settings.email)">
                         <input class="form-control" type="email"
                                 v-model="email"
-                                v-validate:email="{required: true, email: true, emailExists:{rule: true, initial: 'off'}}"
+                                v-validate:email="{required: true, email: true, email_exists:{rule: true, initial: 'off'}}"
                                 placeholder="{{$t('settings.info.email')}}">
 
-                        <p class="help-block text-danger" v-if="$settings.email.emailExists">{{$t('signUp.emailExists')}}</p>
+                        <p class="help-block text-danger" v-if="$settings.email.email_exists">{{$t('sign_up.email_exists')}}</p>
                     </div>
                 </div>
                 <div class="panel-footer">
@@ -49,7 +49,7 @@
         },
 
         validators: {
-            emailExists(email) {
+            email_exists(email) {
                 if(email == this.vm.savedEmail) {
                     return true;
                 }

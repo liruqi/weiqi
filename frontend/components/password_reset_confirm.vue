@@ -1,12 +1,12 @@
 <template>
     <div>
-        <h1>{{$t('passwordResetConfirm.header')}}</h1>
+        <h1>{{$t('password_reset_confirm.header')}}</h1>
 
         <p v-if="$route.params.status=='sent'">
-            {{$t('passwordResetConfirm.sent')}}
+            {{$t('password_reset_confirm.sent')}}
         </p>
         <p v-else>
-            {{$t('passwordResetConfirm.failed')}}
+            {{$t('password_reset_confirm.failed')}}
         </p>
     </div>
 </template>

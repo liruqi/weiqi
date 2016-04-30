@@ -45,8 +45,8 @@
             </div>
 
             <span v-else>
-                <a href="#" data-toggle="modal" data-target="#qi-sign-in">{{$t('room_logs.signIn')}}</a>
-                {{$t('room_logs.toChat')}}
+                <a href="#" data-toggle="modal" data-target="#qi-sign-in">{{$t('room_logs.sign_in')}}</a>
+                {{$t('room_logs.to_chat')}}
             </span>
         </div>
     </div>

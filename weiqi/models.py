@@ -19,7 +19,8 @@ from sqlalchemy.orm import validates, relationship
 from datetime import datetime
 import re
 import bcrypt
-from weiqi.db import Base
+import uuid
+from weiqi.db import Base, GUID
 
 
 class User(Base):
@@ -35,6 +36,8 @@ class User(Base):
 
     display = Column(String, nullable=False)
     rating = Column(Float, nullable=False, default=0)
+
+    is_online = Column(Boolean, nullable=False, default=False)
 
     rooms = relationship('RoomUser', back_populates='user')
     messages = relationship('RoomMessage', back_populates='user')
@@ -69,11 +72,11 @@ class User(Base):
 class Connection(Base):
     __tablename__ = 'connections'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(GUID, default=uuid.uuid4, primary_key=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    user_id = Column(ForeignKey('users.id'), nullable=False)
+    user_id = Column(ForeignKey('users.id'), nullable=True)
     user = relationship('User', back_populates='connections')
 
     ip = Column(String)
@@ -114,6 +117,14 @@ class RoomUser(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     has_unread = Column(Boolean, nullable=False, default=False)
+
+    def to_frontend(self):
+        return {
+            'room_id': self.room_id,
+            'user_id': self.user_id,
+            'user_display': self.user.display,
+            'user_rating': self.user.rating,
+        }
 
 
 class RoomMessage(Base):

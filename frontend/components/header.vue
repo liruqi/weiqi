@@ -5,7 +5,7 @@
                 <div class="navbar-header pull-left">
                     <a class="navbar-brand" v-link="'/'">weiqi.gs</a>
 
-                    <a href="javascript:void(0)" @click="toggleSidebar()" class="sidebar-toggle">
+                    <a href="javascript:void(0)" @click="toggle_sidebar()" class="sidebar-toggle">
                         <span class="divider"></span>
                         <span class="toggle"></span>
                         <span class="divider"></span>
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-    import { toggleSidebar } from './../vuex/actions';
+    import { toggle_sidebar } from './../vuex/actions';
 
     export default {
         vuex: {
@@ -75,7 +75,7 @@
                 user: function(state) { return state.auth.user; }
             },
             actions: {
-                toggleSidebar
+                toggle_sidebar
             }
         },
 

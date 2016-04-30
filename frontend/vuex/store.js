@@ -81,7 +81,7 @@ const mutations = {
             return;
         }
 
-        state.room_users[data.room_id] = state.room_users[data.room_id].filter(function (user) {
+        state.room_users[data.room_id] = state.room_users[data.room_id].filter(function(user) {
             return user.user_id != data.user_id;
         });
         
@@ -93,7 +93,7 @@ const mutations = {
             return;
         }
         
-        state.room_users[data.room_id] = state.room_users[data.room_id].filter(function (user) {
+        state.room_users[data.room_id] = state.room_users[data.room_id].filter(function(user) {
             return user.user_id != data.user_id;
         });
     },

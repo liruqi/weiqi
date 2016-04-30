@@ -18,23 +18,22 @@
 import unittest
 import tornado.testing
 import os.path
-import sys
-
-BASE_DIR = os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)
-
-sys.path.append(BASE_DIR)
+from weiqi import settings
+from weiqi.db import create_db, create_schema
+from weiqi.test.factories import setup_factories
 
 
 def all():
-    return unittest.defaultTestLoader.discover(os.path.join(BASE_DIR, 'weiqi', 'test'), pattern='*.py')
+    return unittest.defaultTestLoader.discover(os.path.join('weiqi', 'test'), pattern='*.py')
 
 
 def main():
-    from weiqi import settings
-    from weiqi.db import create_db
-
+    settings.DEBUG = False
     settings.DB_URL = 'sqlite://'
+
     create_db()
+    create_schema()
+    setup_factories()
 
     tornado.testing.main()
 

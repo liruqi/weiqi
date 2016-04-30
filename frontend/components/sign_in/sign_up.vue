@@ -1,74 +1,74 @@
 <template>
-    <validator name="signUp">
-        <form @submit.prevent="signUp" novalidate>
-            <label>{{$t('signUp.userInfo')}}</label>
+    <validator name="sign_up">
+        <form @submit.prevent="sign_up" novalidate>
+            <label>{{$t('sign_up.user_info')}}</label>
 
-            <div class="form-group" :class="formGroupClasses($signUp.display)">
+            <div class="form-group" :class="form_group_classes($sign_up.display)">
                 <input type="text" class="form-control"
-                       placeholder="{{$t('signUp.display')}}"
+                       placeholder="{{$t('sign_up.display')}}"
                        v-model="display"
                        v-validate:display="{required: true,
                             display_name:{rule: true, initial: 'off'}}"
                        autofocus>
 
-                <p class="help-block">{{$t('signUp.displayHelp')}}</p>
-                <p class="help-block" v-if="$signUp.display.display_name">{{$t('signUp.displayInvalid')}}</p>
+                <p class="help-block">{{$t('sign_up.display_help')}}</p>
+                <p class="help-block" v-if="$sign_up.display.display_name">{{$t('sign_up.display_invalid')}}</p>
             </div>
 
-            <div class="form-group" :class="formGroupClasses($signUp.email)">
+            <div class="form-group" :class="form_group_classes($sign_up.email)">
                 <input type="email" class="form-control"
-                       placeholder="{{$t('signUp.email')}}"
+                       placeholder="{{$t('sign_up.email')}}"
                        v-model="email"
-                       v-validate:email="{required: true, email: true, emailExists:{rule: true, initial: 'off'}}">
+                       v-validate:email="{required: true, email: true, email_exists:{rule: true, initial: 'off'}}">
 
-                <p class="help-block" v-if="$signUp.email.emailExists">{{$t('signUp.emailExists')}}</p>
+                <p class="help-block" v-if="$sign_up.email.email_exists">{{$t('sign_up.email_exists')}}</p>
             </div>
 
-            <div class="form-group" :class="formGroupClasses($signUp.password)">
+            <div class="form-group" :class="form_group_classes($sign_up.password)">
                 <input type="password" class="form-control"
-                       placeholder="{{$t('signUp.password')}}"
+                       placeholder="{{$t('sign_up.password')}}"
                        v-model="password"
                        v-validate:password="['required']">
             </div>
 
             <div class="form-group">
                 <label for="rank">
-                    {{$t('signUp.rank.header')}}
+                    {{$t('sign_up.rank.header')}}
                 </label>
                 <select id="rank" class="form-control" v-model="rank">
-                    <option value="20k">{{$t('signUp.rank.r20k')}}</option>
-                    <option value="19k">{{$t('signUp.rank.r19k')}}</option>
-                    <option value="18k">{{$t('signUp.rank.r18k')}}</option>
-                    <option value="17k">{{$t('signUp.rank.r17k')}}</option>
-                    <option value="16k">{{$t('signUp.rank.r16k')}}</option>
-                    <option value="15k">{{$t('signUp.rank.r15k')}}</option>
-                    <option value="14k">{{$t('signUp.rank.r14k')}}</option>
-                    <option value="13k">{{$t('signUp.rank.r13k')}}</option>
-                    <option value="12k">{{$t('signUp.rank.r12k')}}</option>
-                    <option value="11k">{{$t('signUp.rank.r11k')}}</option>
-                    <option value="10k">{{$t('signUp.rank.r10k')}}</option>
-                    <option value="9k">{{$t('signUp.rank.r9k')}}</option>
-                    <option value="8k">{{$t('signUp.rank.r8k')}}</option>
-                    <option value="7k">{{$t('signUp.rank.r7k')}}</option>
-                    <option value="6k">{{$t('signUp.rank.r6k')}}</option>
-                    <option value="5k">{{$t('signUp.rank.r5k')}}</option>
-                    <option value="4k">{{$t('signUp.rank.r4k')}}</option>
-                    <option value="3k">{{$t('signUp.rank.r3k')}}</option>
-                    <option value="2k">{{$t('signUp.rank.r2k')}}</option>
-                    <option value="1k">{{$t('signUp.rank.r1k')}}</option>
-                    <option value="1d">{{$t('signUp.rank.r1d')}}</option>
-                    <option value="2d">{{$t('signUp.rank.r2d')}}</option>
-                    <option value="3d">{{$t('signUp.rank.r3d')}}</option>
+                    <option value="20k">{{$t('sign_up.rank.r20k')}}</option>
+                    <option value="19k">{{$t('sign_up.rank.r19k')}}</option>
+                    <option value="18k">{{$t('sign_up.rank.r18k')}}</option>
+                    <option value="17k">{{$t('sign_up.rank.r17k')}}</option>
+                    <option value="16k">{{$t('sign_up.rank.r16k')}}</option>
+                    <option value="15k">{{$t('sign_up.rank.r15k')}}</option>
+                    <option value="14k">{{$t('sign_up.rank.r14k')}}</option>
+                    <option value="13k">{{$t('sign_up.rank.r13k')}}</option>
+                    <option value="12k">{{$t('sign_up.rank.r12k')}}</option>
+                    <option value="11k">{{$t('sign_up.rank.r11k')}}</option>
+                    <option value="10k">{{$t('sign_up.rank.r10k')}}</option>
+                    <option value="9k">{{$t('sign_up.rank.r9k')}}</option>
+                    <option value="8k">{{$t('sign_up.rank.r8k')}}</option>
+                    <option value="7k">{{$t('sign_up.rank.r7k')}}</option>
+                    <option value="6k">{{$t('sign_up.rank.r6k')}}</option>
+                    <option value="5k">{{$t('sign_up.rank.r5k')}}</option>
+                    <option value="4k">{{$t('sign_up.rank.r4k')}}</option>
+                    <option value="3k">{{$t('sign_up.rank.r3k')}}</option>
+                    <option value="2k">{{$t('sign_up.rank.r2k')}}</option>
+                    <option value="1k">{{$t('sign_up.rank.r1k')}}</option>
+                    <option value="1d">{{$t('sign_up.rank.r1d')}}</option>
+                    <option value="2d">{{$t('sign_up.rank.r2d')}}</option>
+                    <option value="3d">{{$t('sign_up.rank.r3d')}}</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>{{$t('signUp.recaptcha')}}</label>
+                <label>{{$t('sign_up.recaptcha')}}</label>
                 <qi-recaptcha></qi-recaptcha>
             </div>
 
-            <button type="submit" class="btn btn-lg btn-block btn-success" :disabled="!$signUp.valid || recaptcha==''">
-                {{$t('signUp.signUp')}}
+            <button type="submit" class="btn btn-lg btn-block btn-success" :disabled="!$sign_up.valid || recaptcha==''">
+                {{$t('sign_up.sign_up')}}
             </button>
         </form>
     </validator>
@@ -91,7 +91,7 @@
         },
 
         validators: {
-            emailExists(email) {
+            email_exists(email) {
                 return Vue.http.post('/api/auth/email-exists', {email: email}).then(function(res) {
                     if(res.data === false) {
                         return Promise.resolve();
@@ -105,7 +105,7 @@
         },
 
         methods: {
-            signUp() {
+            sign_up() {
                 var data = {
                     display: this.display,
                     email: this.email,

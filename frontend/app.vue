@@ -24,7 +24,7 @@
 
 <script>
     import store from './vuex/store';
-    import { updateRoute } from './vuex/actions';
+    import { update_route } from './vuex/actions';
 
     export default {
         store: store,
@@ -35,18 +35,18 @@
                 sidebar: function(state) { return state.sidebar; }
             },
             actions: {
-                updateRoute
+                update_route
             }
         },
 
         watch: {
             '$route.path': function() {
-                this.updateRoute(this.$route);
+                this.update_route(this.$route);
             }
         },
 
         ready() {
-            this.updateRoute(this.$route);
+            this.update_route(this.$route);
         }
     }
 </script>

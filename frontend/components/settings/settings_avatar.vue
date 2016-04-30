@@ -49,14 +49,14 @@
 <script>
     import bootbox from 'bootbox';
     import cropper from 'cropper';
-    import { reloadUserAvatar } from '../../vuex/actions';
+    import { reload_user_avatar } from '../../vuex/actions';
 
     export default {
         vuex: {
             getters: {
                 user: function(state) { return state.auth.user; }
             }, actions: {
-                reloadUserAvatar
+                reload_user_avatar
             }
         },
 
@@ -65,7 +65,7 @@
                 bootbox.confirm(this.$t('settings.avatar.confirmDelete'), function(res) {
                     if (res) {
                         this.$http.post('/api/settings/delete-avatar').then(function() {
-                            this.reloadUserAvatar();
+                            this.reload_user_avatar();
                         }.bind(this), function() {});
                     }
                 }.bind(this));
@@ -93,7 +93,7 @@
 
                 this.$http.post('/api/settings/upload-avatar', {avatar: dataURL}).then(function() {
                     jQuery('#avatar-modal').modal('hide');
-                    this.reloadUserAvatar();
+                    this.reload_user_avatar();
                 }.bind(this), function() {});
             },
         },

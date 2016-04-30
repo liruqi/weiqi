@@ -15,7 +15,11 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+import os.path
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), os.path.pardir))
+from weiqi.models import Base
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

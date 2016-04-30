@@ -14,7 +14,7 @@
 </template>
 
 <script>
-    import { loadDirectRoom } from '../../vuex/actions';
+    import { load_direct_room } from '../../vuex/actions';
 
     export default {
         mixins: [require('./../../mixins/title.vue')],
@@ -24,7 +24,7 @@
                 direct_rooms: function(state) { return state.direct_rooms }
             },
             actions: {
-                loadDirectRoom
+                load_direct_room
             }
         },
 
@@ -49,7 +49,7 @@
         },
 
         ready() {
-            this.loadDirectRoom(this.$route.params.user_id);
+            this.load_direct_room(this.$route.params.user_id);
         }
     }
 </script>

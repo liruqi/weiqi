@@ -17,6 +17,7 @@
 from tornado.web import HTTPError
 from weiqi.handler.base import BaseHandler
 from weiqi.models import User
+from weiqi import settings
 
 
 class SignUpHandler(BaseHandler):
@@ -50,7 +51,7 @@ class SignInHandler(BaseHandler):
         if not user.check_password(password):
             raise HTTPError(403, 'invalid username or password')
 
-        self.set_secure_cookie('weiqi', str(user.id))
+        self.set_secure_cookie(settings.COOKIE_NAME, str(user.id))
 
 
 class LogoutHandler(BaseHandler):

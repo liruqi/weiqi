@@ -7,17 +7,17 @@
         <validator name="pw">
             <form @submit.prevent="save" novalidate>
                 <div class="panel-body">
-                    <div class="form-group has-feedback" :class="formGroupClasses($pw.password)">
+                    <div class="form-group has-feedback" :class="form_group_classes($pw.password)">
                         <input class="form-control" type="password"
                                v-model="password"
                                v-validate:password="['required']"
                                placeholder="{{$t('settings.password.new')}}">
                     </div>
-                    <div class="form-group has-feedback" :class="formGroupClasses($pw.confirm)">
+                    <div class="form-group has-feedback" :class="form_group_classes($pw.confirm)">
                         <input class="form-control" type="password"
                                 v-model="confirm"
                                v-validate:confirm="{required: true, confirm: password}"
-                                placeholder="{{$t('settings.password.newConfirm')}}">
+                                placeholder="{{$t('settings.password.new_confirm')}}">
                     </div>
                 </div>
                 <div class="panel-footer">

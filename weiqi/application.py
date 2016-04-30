@@ -17,45 +17,61 @@
 import time
 import tornado.web
 from weiqi import settings
-from weiqi.db import create_db
+from weiqi.db import create_db, session
+from weiqi.models import Connection
 from weiqi.handler import auth, socket, main as main_handler, room
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import Ampq
 
 
+class Application(tornado.web.Application):
+    def __init__(self):
+        self.broker = Ampq(settings.AMPQ_URL)
+        self.pubsub = PubSub(self.broker)
+
+        def handler(route, cls):
+            return route, cls, dict(pubsub=self.pubsub)
+
+        handlers = [
+            handler(r'/api/ping', main_handler.PingHandler),
+            handler(r'/api/socket', socket.SocketHandler),
+            handler(r'/api/auth/email-exists', auth.EmailExistsHandler),
+            handler(r'/api/auth/sign-up', auth.SignUpHandler),
+            handler(r'/api/auth/sign-in', auth.SignInHandler),
+            handler(r'/api/auth/logout', auth.LogoutHandler),
+
+            handler(r'/api/rooms/(.*?)/message', room.MessageHandler),
+            handler(r'/api/rooms/(.*?)/users', room.UsersHandler),
+            handler(r'/api/rooms/(.*?)/mark-read', room.MarkReadHandler),
+
+            handler(r'.*', main_handler.MainHandler),
+        ]
+
+        super().__init__(
+            handlers,
+            debug=settings.DEBUG,
+            autoreload=settings.DEBUG,
+            cookie_secret=settings.SECRET,
+            template_path=settings.TEMPLATE_PATH,
+            static_path=settings.STATIC_PATH)
+
+
 def main():
     create_db()
+    _cleanup_db()
 
-    broker = Ampq(settings.AMPQ_URL)
-    pubsub = PubSub(broker)
-
-    def handler(route, cls):
-        return route, cls, dict(pubsub=pubsub)
-
-    handlers = [
-        handler(r'/api/ping', main_handler.PingHandler),
-        handler(r'/api/socket', socket.SocketHandler),
-        handler(r'/api/auth/email-exists', auth.EmailExistsHandler),
-        handler(r'/api/auth/sign-up', auth.SignUpHandler),
-        handler(r'/api/auth/sign-in', auth.SignInHandler),
-        handler(r'/api/auth/logout', auth.LogoutHandler),
-
-        handler(r'/api/rooms/(.*?)/message', room.MessageHandler),
-        handler(r'/api/rooms/(.*?)/users', room.UsersHandler),
-        handler(r'/api/rooms/(.*?)/mark-read', room.MarkReadHandler),
-
-        handler(r'.*', main_handler.MainHandler),
-    ]
-
-    app = tornado.web.Application(
-        handlers,
-        debug=settings.DEBUG,
-        autoreload=settings.DEBUG,
-        cookie_secret=settings.SECRET,
-        template_path=settings.TEMPLATE_PATH,
-        static_path=settings.STATIC_PATH)
-
+    app = create_app()
     app.listen(settings.LISTEN_PORT)
 
-    tornado.ioloop.IOLoop.current().add_timeout(time.time() + .1, broker.run)
+    tornado.ioloop.IOLoop.current().add_timeout(time.time() + .1, app.broker.run)
     tornado.ioloop.IOLoop.current().start()
+
+
+def create_app():
+    return Application()
+
+
+def _cleanup_db():
+    """Cleans DB state before starting the server."""
+    with session() as db:
+        db.query(Connection).delete()

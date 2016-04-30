@@ -16,7 +16,7 @@
 
 from tornado.web import authenticated
 from weiqi.handler.base import BaseHandler
-from weiqi.models import Room, RoomMessage
+from weiqi.models import User, Room, RoomMessage
 
 
 class MessageHandler(BaseHandler):
@@ -39,7 +39,8 @@ class MessageHandler(BaseHandler):
 class UsersHandler(BaseHandler):
     def get(self, room_id):
         room = self.db.query(Room).get(room_id)
-        users = [ru.user.to_frontend() for ru in room.users]
+        query = self.db.query(User).filter_by(is_online=True).join('rooms').filter_by(room_id=room.id)
+        users = [u.to_frontend() for u in query]
         self.write({'users': users})
 
 

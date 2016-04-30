@@ -23,7 +23,7 @@
 
             <div class="user-buttons">
                 <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#qi-sign-in" v-if="!user.logged_in">
-                    {{$t('sidebar.signIn')}}
+                    {{$t('sidebar.sign_in')}}
                 </button>
 
                 <div class="btn-group btn-block" v-if="user.logged_in">
@@ -82,7 +82,7 @@
                         <span v-if="game.Demo">{{game.DemoOwner}}</span>
                         <span v-else>{{game.MatchWhite}} &mdash; {{game.MatchBlack}}</span>
 
-                        <span class="sidebar-item-action pull-right" v-if="can_close_game(game.id)" @click.prevent="closeGame(game.id)">
+                        <span class="sidebar-item-action pull-right" v-if="can_close_game(game.id)" @click.prevent="close_game(game.id)">
                             <i class="fa fa-times-circle"></i>
                         </span>
                     </a>
@@ -141,7 +141,7 @@
 </template>
 
 <script>
-    import { closeGame } from '../vuex/actions';
+    import { close_game } from '../vuex/actions';
 
     export default {
         vuex: {
@@ -154,7 +154,7 @@
                 game_has_update: function(state) { return state.game_has_update; }
             },
             actions: {
-                closeGame
+                close_game
             }
         },
 
