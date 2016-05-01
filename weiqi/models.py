@@ -17,8 +17,21 @@
 from datetime import datetime
 import re
 import bcrypt
+import json
 from flask_login import UserMixin
 from weiqi import db
+from weiqi.glicko2 import player_from_dict, RatingEncoder
+
+
+class RatingData(db.TypeDecorator):
+    impl = db.Text
+
+    def process_bind_param(self, value, dialect):
+        return json.dumps(value, cls=RatingEncoder)
+
+    def process_result_value(self, value, dialect):
+        data = json.loads(value)
+        return player_from_dict(data)
 
 
 class User(db.Model, UserMixin):
@@ -33,13 +46,16 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String, nullable=False)
 
     display = db.Column(db.String, nullable=False)
+
     rating = db.Column(db.Float, nullable=False, default=0)
+    rating_data = db.deferred(db.Column(RatingData, nullable=False))
 
     is_online = db.Column(db.Boolean, nullable=False, default=False)
 
     rooms = db.relationship('RoomUser', back_populates='user')
     messages = db.relationship('RoomMessage', back_populates='user')
     connections = db.relationship('Connection', back_populates='user')
+    automatch = db.relationship('Automatch', back_populates='user')
 
     def set_password(self, pw):
         self.password = bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
@@ -90,6 +106,7 @@ class Room(db.Model):
 
     name = db.Column(db.String, nullable=False, default='Room')
     type = db.Column(db.Enum('main', 'direct', 'game', name='room_type'), nullable=False)
+    is_default = db.Column(db.Boolean, nullable=False, default=False)
 
     users = db.relationship('RoomUser', back_populates='room')
     messages = db.relationship('RoomMessage', back_populates='room')
@@ -158,6 +175,22 @@ class RoomMessage(db.Model):
             'user_rating': self.user_rating,
             'message': self.message
         }
+
+
+class Automatch(db.Model):
+    __tablename__ = 'automatch'
+
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.ForeignKey('users.id'), nullable=False)
+    user = db.relationship('User', back_populates='automatch')
+
+    preset = db.Column(db.String, nullable=False)
+    min_rating = db.Column(db.Float, nullable=False)
+    max_rating = db.Column(db.Float, nullable=False)
+
+    __table_args__ = (db.CheckConstraint('min_rating <= max_rating', name='rating_check'),)
 
 
 def datetime_to_frontend(date):

@@ -18,34 +18,39 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from flask_socketio import emit
 from weiqi import db
-from weiqi.models import Room, RoomMessage, RoomUser, User
+from weiqi.models import Room, RoomMessage, RoomUser, User, Automatch
 
-bp = Blueprint('rooms', __name__)
+bp = Blueprint('play', __name__)
 
 
-@bp.route('/<room_id>/message', methods=['POST'])
+@bp.route('/play/automatch', methods=['POST'])
 @login_required
-def message(room_id):
-    ru = RoomUser.query.filter_by(user=current_user, room_id=room_id).first_or_404()
-
-    msg = RoomMessage(
-        room=ru.room,
-        user=current_user,
-        user_display=current_user.display,
-        user_rating=current_user.rating,
-        message=request.form['message'])
-
-    db.session.add(msg)
-    db.session.commit()
-
-    emit('room_message', msg.to_frontend(), room='room-'+str(ru.room_id), namespace=None)
+def automatch():
+    preset = request.form['preset']
+    max_hc = request.form['max_hc']
 
     return jsonify({})
 
 
-@bp.route('/<room_id>/users')
-def users(room_id):
-    room = Room.query.get_or_404(room_id)
-    query = RoomUser.query.filter_by(room_id=room.id).join('user').filter_by(is_online=True)
+@bp.route('/play/automatch/cancel', methods=['POST'])
+@login_required
+def cancel_automatch():
+    pass
 
-    return jsonify({'users': [ru.to_frontend() for ru in query]})
+
+@bp.route('/play/upload-sgf', methods=['POST'])
+@login_required
+def upload_sgf():
+    pass
+
+
+@bp.route('/play/create-demo', methods=['POST'])
+@login_required
+def create_demo():
+    pass
+
+
+@bp.route('/play/challenge', methods=['POST'])
+@login_required
+def challenge():
+    pass

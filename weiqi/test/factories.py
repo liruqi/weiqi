@@ -42,6 +42,7 @@ class RoomFactory(SQLAlchemyModelFactory):
     id = factory.Sequence(lambda n: n)
     name = FuzzyText()
     type = 'main'
+    is_default = True
 
 
 class RoomUserFactory(SQLAlchemyModelFactory):

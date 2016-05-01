@@ -13,16 +13,31 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Currently `test_client()` does not use `current_user` from Flask-Login, so tests are limited.
-See: https://github.com/miguelgrinberg/Flask-SocketIO/issues/231
-"""
 
-from weiqi import app, socketio
+import pytest
+from weiqi import db
+from weiqi.models import User, Room, RoomMessage, RoomUser, Connection
 
 
-def test_connection_data():
-    client = socketio.test_client(app)
-    recv = client.get_received()
+@pytest.fixture
+def app(request):
+    from weiqi import app
+    client = app.test_client()
+    ctx = app.test_request_context()
+    ctx.push()
+    client.__enter__()
 
-    assert len(recv) == 1
-    assert recv[0]['name'] == 'connection_data'
+    RoomUser.query.delete()
+    RoomMessage.query.delete()
+    Connection.query.delete()
+    Room.query.delete()
+    User.query.delete()
+
+    db.session.commit()
+
+    def cleanup():
+        client.__exit__(None, None, None)
+        ctx.pop()
+
+    request.addfinalizer(cleanup)
+    return client

@@ -17,7 +17,9 @@
 from flask import Blueprint, request, abort, jsonify, redirect
 from flask_login import login_user, logout_user, login_required
 from weiqi import db
-from weiqi.models import User
+from weiqi.models import User, RoomUser, Room
+from weiqi.rating import min_rating
+from weiqi.glicko2 import Player
 
 bp = Blueprint('auth', __name__)
 
@@ -26,13 +28,28 @@ bp = Blueprint('auth', __name__)
 def sign_up():
     user = User(
         display=request.form['display'],
-        email=request.form['email'],
-        rating=100)
+        email=request.form['email'])
 
     user.set_password(request.form['password'])
 
+    rank = request.form['rank']
+    rating = min_rating(rank)
+
+    if rating < min_rating('20k') or rating > min_rating('3d'):
+        abort(400)
+
+    user.rating = rating
+    user.rating_data = Player(rating)
+
     db.session.add(user)
+
+    for room in Room.query.filter_by(type='main', is_default=True):
+        ru = RoomUser(user=user, room=room)
+        db.session.add(ru)
+
     db.session.commit()
+
+    login_user(user, remember=True)
 
     return jsonify({})
 

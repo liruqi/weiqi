@@ -18,7 +18,7 @@ from flask_script import Manager
 from flask_migrate import MigrateCommand
 
 from weiqi import app, init_app, socketio, db
-from weiqi.models import Connection
+from weiqi.models import Connection, Automatch
 
 init_app()
 
@@ -29,6 +29,7 @@ manager.add_command('db', MigrateCommand)
 @manager.command
 def runserver():
     Connection.query.delete()
+    Automatch.query.delete()
     db.session.commit()
 
     socketio.run(app, debug=app.config['DEBUG'])

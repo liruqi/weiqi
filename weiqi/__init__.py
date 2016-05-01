@@ -3,7 +3,7 @@ from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-from . import settings
+from . import settings, cache_bust
 
 app = Flask(__name__)
 app.config.from_object('weiqi.settings')
@@ -19,7 +19,7 @@ from . import views, models, login
 
 def init_app():
     db.init_app(app)
-    #db.app = app
     migrate.init_app(app, db)
     socketio.init_app(app)
     login_manager.init_app(app)
+    cache_bust.init_cache_buster(app)

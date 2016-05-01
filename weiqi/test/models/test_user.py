@@ -14,15 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.test import BaseTestCase
 from weiqi.models import User
 
 
-class TestUser(BaseTestCase):
-    def test_password(self):
-        user = User()
-        user.set_password('pw')
+def test_password():
+    user = User()
+    user.set_password('pw')
 
-        self.assertNotEqual(user.password, 'pw')
-        self.assertTrue(user.check_password('pw'))
-        self.assertFalse(user.check_password('invalid'))
+    assert user.password != 'pw'
+    assert user.check_password('pw')
+    assert not user.check_password('invalid')

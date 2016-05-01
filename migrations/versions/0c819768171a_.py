@@ -1,13 +1,13 @@
 """initial
 
-Revision ID: 28ee3877611c
+Revision ID: 0c819768171a
 Revises: None
-Create Date: 2016-04-30 09:50:42.481276
+Create Date: 2016-05-01 13:32:26.414443
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '28ee3877611c'
+revision = '0c819768171a'
 down_revision = None
 
 from alembic import op
@@ -23,6 +23,7 @@ def upgrade():
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('type', sa.Enum('main', 'direct', 'game', name='room_type'), nullable=False),
+    sa.Column('is_default', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -33,12 +34,24 @@ def upgrade():
     sa.Column('password', sa.String(), nullable=False),
     sa.Column('display', sa.String(), nullable=False),
     sa.Column('rating', sa.Float(), nullable=False),
+    sa.Column('rating_data', weiqi.models.RatingData(), nullable=False),
     sa.Column('is_online', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
+    op.create_table('automatch',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('preset', sa.String(), nullable=False),
+    sa.Column('min_rating', sa.Float(), nullable=False),
+    sa.Column('max_rating', sa.Float(), nullable=False),
+    sa.CheckConstraint('min_rating <= max_rating', name='rating_check'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('connections',
-    sa.Column('id', weiqi.models.GUID(), nullable=False),
+    sa.Column('id', sa.String(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('ip', sa.String(), nullable=True),
@@ -75,6 +88,7 @@ def downgrade():
     op.drop_table('room_users')
     op.drop_table('room_messages')
     op.drop_table('connections')
+    op.drop_table('automatch')
     op.drop_table('users')
     op.drop_table('rooms')
     ### end Alembic commands ###

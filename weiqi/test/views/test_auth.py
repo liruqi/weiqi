@@ -14,23 +14,34 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.test import BaseTestCase
+from flask_login import current_user
 from weiqi.models import User
+from weiqi.rating import min_rating
+from weiqi.test.factories import RoomFactory
 
 
-class TestSignUp(BaseTestCase):
-    def test_sign_up(self):
-        self.app.post('/api/auth/sign-up', data={
-            'display': 'name',
-            'email': 'test@test.test',
-            'password': 'test',
-            'rating': 100,
-        })
+def test_sign_up(app):
+    RoomFactory(is_default=False)
+    room = RoomFactory(is_default=True)
 
-        user = User.query.filter_by(email='test@test.test').first()
+    app.post('/api/auth/sign-up', data={
+        'display': 'name',
+        'email': 'test@test.test',
+        'password': 'test',
+        'rank': '5k',
+    })
 
-        self.assertIsNotNone(user)
-        self.assertEqual(user.display, 'name')
-        self.assertEqual(user.email, 'test@test.test')
-        self.assertTrue(user.check_password('test'))
-        self.assertEqual(user.rating, 100)
+    user = User.query.filter_by(email='test@test.test').first()
+
+    assert user is not None
+    assert user.display == 'name'
+    assert user.email == 'test@test.test'
+    assert user.check_password('test')
+    assert user.rating == min_rating('5k')
+    assert user.rating_data is not None
+    assert user.rating_data.rating == min_rating('5k')
+
+    assert len(user.rooms) == 1
+    assert user.rooms[0].room_id == room.id
+
+    assert current_user.is_authenticated

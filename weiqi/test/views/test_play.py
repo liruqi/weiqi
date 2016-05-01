@@ -13,16 +13,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Currently `test_client()` does not use `current_user` from Flask-Login, so tests are limited.
-See: https://github.com/miguelgrinberg/Flask-SocketIO/issues/231
-"""
 
-from weiqi import app, socketio
+from weiqi.models import Automatch
+from weiqi.test.factories import UserFactory
 
 
-def test_connection_data():
-    client = socketio.test_client(app)
-    recv = client.get_received()
+def test_automatch():
+    pass
+    #user = UserFactory()
+    #self.login(user)
 
-    assert len(recv) == 1
-    assert recv[0]['name'] == 'connection_data'
+    #res = self.app.post('/api/play/automatch', data={'preset': 'fast', 'max_hc': 1})
+
+    #self.assertEqual(res.status_code, 200)
+    #self.assertEqual(Automatch.query.count(), 1)

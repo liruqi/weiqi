@@ -14,33 +14,55 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.test import BaseTestCase
+from weiqi.test.utils import get_json, login
 from weiqi.test.factories import RoomFactory, RoomUserFactory
 
 
-class TestRooms(BaseTestCase):
-    def test_room_users(self):
-        ru = RoomUserFactory()
+def test_room_users(app):
+    ru = RoomUserFactory()
 
-        res, data = self.get_json('/api/rooms/'+str(ru.room.id)+'/users')
+    res, data = get_json(app, '/api/rooms/'+str(ru.room.id)+'/users')
 
-        self.assertEqual(res.status_code, 200)
-        self.assertIsNotNone(data.get('users'))
-        self.assertEqual(len(data.get('users')), 1)
+    assert res.status_code == 200
+    assert data.get('users') is not None
+    assert len(data.get('users')) == 1
 
-    def test_room_users_offline(self):
-        room = RoomFactory()
-        ru = RoomUserFactory(room=room, user__is_online=True)
-        RoomUserFactory(room=room, user__is_online=False)
-        ru2 = RoomUserFactory(room=room, user__is_online=True)
 
-        res, data = self.get_json('/api/rooms/'+str(room.id)+'/users')
+def test_room_users_offline(app):
+    room = RoomFactory()
+    ru = RoomUserFactory(room=room, user__is_online=True)
+    RoomUserFactory(room=room, user__is_online=False)
+    ru2 = RoomUserFactory(room=room, user__is_online=True)
 
-        users = data.get('users')
-        user_ids = [u['id'] for u in users]
+    res, data = get_json(app, '/api/rooms/'+str(room.id)+'/users')
 
-        self.assertEqual(res.status_code, 200)
-        self.assertIsNotNone(users)
-        self.assertEqual(len(users), 2)
-        self.assertIn(ru.user_id, user_ids)
-        self.assertIn(ru2.user_id, user_ids)
+    users = data.get('users')
+    user_ids = [u['user_id'] for u in users]
+
+    assert res.status_code == 200
+    assert users is not None
+    assert len(users) == 2
+    assert ru.user_id in user_ids
+    assert ru2.user_id in user_ids
+
+
+def test_message(app):
+    ru = RoomUserFactory()
+    login(app, ru.user)
+
+    res = app.post('/api/rooms/'+str(ru.room_id)+'/message', data={'message': 'test'})
+
+    assert res.status_code == 200
+    assert len(ru.room.messages) == 1
+
+
+def test_message_not_in_room(app):
+    room = RoomFactory()
+    ru = RoomUserFactory()
+    login(app, ru.user)
+
+    res = app.post('/api/rooms/'+str(room.id)+'/message', data={'message': 'test'})
+
+    assert res.status_code == 404
+    assert len(ru.room.messages) == 0
+    assert len(room.messages) == 0

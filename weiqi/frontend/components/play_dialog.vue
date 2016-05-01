@@ -31,9 +31,9 @@
 
                     <div class="form-horizontal">
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">{{$t('play.options.maxHC')}}</label>
+                            <label class="col-sm-4 control-label">{{$t('play.options.max_hc')}}</label>
                             <div class="col-sm-8">
-                                <select class="form-control" v-model="maxHC">
+                                <select class="form-control" v-model="max_hc">
                                     <option :value="0">{{$t('play.options.noHC')}}</option>
                                     <option :value="1">1</option>
                                     <option :value="2">2</option>
@@ -62,7 +62,7 @@
         data() {
             return {
                 preset: 'medium',
-                maxHC: 4
+                max_hc: 4
             }
         },
 
@@ -78,7 +78,7 @@
             },
 
             play() {
-                this.$http.post('/api/play/automatch', {preset: this.preset, maxHC: this.maxHC}).then(function() {
+                this.$http.post('/api/play/automatch', {preset: this.preset, max_hc: this.max_hc}).then(function() {
                     jQuery('#qi-play-dialog').modal('hide');
                 }, function() {});
             }

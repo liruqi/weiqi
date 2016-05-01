@@ -13,16 +13,19 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Currently `test_client()` does not use `current_user` from Flask-Login, so tests are limited.
-See: https://github.com/miguelgrinberg/Flask-SocketIO/issues/231
-"""
 
-from weiqi import app, socketio
+import json
 
 
-def test_connection_data():
-    client = socketio.test_client(app)
-    recv = client.get_received()
+def get_json(app, *args, **kwargs):
+    res = app.get(*args, **kwargs)
+    data = json.loads(res.data.decode())
+    return res, data
 
-    assert len(recv) == 1
-    assert recv[0]['name'] == 'connection_data'
+
+def login(app, user, password='pw'):
+    return app.post('/api/auth/sign-in', data={'email': user.email, 'password': password})
+
+
+def logout(app):
+    return app.get('/api/auth/logout')

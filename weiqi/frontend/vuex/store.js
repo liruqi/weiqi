@@ -74,11 +74,11 @@ const mutations = {
 
     MSG_ROOM_USER(state, data) {
         if(data.user_id == state.auth.user.user_id) {
-            state.auth.user.rating = data.Rating;
+            state.auth.user.rating = data.user_rating;
         }
 
         if(state.direct_rooms[data.user_id]) {
-            state.direct_rooms[data.user_id].IsOnline = data.IsOnline;
+            state.direct_rooms[data.user_id].is_online = data.is_online;
         }
 
         if(!state.room_users[data.room_id]) {
@@ -198,7 +198,7 @@ const mutations = {
         Vue.set(state.direct_rooms, room.Otheruser_id, {
             room_id: room.Room.id,
             Otheruser_id: room.Otheruser_id,
-            IsOnline: room.IsOnline,
+            is_online: room.is_online,
             IsActive: room.IsActive
         });
         
