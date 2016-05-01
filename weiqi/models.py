@@ -19,9 +19,10 @@ import re
 import bcrypt
 import json
 from flask_login import UserMixin
+from sqlalchemy.orm.attributes import flag_modified
 from weiqi import db
 from weiqi.glicko2 import player_from_dict, RatingEncoder
-from weiqi.board import board_from_dict
+from weiqi.board import board_from_dict, BLACK, WHITE
 
 
 class RatingData(db.TypeDecorator):
@@ -111,6 +112,7 @@ class Room(db.Model):
 
     users = db.relationship('RoomUser', back_populates='room')
     messages = db.relationship('RoomMessage', back_populates='room')
+    games = db.relationship('Game', back_populates='room')
 
     def to_frontend(self):
         return {
@@ -221,7 +223,7 @@ class Game(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     room_id = db.Column(db.ForeignKey('rooms.id'), nullable=False)
-    room = db.relationship('Room')
+    room = db.relationship('Room', back_populates='games')
 
     is_demo = db.Column(db.Boolean, nullable=False, default=False)
     is_ranked = db.Column(db.Boolean, nullable=False, default=True)
@@ -262,6 +264,12 @@ class Game(db.Model):
         db.CheckConstraint('NOT is_demo OR demo_owner_id IS NOT NULL'),
     )
 
+    @property
+    def current_user(self):
+        if self.is_demo:
+            return self.demo_owner
+        return self.black_user if self.board.current == BLACK else self.white_user
+
     def to_frontend(self, full=False):
         """Returns a dictionary with the game information.
         Will not return board data unless `full` is set to True.
@@ -297,6 +305,14 @@ class Game(db.Model):
             })
 
         return data
+
+    def apply_board_change(self):
+        """Notifies sqlalchemy about a change in the `board` field.
+
+        This is required because sqlalchemy detects only changes for field values, but `board`
+        is usually changed in-place.
+        """
+        flag_modified(self, 'board')
 
 
 def datetime_to_frontend(date):

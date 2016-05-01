@@ -18,13 +18,13 @@ from flask import request
 from flask_socketio import emit, join_room
 from flask_login import current_user
 from weiqi import socketio, db
-from weiqi.models import Connection, Room, Game
+from weiqi.models import Connection, Room, Game, RoomUser
 
 
 @socketio.on('connect')
 def connect():
     emit('connection_data', _connection_data())
-    _join_rooms()
+    _join_open_rooms_and_games()
     _insert_connection()
     _update_status()
 
@@ -39,7 +39,7 @@ def disconnect():
 def open_game(game_id):
     game = Game.query.get(game_id)
     join_room('game/'+str(game_id))
-    join_room('room/'+str(game.room_id))
+    _join_room_user(game.room_id)
     emit('game_data', game.to_frontend(full=True))
 
 
@@ -69,9 +69,21 @@ def _connection_data_rooms():
     return {'rooms': rooms, 'room_logs': logs}
 
 
-def _join_rooms():
+def _join_open_rooms_and_games():
     for room in Room.open_rooms(current_user):
         join_room('room/'+str(room.id))
+
+        if room.type == 'game':
+            join_room('game/'+str(room.games[0].id))
+
+
+def _join_room_user(room_id):
+    join_room('room/'+str(room_id))
+
+    if current_user.is_authenticated:
+        if RoomUser.query.filter_by(room_id=room_id, user=current_user).count() == 0:
+            db.session.add(RoomUser(room_id=room_id, user=current_user))
+            db.session.commit()
 
 
 def _insert_connection():

@@ -16,7 +16,7 @@
 
 import pytest
 from weiqi import db
-from weiqi.models import User, Room, RoomMessage, RoomUser, Connection,Automatch
+from weiqi.models import User, Room, RoomMessage, RoomUser, Connection, Automatch, Game
 
 
 @pytest.fixture
@@ -31,6 +31,7 @@ def app(request):
     Room.query.delete()
     User.query.delete()
     Automatch.query.delete()
+    Game.query.delete()
 
     db.session.commit()
 

@@ -18,7 +18,8 @@ import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy import FuzzyText
 from weiqi import db
-from weiqi.models import User, Room, RoomUser, Automatch
+from weiqi.models import User, Room, RoomUser, Automatch, Game
+from weiqi.board import Board
 
 
 class UserFactory(SQLAlchemyModelFactory):
@@ -62,7 +63,26 @@ class AutomatchFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = db.session
 
     user = factory.SubFactory(UserFactory, rating=1000)
-    user_rating = 1000
+    user_rating = factory.lazy_attribute(lambda o: o.user.rating)
     min_rating = 1000
     max_rating = 1099
     preset = 'fast'
+
+
+class GameFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = Game
+        sqlalchemy_session = db.session
+
+    room = factory.SubFactory(RoomFactory)
+    is_demo = False
+    is_ranked = True
+    stage = 'playing'
+    board = factory.lazy_attribute(lambda o: Board(9))
+    komi = 7.5
+    black_user = factory.SubFactory(UserFactory)
+    black_display = factory.lazy_attribute(lambda o: o.black_user.display)
+    black_rating = factory.lazy_attribute(lambda o: o.black_user.rating)
+    white_user = factory.SubFactory(UserFactory)
+    white_display = factory.lazy_attribute(lambda o: o.white_user.display)
+    white_rating = factory.lazy_attribute(lambda o: o.white_user.rating)
