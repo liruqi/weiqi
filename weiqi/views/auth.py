@@ -31,8 +31,18 @@ def sign_up():
         email=request.form['email'])
 
     user.set_password(request.form['password'])
+    _sign_up_rating(user, request.form['rank'])
+    _sign_up_rooms(user)
 
-    rank = request.form['rank']
+    db.session.add(user)
+    db.session.commit()
+
+    login_user(user, remember=True)
+
+    return jsonify({})
+
+
+def _sign_up_rating(user, rank):
     rating = min_rating(rank)
 
     if rating < min_rating('20k') or rating > min_rating('3d'):
@@ -41,17 +51,11 @@ def sign_up():
     user.rating = rating
     user.rating_data = Player(rating)
 
-    db.session.add(user)
 
+def _sign_up_rooms(user):
     for room in Room.query.filter_by(type='main', is_default=True):
         ru = RoomUser(user=user, room=room)
         db.session.add(ru)
-
-    db.session.commit()
-
-    login_user(user, remember=True)
-
-    return jsonify({})
 
 
 @bp.route('/email-exists', methods=['POST'])
