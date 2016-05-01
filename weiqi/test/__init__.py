@@ -21,7 +21,4 @@ app.config['TESTING'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
 
 init_app()
-
-
-with app.test_request_context():
-    db.create_all()
+db.create_all()

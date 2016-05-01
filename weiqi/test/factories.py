@@ -18,7 +18,7 @@ import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy import FuzzyText
 from weiqi import db
-from weiqi.models import User, Room, RoomUser
+from weiqi.models import User, Room, RoomUser, Automatch
 
 
 class UserFactory(SQLAlchemyModelFactory):
@@ -31,7 +31,7 @@ class UserFactory(SQLAlchemyModelFactory):
     password = factory.PostGenerationMethodCall('set_password', 'pw')
     display = FuzzyText()
     is_online = True
-    rating = 100
+    rating = 1000
 
 
 class RoomFactory(SQLAlchemyModelFactory):
@@ -54,3 +54,15 @@ class RoomUserFactory(SQLAlchemyModelFactory):
     user = factory.SubFactory(UserFactory)
 
     has_unread = False
+
+
+class AutomatchFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = Automatch
+        sqlalchemy_session = db.session
+
+    user = factory.SubFactory(UserFactory, rating=1000)
+    user_rating = 1000
+    min_rating = 1000
+    max_rating = 1099
+    preset = 'fast'

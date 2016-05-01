@@ -17,19 +17,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="game in sortedGames" v-link="{name:'game', params:{game_id: game.id}}">
-                    <template v-if="game.Demo">
+                <tr v-for="game in sorted_games" v-link="{name:'game', params:{game_id: game.id}}">
+                    <template v-if="game.is_demo">
                         <td colspan="2">
-                            <qi-username-rank :user_id="game.DemoOwner" :rating="game.DemoOwnerRating"></qi-username-rank>
-                            <span v-if="game.DemoTitle">&mdash; {{game.DemoTitle}}</span>
+                            <qi-username-rank :user_id="game.demo_owner_id" :rating="game.demo_owner_rating"></qi-username-rank>
+                            <span v-if="game.demo_title">&mdash; {{game.demo_title}}</span>
                         </td>
                     </template>
                     <template v-else>
                         <td>
-                            <qi-username-rank :user_id="game.MatchWhite" :rating="game.MatchWhiteRating"></qi-username-rank>
+                            <qi-username-rank :user_id="game.white_user_id" :rating="game.white_rating"></qi-username-rank>
                         </td>
                         <td>
-                            <qi-username-rank :user_id="game.MatchBlack" :rating="game.MatchBlackRating"></qi-username-rank>
+                            <qi-username-rank :user_id="game.black_user_id" :rating="game.black_rating"></qi-username-rank>
                         </td>
                     </template>
                     <td>{{game.Size}}x{{game.Size}}</td>
@@ -61,27 +61,27 @@
         },
 
         computed: {
-            windowTitle() {
+            window_title() {
                 return this.$t('gamelist.header');
             },
 
-            sortedGames() {
-                var calcRating = function(g) {
+            sorted_games() {
+                var calc_rating = function(g) {
                     if(g.Demo) {
-                        return g.DemoOwnerRating;
+                        return g.demo_owner_rating;
                     }
-                    return Math.max(g.MatchBlackRating, g.MatchWhiteRating);
+                    return Math.max(g.black_rating, g.white_rating);
                 };
 
                 return this.active_games.slice().sort(function(a, b) {
-                    return calcRating(b) - calcRating(a);
+                    return calc_rating(b) - calc_rating(a);
                 });
             }
         },
 
         ready() {
-            this.updateTiming();
-            this.timer = setInterval(this.updateTiming, 10*1000);
+            this.update_timing();
+            this.timer = setInterval(this.update_timing, 10*1000);
         },
 
         destroyed() {
@@ -89,7 +89,7 @@
         },
 
         methods: {
-            updateTiming() {
+            update_timing() {
                 this.active_games.forEach(function(game) {
                     Vue.set(this.started, game.id, moment(game.created_at).fromNow());
                 }.bind(this));

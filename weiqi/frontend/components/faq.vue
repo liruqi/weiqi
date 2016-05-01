@@ -60,7 +60,7 @@
         mixins: [require('./../mixins/title.vue')],
 
         computed: {
-            windowTitle() {
+            window_title() {
                 return this.$t('faq.header');
             }
         }

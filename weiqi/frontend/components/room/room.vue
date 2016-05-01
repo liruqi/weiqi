@@ -24,7 +24,7 @@
         },
 
         computed: {
-            windowTitle() {
+            window_title() {
                 return this.room.name;
             },
 

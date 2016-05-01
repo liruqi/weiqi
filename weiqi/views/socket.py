@@ -18,7 +18,7 @@ from flask import request
 from flask_socketio import emit, join_room
 from flask_login import current_user
 from weiqi import socketio, db
-from weiqi.models import Connection, Room
+from weiqi.models import Connection, Room, Game
 
 
 @socketio.on('connect')
@@ -33,6 +33,14 @@ def connect():
 def disconnect():
     _delete_connection()
     _update_status()
+
+
+@socketio.on('open_game')
+def open_game(game_id):
+    game = Game.query.get(game_id)
+    join_room('game/'+str(game_id))
+    join_room('room/'+str(game.room_id))
+    emit('game_data', game.to_frontend(full=True))
 
 
 def _connection_data():
@@ -54,12 +62,7 @@ def _connection_data_rooms():
     rooms = []
     logs = {}
 
-    query = Room.query.filter_by(type='main')
-
-    if current_user.is_authenticated:
-        query = query.join('users').filter_by(user_id=current_user.id)
-
-    for room in query:
+    for room in Room.open_rooms(current_user):
         rooms.append(room.to_frontend())
         logs[room.id] = [m.to_frontend() for m in room.messages]
 
@@ -67,15 +70,8 @@ def _connection_data_rooms():
 
 
 def _join_rooms():
-    join_room("room")
-
-    if current_user.is_authenticated:
-        query = query = Room.query.join('users').filter_by(user_id=current_user.id)
-    else:
-        query = Room.query.filter_by(type='main')
-
-    for room in query:
-        join_room('room-'+str(room.id))
+    for room in Room.open_rooms(current_user):
+        join_room('room/'+str(room.id))
 
 
 def _insert_connection():
@@ -101,6 +97,6 @@ def _update_status():
 
     for ru in current_user.rooms:
         if current_user.is_online:
-            emit('room_user', ru.to_frontend(), room='room-'+str(ru.room_id))
+            emit('room_user', ru.to_frontend(), room='room/'+str(ru.room_id))
         else:
-            emit('room_user_left', ru.to_frontend(), room='room-'+str(ru.room_id))
+            emit('room_user_left', ru.to_frontend(), room='room/'+str(ru.room_id))

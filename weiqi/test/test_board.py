@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
+import json
 from weiqi.board import (Board, coord2d, coord_to_2d, BLACK, WHITE, NODE_BLACK, NODE_WHITE, board_from_string,
-                         IllegalMoveError, PASS, RESIGN)
+                         IllegalMoveError, PASS, RESIGN, board_from_dict)
 
 
 def test_coord_to_2d():
@@ -40,6 +41,21 @@ def test_from_string():
 
     assert board.at(coord2d(3, 2)) == BLACK
     assert board.at(coord2d(8, 8)) == WHITE
+
+
+def test_board_from_dict():
+    board = board_from_string(
+        '.........'
+        '..x......'
+        '.........'
+        '..o......'
+        '.........'
+        '.........'
+        '.........'
+        '..x....o.'
+        '.........')
+
+    assert str(board_from_dict(board.to_dict())) == str(board)
 
 
 def test_play():

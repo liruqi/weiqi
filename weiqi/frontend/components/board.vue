@@ -21,84 +21,84 @@
         data() {
             return {
                 wgo: null,
-                resizeInterval: null
+                resize_interval: null
             }
         },
 
         ready() {
             this.wgo = new WGo.Board(this.$el, {
                 width:      500,
-                background: "/assets/images/board/board.jpg",
-                size:       this.board.Size
+                background: "/static/images/board/board.jpg",
+                size:       this.board.size
             });
 
-            this.setSize();
-            this.drawCoordinates();
+            this.set_size();
+            this.draw_coordinates();
             this.draw();
 
-            this.wgo.addEventListener("click", this.clickHandler);
-            jQuery(this.$el).on('DOMMouseScroll mousewheel', this.scrollHandler);
+            this.wgo.addEventListener("click", this.click_handler);
+            jQuery(this.$el).on('DOMMouseScroll mousewheel', this.scroll_handler);
 
 
             var el = jQuery(this.$el).parent();
-            var lastWidth = el.width();
-            var lastHeight = el.height();
+            var last_width = el.width();
+            var last_height = el.height();
 
-            this.resizeInterval = setInterval(function() {
+            this.resize_interval = setInterval(function() {
                 var width = el.width();
                 var height= el.height();
 
-                if(width != lastWidth || height != lastHeight) {
-                    this.setSize();
-                    lastWidth = width;
-                    lastHeight = height;
+                if(width != last_width || height != last_height) {
+                    this.set_size();
+                    last_width = width;
+                    last_height = height;
                 }
             }.bind(this), 1000/60);
         },
 
         destroyed() {
-            this.wgo.removeEventListener("click", this.clickHandler);
+            this.wgo.removeEventListener("click", this.click_handler);
             jQuery(this.$el).off('mousewheel');
             jQuery(this.$el).off('DOMMouseScroll');
 
-            clearInterval(this.resizeInterval);
+            clearInterval(this.resize_interval);
         },
 
         watch: {
-            'currentNodeHash': function() {
+            'current_node_hash': function() {
                 this.draw();
                 this.$dispatch('board-update');
             }
         },
 
         computed: {
-            currentNodeID() {
+            current_node_id() {
                 if(this.force_node_id !== false) {
                     return this.force_node_id;
                 }
-                return this.board.CurrentNodeID;
+                return this.board.current_node_id;
             },
 
-            currentNodeHash() {
-                if((this.board.Tree || []).length < 1) {
+            current_node_hash() {
+                if((this.board.tree || []).length < 1) {
                     return null;
                 }
 
-                var node = this.board.Tree[this.currentNodeID];
+                var node = this.board.tree[this.current_node_id];
                 return JSON.stringify(node);
             }
         },
 
         methods: {
-            setSize() {
-                var parentHeight = jQuery(this.$el).parent().height();
-                var siblingsHeight = 0;
+            set_size() {
+                var parent_height = jQuery(this.$el).parent().height();
+                var siblings_height = 0;
 
                 jQuery(this.$el).siblings().each(function() {
-                    siblingsHeight += jQuery(this).height();
+                    siblings_height += jQuery(this).height();
                 });
 
-                var height = parentHeight - siblingsHeight;
+                var height = parent_height - siblings_height;
                 var width = jQuery(this.$el).width();
                 var min = Math.min(height, width);
 
@@ -107,12 +107,12 @@
                 }
             },
 
-            clickHandler(x, y) {
-                var coord = x + y*this.board.Size;
+            click_handler(x, y) {
+                var coord = x + y*this.board.size;
                 this.$dispatch('board-click', coord);
             },
 
-            scrollHandler(e) {
+            scroll_handler(e) {
                 e.preventDefault();
 
                 var scroll = 1;
@@ -128,16 +128,16 @@
             draw() {
                 this.wgo.removeAllObjects();
 
-                if((this.board.Tree || []).length < 1) {
+                if((this.board.tree || []).length < 1) {
                     return;
                 }
 
-                var pos = this.constructPos();
-                var node = this.board.Tree[this.currentNodeID];
+                var pos = this.construct_pos();
+                var node = this.board.tree[this.current_node_id];
 
                 pos.forEach(function(color, coord) {
-                    var y = Math.floor(coord/this.board.Size);
-                    var x = coord - y*this.board.Size;
+                    var y = Math.floor(coord/this.board.size);
+                    var x = coord - y*this.board.size;
                     var params = {x: x, y: y};
 
                     if(color == 'B') {
@@ -146,15 +146,15 @@
                         params.c = WGo.W;
                     }
 
-                    if(node && node.ScorePoints) {
-                        if(node.MarkedDead && node.MarkedDead[coord]) {
+                    if(node && node.score_points) {
+                        if(node.marked_dead && node.marked_dead[coord]) {
                             params.type = "outline"
                         }
 
-                        if(color == '.' && node.ScorePoints[coord] == 1) {
+                        if(color == '.' && node.score_points[coord] == 1) {
                             params.type = "mini";
                             params.c = WGo.B;
-                        } else if(color == '.' && node.ScorePoints[coord] == 2) {
+                        } else if(color == '.' && node.score_points[coord] == 2) {
                             params.type = "mini";
                             params.c = WGo.W;
                         } else if(color == '.') {
@@ -167,22 +167,22 @@
                     this.wgo.addObject(params);
                 }.bind(this));
 
-                this.drawMoveMarker();
+                this.draw_move_marker();
             },
 
-            drawMoveMarker() {
-                var node = this.board.Tree[this.currentNodeID];
+            draw_move_marker() {
+                var node = this.board.tree[this.current_node_id];
 
-                if(node && (node.Action == 'B' || node.Action == 'W') && node.Move >= 0) {
-                    var coord = node.Move;
-                    var y = Math.floor(coord/this.board.Size);
-                    var x = coord - y*this.board.Size;
+                if(node && (node.action == 'B' || node.action == 'W') && node.move >= 0) {
+                    var coord = node.move;
+                    var y = Math.floor(coord/this.board.size);
+                    var x = coord - y*this.board.size;
 
                     this.wgo.addObject({x: x, "y": y, "type": "CR"})
                 }
             },
 
-            drawCoordinates() {
+            draw_coordinates() {
                 if(!this.coordinates) {
                     this.wgo.setSection({top: 0, right: 0, bottom: 0, left: 0});
                     return;
@@ -232,16 +232,16 @@
                 this.wgo.addCustomObject(coordinates);
             },
 
-            constructPos() {
-                var pos = this.emptyPos(this.board.Size);
-                var nodes = this.currentNodePath();
+            construct_pos() {
+                var pos = this.empty_pos(this.board.size);
+                var nodes = this.current_node_path();
 
-                nodes.forEach(function(node) { this.applyNode(pos, node) }.bind(this));
+                nodes.forEach(function(node) { this.apply_node(pos, node) }.bind(this));
 
                 return pos;
             },
 
-            emptyPos(size) {
+            empty_pos(size) {
                 var pos = [];
 
                 for(var i=0; i<size*size; i++) {
@@ -251,48 +251,48 @@
                 return pos;
             },
 
-            currentNodePath() {
-                if((this.board.Tree || []).length < 1) {
+            current_node_path() {
+                if((this.board.tree || []).length < 1) {
                     return [];
                 }
 
                 var nodes = [];
-                var curNode = this.board.Tree[this.currentNodeID];
+                var cur_node = this.board.tree[this.current_node_id];
 
-                while(curNode) {
-                    nodes.unshift(curNode);
-                    curNode = this.board.Tree[curNode.ParentID];
+                while(cur_node) {
+                    nodes.unshift(cur_node);
+                    cur_node = this.board.tree[cur_node.parent_id];
                 }
 
                 return nodes;
             },
 
-            applyNode(pos, node) {
+            apply_node(pos, node) {
                 var colors = {0: 'W', 1: 'B'};
 
-                switch(node.Action) {
+                switch(node.action) {
                     case 'B':
                     case 'W':
-                        if(node.Move >= 0) {
-                            pos[node.Move] = node.Action;
+                        if(node.move >= 0) {
+                            pos[node.move] = node.action;
                         }
                         break;
 
                     case 'E':
-                        Object.keys(node.Edits).forEach(function(key) {
-                            pos[+key] = colors[node.Edits[key]];
+                        Object.keys(node.edits).forEach(function(key) {
+                            pos[+key] = colors[node.edits[key]];
                         });
                         break;
                 }
 
-                if(node.Captures) {
-                    node.Captures.forEach(function (coord) {
+                if(node.captures) {
+                    node.captures.forEach(function (coord) {
                         pos[coord] = '.';
                     });
                 }
             },
 
-            toggleCoordinates() {
+            toggle_coordinates() {
                 this.coordinates = !this.coordinates;
                 this.draw();
             }

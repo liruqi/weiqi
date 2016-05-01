@@ -2,8 +2,10 @@ import io from 'socket.io-client';
 import store from './vuex/store';
 import { server_messages } from './vuex/actions';
 
+var socket;
+
 export default function configWebsocket() {
-    var socket = io('http://' + document.domain + ':' + location.port, {
+    socket = io('http://' + document.domain + ':' + location.port, {
         reconnection: false
     });
 
@@ -23,4 +25,8 @@ export default function configWebsocket() {
             server_messages[key](store, data);
         });
     });
+}
+
+export function emit(topic, data) {
+    socket.emit(topic, data);
 }

@@ -3,16 +3,16 @@ export function createGame() {
         Demo: false,
 
         Board: {
-            CurrentNodeID: 0,
+            current_node_id: 0,
             
             Tree: [{
-                ParentID: -1,
+                parent_id: -1,
                 Children: [1, 2]
             }, {
-                ParentID: 0,
+                parent_id: 0,
                 Children: []
             }, {
-                ParentID: 0,
+                parent_id: 0,
                 Children: []
             }]
         }

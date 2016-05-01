@@ -39,7 +39,7 @@
         },
 
         computed: {
-            windowTitle() {
+            window_title() {
                 return this.$route.params.user_id;
             },
 

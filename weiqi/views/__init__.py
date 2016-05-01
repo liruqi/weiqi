@@ -15,9 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi import app
-from . import auth, index, socket, rooms, play
+from . import auth, index, socket, rooms, play, games
 
 
 app.register_blueprint(auth.bp, url_prefix='/api/auth')
 app.register_blueprint(rooms.bp, url_prefix='/api/rooms')
 app.register_blueprint(play.bp, url_prefix='/api/play')
+app.register_blueprint(games.bp, url_prefix='/api/games')

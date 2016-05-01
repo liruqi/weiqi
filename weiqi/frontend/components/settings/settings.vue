@@ -21,7 +21,7 @@
         },
 
         computed: {
-            windowTitle() {
+            window_title() {
                 return this.$t('settings.header');
             }
         }

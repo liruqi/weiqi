@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import moment from 'moment';
+import { emit } from '../socket';
 
 Vue.use(Vuex);
 
@@ -111,13 +112,13 @@ const mutations = {
             return game.id == data.id;
         });
         
-        if(game && game.Demo) {
+        if(game && game.is_demo) {
             game.stage = 'playing';
         } else if(!game) {
             state.active_games.push(data);
         }
 
-        if(!data.Demo && (data.MatchBlack == state.auth.user.user_id || data.MatchWhite == state.auth.user.user_id)) {
+        if(!data.is_demo && (data.black_user_id == state.auth.user.user_id || data.white_user_id == state.auth.user.user_id)) {
             state.route.router.go({name: 'game', params: {game_id: data.id}});
         }
     },
@@ -160,31 +161,31 @@ const mutations = {
 
         game.stage = data.Stage;
         game.Result = data.Result;
-        game.Timing = data.Timing;
+        game.timing = data.Timing;
 
         if(data.Node) {
-            if(!game.Board.Tree) {
-                Vue.set(game.Board, 'Tree', []);
+            if(!game.board.tree) {
+                Vue.set(game.board, 'Tree', []);
             }
 
-            if (!game.Board.Tree[data.Node.id]) {
+            if (!game.board.tree[data.Node.id]) {
                 // This value will be needed to detect if a game update created a new node.
                 // Useful for determining if a sound should be played.
-                Vue.set(game.Board, 'LastInsertedNodeID', data.Node.id);
-                game.Board.Tree.push(data.Node);
+                Vue.set(game.board, 'last_inserted_node_id', data.Node.id);
+                game.board.tree.push(data.Node);
             } else {
-                game.Board.Tree.$set(data.Node.id, data.Node);
+                game.board.tree.$set(data.Node.id, data.Node);
             }
 
-            game.Board.CurrentNodeID = data.Node.id;
+            game.board.current_node_id = data.Node.id;
 
-            if(data.Node.ParentID >= 0) {
-                if (!game.Board.Tree[data.Node.ParentID].Children) {
-                    Vue.set(game.Board.Tree[data.Node.ParentID], 'Children', []);
+            if(data.Node.parent_id >= 0) {
+                if (!game.board.tree[data.Node.parent_id].Children) {
+                    Vue.set(game.board.tree[data.Node.parent_id], 'Children', []);
                 }
 
-                if(game.Board.Tree[data.Node.ParentID].Children.indexOf(data.Node.id) == -1) {
-                    game.Board.Tree[data.Node.ParentID].Children.push(data.Node.id);
+                if(game.board.tree[data.Node.parent_id].Children.indexOf(data.Node.id) == -1) {
+                    game.board.tree[data.Node.parent_id].Children.push(data.Node.id);
                 }
             }
         }
@@ -219,22 +220,26 @@ const mutations = {
             return game.id == id;
         });
 
-        if(!game || game.Demo || !game.Board.Tree || (!game.Demo && game.stage == 'finished') ||
-            moment(game.Timing.StartAt).diff(moment.utc()) > 0) {
+        if(!game.timing) {
             return;
         }
 
-        var node = game.Board.Tree[game.Board.CurrentNodeID];
-        var current = 'B';
-        var timing = game.Timing.Black;
-
-        if(node && (node.Action == 'B' || (!node.ParentID >= 0 && node.Action == 'E'))) {
-            current = 'W';
-            timing = game.Timing.White;
+        if(!game || game.is_demo || !game.board.tree || (!game.is_demo && game.stage == 'finished') ||
+            moment(game.timing.start_at).diff(moment.utc()) > 0) {
+            return;
         }
 
-        timing.Main -= Math.abs(moment(game.Timing.LastUpdateAt).diff(moment.utc())) * 1000000;
-        game.Timing.LastUpdateAt = moment.utc();
+        var node = game.board.tree[game.board.current_node_id];
+        var current = 'B';
+        var timing = game.timing.black;
+
+        if(node && (node.action == 'B' || (!node.parent_id >= 0 && node.action == 'E'))) {
+            current = 'W';
+            timing = game.timing.white;
+        }
+
+        timing.Main -= Math.abs(moment(game.timing.LastUpdateAt).diff(moment.utc())) * 1000000;
+        game.timing.LastUpdateAt = moment.utc();
     },
 
     OPEN_GAME(state, game_id) {
@@ -242,11 +247,12 @@ const mutations = {
             return game.id == game_id;
         });
 
-        if(game && game.Board) {
+        if(game && game.board) {
             return;
         }
 
-        Vue.http.post('/api/games/'+game_id+'/open');
+        emit('open_game', game_id);
+        //Vue.http.post('/api/games/'+game_id+'/open');
     },
 
     CLOSE_GAME(state, game_id) {

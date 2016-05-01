@@ -14,28 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pytest
-from weiqi import db
-from weiqi.models import User, Room, RoomMessage, RoomUser, Connection,Automatch
+import json
+from flask import Blueprint, request, jsonify
+from flask_login import login_required, current_user
+from flask_socketio import emit
+from weiqi.models import Game
 
-
-@pytest.fixture
-def app(request):
-    from weiqi import app
-    client = app.test_client()
-    client.__enter__()
-
-    RoomUser.query.delete()
-    RoomMessage.query.delete()
-    Connection.query.delete()
-    Room.query.delete()
-    User.query.delete()
-    Automatch.query.delete()
-
-    db.session.commit()
-
-    def cleanup():
-        client.__exit__(None, None, None)
-
-    request.addfinalizer(cleanup)
-    return client
+bp = Blueprint('games', __name__)

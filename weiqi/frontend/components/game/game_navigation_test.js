@@ -38,7 +38,7 @@ describe('game_navigation.vue', function() {
                 var vm = getComponent();
                 var comp = vm.$refs.component;
 
-                vm.game.Demo = test[1];
+                vm.game.is_demo = test[1];
                 vm.isPlayer = test[2];
                 vm.hasControl = test[3];
 

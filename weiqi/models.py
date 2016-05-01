@@ -21,6 +21,7 @@ import json
 from flask_login import UserMixin
 from weiqi import db
 from weiqi.glicko2 import player_from_dict, RatingEncoder
+from weiqi.board import board_from_dict
 
 
 class RatingData(db.TypeDecorator):
@@ -104,7 +105,7 @@ class Room(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    name = db.Column(db.String, nullable=False, default='Room')
+    name = db.Column(db.String, nullable=False, default='')
     type = db.Column(db.Enum('main', 'direct', 'game', name='room_type'), nullable=False)
     is_default = db.Column(db.Boolean, nullable=False, default=False)
 
@@ -117,6 +118,12 @@ class Room(db.Model):
             'name': self.name,
             'type': self.type,
         }
+
+    @classmethod
+    def open_rooms(cls, user):
+        if not user or not user.is_authenticated:
+            return cls.query.filter_by(type='main')
+        return cls.query.join('users').filter_by(user_id=user.id)
 
 
 class RoomUser(db.Model):
@@ -186,11 +193,110 @@ class Automatch(db.Model):
     user_id = db.Column(db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('User', back_populates='automatch')
 
+    user_rating = db.Column(db.Float, nullable=False)
+
     preset = db.Column(db.String, nullable=False)
     min_rating = db.Column(db.Float, nullable=False)
     max_rating = db.Column(db.Float, nullable=False)
 
     __table_args__ = (db.CheckConstraint('min_rating <= max_rating', name='rating_check'),)
+
+
+class BoardData(db.TypeDecorator):
+    impl = db.Text
+
+    def process_bind_param(self, value, dialect):
+        return json.dumps(value.to_dict())
+
+    def process_result_value(self, value, dialect):
+        return board_from_dict(json.loads(value))
+
+
+class Game(db.Model):
+    __tablename__ = 'games'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    room_id = db.Column(db.ForeignKey('rooms.id'), nullable=False)
+    room = db.relationship('Room')
+
+    is_demo = db.Column(db.Boolean, nullable=False, default=False)
+    is_ranked = db.Column(db.Boolean, nullable=False, default=True)
+
+    stage = db.Column(db.Enum('playing', 'counting', 'finished', name='game_stage'), nullable=False)
+    title = db.Column(db.String, nullable=False, default='')
+
+    board = db.deferred(db.Column(BoardData, nullable=False))
+    komi = db.Column(db.Float, nullable=False)
+
+    result = db.Column(db.String, nullable=False, default='')
+    result_black_confirmed = db.Column(db.String, nullable=False, default='')
+    result_white_confirmed = db.Column(db.String, nullable=False, default='')
+
+    black_user_id = db.Column(db.ForeignKey('users.id'), nullable=True)
+    black_user = db.relationship('User', foreign_keys=[black_user_id])
+    black_display = db.Column(db.String, nullable=False, default='')
+    black_rating = db.Column(db.Float, nullable=True)
+
+    white_user_id = db.Column(db.ForeignKey('users.id'), nullable=True)
+    white_user = db.relationship('User', foreign_keys=[white_user_id])
+    white_display = db.Column(db.String, nullable=False, default='')
+    white_rating = db.Column(db.Float, nullable=True)
+
+    demo_owner_id = db.Column(db.ForeignKey('users.id'), nullable=True)
+    demo_owner = db.relationship('User', foreign_keys=[demo_owner_id])
+    demo_owner_display = db.Column(db.String, nullable=False, default='')
+    demo_owner_rating = db.Column(db.Float, nullable=True)
+
+    demo_control_id = db.Column(db.ForeignKey('users.id'), nullable=True)
+    demo_control = db.relationship('User', foreign_keys=[demo_control_id])
+    demo_control_display = db.Column(db.String, nullable=False, default='')
+
+    __table_args__ = (
+        db.CheckConstraint('NOT is_ranked OR NOT is_demo'),
+        db.CheckConstraint('is_demo OR black_user_id IS NOT NULL'),
+        db.CheckConstraint('is_demo OR white_user_id IS NOT NULL'),
+        db.CheckConstraint('NOT is_demo OR demo_owner_id IS NOT NULL'),
+    )
+
+    def to_frontend(self, full=False):
+        """Returns a dictionary with the game information.
+        Will not return board data unless `full` is set to True.
+        """
+        data = {
+            'id': self.id,
+            'created_at': datetime_to_frontend(self.created_at),
+            'room_id': self.room_id,
+            'is_demo': self.is_demo,
+            'is_ranked': self.is_ranked,
+            'stage': self.stage,
+            'title': self.title,
+            'komi': self.komi,
+            'result': self.result,
+            'black_user_id': self.black_user_id,
+            'black_display': self.black_display,
+            'black_rating': self.black_rating,
+            'white_user_id': self.white_user_id,
+            'white_display': self.white_display,
+            'white_rating': self.white_rating,
+            'demo_owner_id': self.demo_owner_id,
+            'demo_owner_display': self.demo_owner_display,
+            'demo_owner_rating': self.demo_owner_rating,
+        }
+
+        if full:
+            data.update({
+                'board': self.board.to_dict(),
+                'result_black_confirmed': self.result_black_confirmed,
+                'result_white_confirmed': self.result_white_confirmed,
+                'demo_control_id': self.demo_control_id,
+                'demo_control_display': self.demo_control_display,
+            })
+
+        return data
 
 
 def datetime_to_frontend(date):

@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+from json import JSONEncoder
 
 BLACK = 'x'
 WHITE = 'o'
@@ -81,6 +82,9 @@ class Node:
         self.labels = []
         self.symbols = []
 
+    def to_dict(self):
+        return self.__dict__
+
 
 class IllegalMoveError(Exception):
     pass
@@ -104,6 +108,15 @@ class Board:
                 board += '\n'
 
         return board
+
+    def to_dict(self):
+        return {
+            'size': self.size,
+            'current': self.current,
+            'tree': [n.to_dict() for n in self.tree],
+            'pos': self.pos,
+            'current_node_id': self.current_node_id,
+        }
 
     def at(self, coord):
         return self.pos[coord]
@@ -252,3 +265,18 @@ def board_from_string(pos, size=9) -> Board:
     board.pos = list(pos)
 
     return board
+
+
+def board_from_dict(data) -> Board:
+    board = Board(data['size'])
+    board.current = data['current']
+    board.pos = data['pos']
+    board.current_node_id = data['current_node_id']
+    board.tree = [node_from_dict(n) for n in data['tree']]
+    return board
+
+
+def node_from_dict(data) -> Node:
+    node = Node()
+    node.__dict__.update(data)
+    return node

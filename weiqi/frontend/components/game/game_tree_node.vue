@@ -37,7 +37,7 @@
 
         computed: {
             color() {
-                if(this.node.Action == 'W' || this.node.Action == 'AW') {
+                if(this.node.action == 'W' || this.node.action == 'AW') {
                     return 'white';
                 }
                 return 'black';
@@ -47,18 +47,18 @@
                 var children = [];
 
                 (this.node.Children || []).forEach(function(child) {
-                    children.push(this.game.Board.Tree[child]);
+                    children.push(this.game.board.tree[child]);
                 }.bind(this));
 
                 return children;
             },
 
             isSingle() {
-                if(this.node.ParentID < 0 || !this.game.Board.Tree) {
+                if(this.node.parent_id < 0 || !this.game.board.tree) {
                     return true;
                 }
 
-                return this.game.Board.Tree[this.node.ParentID].Children.length < 2;
+                return this.game.board.tree[this.node.parent_id].Children.length < 2;
             },
 
             isExpanded() {

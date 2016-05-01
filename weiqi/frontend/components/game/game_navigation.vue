@@ -1,5 +1,5 @@
 <template>
-    <div v-if="game.Demo || !isPlayer || game.stage=='finished'">
+    <div v-if="game.is_demo || !isPlayer || game.stage=='finished'">
         <div class="game-navigation">
             <div class="game-nav-node">
                 <qi-game-tree-node v-if="rootNode" :game="game" :active-node="currentNode" :node="rootNode"
@@ -14,7 +14,7 @@
             <button class="btn btn-default btn-xs" @click="lastMove()">&raquo;</button>
         </div>
 
-        <button v-el:back-to-game v-if="!game.Demo || !hasControl" class="btn btn-default btn-xs btn-block" @click="backToGame()">
+        <button v-el:back-to-game v-if="!game.is_demo || !hasControl" class="btn btn-default btn-xs btn-block" @click="backToGame()">
             {{$t('game.backToGame')}}
         </button>
     </div>
@@ -37,8 +37,8 @@
             previousMove() {
                 var node = this.currentNode;
 
-                if(node && node.ParentID >= 0) {
-                    this.setNodeID(node.ParentID)
+                if(node && node.parent_id >= 0) {
+                    this.setNodeID(node.parent_id)
                 }
             },
 
@@ -53,7 +53,7 @@
                     this.setNodeID(node.Children[0]);
                 }
 
-                if(this.force_node_id == this.game.Board.CurrentNodeID) {
+                if(this.force_node_id == this.game.board.current_node_id) {
                     this.force_node_id = false;
                 }
             },
@@ -74,7 +74,7 @@
                 var node = this.currentNode;
 
                 while(node.Children && node.Children.length > 0) {
-                    node = this.game.Board.Tree[node.Children[0]];
+                    node = this.game.board.tree[node.Children[0]];
                 }
 
                 this.setNodeID(node.id);
@@ -85,19 +85,19 @@
             },
 
             setNodeID(nodeID) {
-                if(this.game.Demo && this.hasControl) {
+                if(this.game.is_demo && this.hasControl) {
                     this.$http.post('/api/games/'+this.game.id+'/set-current-node', {nodeID: nodeID});
                 } else {
                     this.force_node_id = nodeID;
 
-                    if(this.force_node_id == this.game.Board.CurrentNodeID) {
+                    if(this.force_node_id == this.game.board.current_node_id) {
                         this.force_node_id = false;
                     }
                 }
             },
 
             handleNodeChange(node) {
-                if(!node || !this.game.Board.Tree) {
+                if(!node || !this.game.board.tree) {
                     return;
                 }
 
@@ -109,9 +109,9 @@
             },
 
             expandNodePath(node) {
-                while(node.ParentID >= 0) {
-                    this.$set('expanded.n' + node.ParentID, true);
-                    node = this.game.Board.Tree[node.ParentID];
+                while(node.parent_id >= 0) {
+                    this.$set('expanded.n' + node.parent_id, true);
+                    node = this.game.board.tree[node.parent_id];
                 }
             },
 
@@ -156,7 +156,7 @@
 
         computed: {
             hasNodes() {
-                return (this.game.Board.Tree || []).length > 0;
+                return (this.game.board.tree || []).length > 0;
             },
 
             currentNode() {
@@ -167,10 +167,10 @@
                 var nodeID = this.force_node_id;
 
                 if(nodeID === false) {
-                    nodeID = this.game.Board.CurrentNodeID;
+                    nodeID = this.game.board.current_node_id;
                 }
 
-                return this.game.Board.Tree[nodeID];
+                return this.game.board.tree[nodeID];
             },
 
             rootNode() {
@@ -178,7 +178,7 @@
                     return;
                 }
 
-                return this.game.Board.Tree[0];
+                return this.game.board.tree[0];
             }
         }
     }

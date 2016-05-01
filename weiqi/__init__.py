@@ -23,3 +23,5 @@ def init_app():
     socketio.init_app(app)
     login_manager.init_app(app)
     cache_bust.init_cache_buster(app)
+
+    app.app_context().push()

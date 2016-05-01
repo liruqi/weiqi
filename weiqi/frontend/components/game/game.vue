@@ -1,13 +1,13 @@
 <template>
-    <div class="row" v-if="timerStarted">
+    <div class="row" v-if="timer_started">
         <div class="col-sm-9 game-detail-left">
-            <template v-if="!hasStarted">
-                <h1 class="text-center">{{$t('game.willStartIn')}}</h1>
-                <h1 class="text-center">{{secondsToStart}}</h1>
+            <template v-if="!has_started">
+                <h1 class="text-center">{{$t('game.will_start_in')}}</h1>
+                <h1 class="text-center">{{seconds_to_start}}</h1>
             </template>
             <template v-else>
-                <p v-if="game.Demo && game.DemoTitle" class="text-center">{{game.DemoTitle}}</p>
-                <qi-board v-if="game.Board" :board="game.Board" :force_node_id="force_node_id" :coordinates="coordinates"></qi-board>
+                <p v-if="game.is_demo && game.demo_title" class="text-center">{{game.demo_title}}</p>
+                <qi-board v-if="game.board" :board="game.board" :force_node_id="force_node_id" :coordinates="coordinates"></qi-board>
             </template>
         </div>
 
@@ -16,14 +16,14 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-xs-6">
-                            <qi-game-player :demo="game.Demo" :stage="game.stage" :color="'white'"
-                                            :demo-player="game.DemoWhite" :player="game.MatchWhite"
-                                            :rating="game.MatchWhiteRating" :points="0" :time="whiteTime"></qi-game-player>
+                            <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'white'"
+                                            :display="game.white_display" :user_id="game.white_user_id"
+                                            :rating="game.white_rating" :points="0" :time="white_time"></qi-game-player>
                         </div>
                         <div class="col-xs-6">
-                            <qi-game-player :demo="game.Demo" :stage="game.stage" :color="'black'"
-                                            :demo-player="game.DemoBlack" :player="game.MatchBlack"
-                                            :rating="game.MatchBlackRating" :points="0" :time="blackTime"></qi-game-player>
+                            <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'black'"
+                                            :display="game.black_display" :user_id="game.black_user_id"
+                                            :rating="game.black_rating" :points="0" :time="black_time"></qi-game-player>
                         </div>
                     </div>
 
@@ -31,7 +31,7 @@
                         {{game.Result}}
                     </p>
 
-                    <template v-if="isPlayer && hasStarted">
+                    <template v-if="is_player && has_started">
                         <button class="btn btn-default btn-block" v-if="game.stage=='playing'" @click="pass()">
                             {{$t('game.pass')}}
                         </button>
@@ -45,7 +45,7 @@
                         </button>
                     </template>
 
-                    <qi-game-navigation :game="game" :is-player="isPlayer" :has-control="hasControl" :force_node_id.sync="force_node_id"></qi-game-navigation>
+                    <qi-game-navigation :game="game" :is-player="is_player" :has-control="has_control" :force_node_id.sync="force_node_id"></qi-game-navigation>
                 </div>
             </div>
 
@@ -92,88 +92,88 @@
         data() {
             return {
                 force_node_id: false,
-                secondsToStart: 0,
-                timerStarted: false,
-                demoTool: 'move'
+                seconds_to_start: 0,
+                timer_started: false,
+                demo_tool: 'move'
             }
         },
 
         computed: {
-            windowTitle() {
-                if(this.game.Demo) {
-                    return this.game.DemoTitle;
+            window_title() {
+                if(this.game.is_demo) {
+                    return this.game.demo_title;
                 }
-                return this.game.MatchWhite + ' - ' + this.game.MatchBlack;
+                return this.game.white_display + ' - ' + this.game.black_display;
             },
 
             game() {
                 var empty = {
-                    ID: false,
-                    Timing: {
-                        Black: {},
-                        White: {}
+                    id: false,
+                    timing: {
+                        black: {},
+                        white: {}
                     },
-                    Board: {
-                        Tree: []
+                    board: {
+                        tree: []
                     }
                 };
 
                 return this.open_games.find(function(game) { return game.id == this.$route.params.game_id; }.bind(this)) || empty;
             },
 
-            isPlayer() {
-                return this.user.user_id == this.game.MatchBlack || this.user.user_id == this.game.MatchWhite;
+            is_player() {
+                return this.user.user_id == this.game.black_user_id || this.user.user_id == this.game.white_user_id;
             },
 
-            hasControl() {
-                return this.user.user_id == this.game.DemoControl;
+            has_control() {
+                return this.user.user_id == this.game.demo_control_id;
             },
 
-            blackTime() {
-                if(this.game.Timing && this.game.Timing.Black) {
-                    return this.formatTime(this.game.Timing.Black.Main);
+            black_time() {
+                if(this.game.timing && this.game.timing.black) {
+                    return this.formatTime(this.game.timing.black.Main);
                 }
             },
 
-            whiteTime() {
-                if(this.game.Timing && this.game.Timing.White) {
-                    return this.formatTime(this.game.Timing.White.Main);
+            white_time() {
+                if(this.game.timing && this.game.timing.white) {
+                    return this.formatTime(this.game.timing.white.Main);
                 }
             },
 
-            hasStarted() {
-                return this.secondsToStart <= 0;
+            has_started() {
+                return this.seconds_to_start <= 0;
             },
 
             room_logs_show_only() {
-                if(this.isPlayer && this.game.stage != 'finished') {
-                    return [this.game.MatchBlack, this.game.MatchWhite];
+                if(this.is_player && this.game.stage != 'finished') {
+                    return [this.game.black_user_id, this.game.white_user_id];
                 }
                 return [];
             },
 
             coordinates() {
-                return !this.isPlayer || this.game.stage == 'finished';
+                return !this.is_player || this.game.stage == 'finished';
             }
         },
 
         watch: {
-            'game.Board.LastInsertedNodeID': function(nodeID) {
-                if(this.game.Board.CurrentNodeID != nodeID) {
+            'game.board.last_inserted_node_id': function(nodeID) {
+                if(this.game.board.current_node_id != nodeID) {
                     return;
                 }
 
-                var node = this.game.Board.Tree[nodeID];
+                var node = this.game.board.tree[nodeID];
 
                 // No sound for pass/resign
                 if(node.Move < 0) {
                     return;
                 }
 
-                if(node.Action == 'B') {
-                    new Howl({src: ['/assets/sounds/black.mp3', '/assets/sounds/black.ogg']}).play()
-                } else if(node.Action == 'W') {
-                    new Howl({src: ['/assets/sounds/white.mp3', '/assets/sounds/white.ogg']}).play()
+                if(node.action == 'B') {
+                    new Howl({src: ['/static/sounds/black.mp3', '/static/sounds/black.ogg']}).play()
+                } else if(node.action == 'W') {
+                    new Howl({src: ['/static/sounds/white.mp3', '/static/sounds/white.ogg']}).play()
                 }
             },
 
@@ -195,13 +195,13 @@
 
         events: {
             'board-click': function(coord) {
-                if(this.game.Demo && this.hasControl) {
-                    switch(this.demoTool) {
+                if(this.game.is_demo && this.has_control) {
+                    switch(this.demo_tool) {
                         case 'move':
                             this.$http.post('/api/games/' + this.$route.params.game_id + '/move', {move: coord});
                             break;
                     }
-                } else if(!this.game.Demo && this.isPlayer) {
+                } else if(!this.game.is_demo && this.is_player) {
                     if (this.game.stage == 'counting') {
                         this.$http.post('/api/games/' + this.$route.params.game_id + '/toggle-marked-dead', {coord: coord});
                     } else if (this.game.stage != 'finished') {
@@ -211,7 +211,7 @@
             },
 
             'board-scroll': function(scroll) {
-                if(this.game.Demo || (this.isPlayer && this.game.stage != 'finished')) {
+                if(this.game.is_demo || (this.is_player && this.game.stage != 'finished')) {
                     return;
                 }
 
@@ -233,15 +233,15 @@
                     return;
                 }
 
-                if(this.game.Timing) {
-                    this.secondsToStart = Math.ceil(moment(this.game.Timing.StartAt).diff(moment.utc()) / 1000);
+                if(this.game.timing) {
+                    this.seconds_to_start = Math.ceil(moment(this.game.timing.start_at).diff(moment.utc()) / 1000);
 
-                    if (this.hasStarted) {
+                    if (this.has_started) {
                         this.update_game_time(this.game.id);
                     }
                 }
 
-                this.timerStarted = true;
+                this.timer_started = true;
             },
 
             pad(n) {

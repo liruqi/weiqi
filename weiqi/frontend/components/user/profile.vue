@@ -49,9 +49,9 @@
                 </thead>
                 <tbody>
                     <tr v-for="game in games">
-                        <template v-if="game.Demo">
+                        <template v-if="game.is_demo">
                             <td>{{$t('game.demo')}}</td>
-                            <td>{{game.DemoTitle}}</td>
+                            <td>{{game.demo_title}}</td>
                         </template>
                         <template v-else>
                             <td :class="{winner: game.Result.startsWith('W+')}">
@@ -104,7 +104,7 @@
         },
 
         computed: {
-            windowTitle() {
+            window_title() {
                 return this.user.user_id;
             }
         },

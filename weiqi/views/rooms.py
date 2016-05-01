@@ -38,7 +38,7 @@ def message(room_id):
     db.session.add(msg)
     db.session.commit()
 
-    emit('room_message', msg.to_frontend(), room='room-'+str(ru.room_id), namespace=None)
+    emit('room_message', msg.to_frontend(), room='room/'+str(ru.room_id), namespace=None)
 
     return jsonify({})
 
