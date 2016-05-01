@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.rating import rating_to_rank, min_rating, rank_diff, RATING_PER_RANK
+from weiqi.rating import rating_to_rank, min_rating, max_rating, rank_diff, RATING_PER_RANK, rating_range
 
 
 def test_ranks():
@@ -117,3 +117,17 @@ def test_min_rating():
 
     assert min_rating("10d") == 2900
     assert min_rating("11d") == 2900
+
+
+def test_rating_range():
+    tests = [
+        [min_rating('5k'), 0, min_rating('5k'), max_rating('5k')],
+        [min_rating('1d'), 2, min_rating('2k'), max_rating('3d')],
+
+        [100, 0, 100, 199],
+        [200, 2, -9999, 499],
+        [2900, 3, 2600, 9999]
+    ]
+
+    for t in tests:
+        assert rating_range(t[0], t[1]) == (t[2], t[3])
