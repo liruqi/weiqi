@@ -6,7 +6,11 @@ var socket;
 
 export default function configWebsocket() {
     socket = io('http://' + document.domain + ':' + location.port, {
-        reconnection: false
+        reconnection: false,
+
+        // socket.io-client v1.4.5 can currently only connect via websockets
+        // see: https://github.com/miguelgrinberg/Flask-SocketIO/issues/219
+        transports: ['websocket']
     });
 
     socket.on('connect', function() {

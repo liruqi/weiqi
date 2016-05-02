@@ -1,19 +1,19 @@
 export function createGame() {
     return {
-        Demo: false,
+        is_demo: false,
 
-        Board: {
+        board: {
             current_node_id: 0,
             
-            Tree: [{
+            tree: [{
                 parent_id: -1,
-                Children: [1, 2]
+                children: [1, 2]
             }, {
                 parent_id: 0,
-                Children: []
+                children: []
             }, {
                 parent_id: 0,
-                Children: []
+                children: []
             }]
         }
     };

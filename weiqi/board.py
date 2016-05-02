@@ -17,9 +17,9 @@
 import re
 from json import JSONEncoder
 
+EMPTY = '.'
 BLACK = 'x'
 WHITE = 'o'
-EMPTY = '.'
 
 PASS = -1
 RESIGN = -2

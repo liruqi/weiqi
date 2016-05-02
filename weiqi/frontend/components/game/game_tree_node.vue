@@ -1,28 +1,28 @@
 <template>
     <div id="game-nav-node-{{node.id}}">
-        <span class="game-nav-node-plus-minus" v-if="children.length>1 || (!isSingle && children.length>=1)" @click="toggleNode">
-            <i v-if="isExpanded" class="fa fa-minus-square-o fa-fw"></i>
+        <span class="game-nav-node-plus-minus" v-if="children.length>1 || (!is_single && children.length>=1)" @click="toggle_node">
+            <i v-if="is_expanded" class="fa fa-minus-square-o fa-fw"></i>
             <i v-else class="fa fa-plus-square-o fa-fw"></i>
         </span>
         <span v-else class="game-nav-node-plus-minus">
             <i class="fa fa-fw"></i>
         </span>
 
-        <span class="game-nav-node-label" @click="navigate(node.id)" @dblclick="toggleNode" :class="{active: isActive}">
+        <span class="game-nav-node-label" @click="navigate(node.id)" @dblclick="toggle_node" :class="{active: is_active}">
             <i v-if="color=='white'" class="fa fa-circle-thin"></i>
             <i v-else class="fa fa-circle"></i>
-            {{moveNr}}
+            {{move_nr}}
         </span>
 
-        <template v-if="children.length==1 && isSingle">
-            <qi-game-tree-node :game="game" :active-node="activeNode" :node="children[0]" :move-nr="moveNr+1"
+        <template v-if="children.length==1 && is_single">
+            <qi-game-tree-node :game="game" :active_node="active_node" :node="children[0]" :move_nr="move_nr+1"
                     :expanded.sync="expanded"></qi-game-tree-node>
         </template>
 
-        <template v-if="children.length>1 || (!isSingle && children.length>=1)">
-            <div class="game-nav-node collapse" :class="{in: isExpanded}">
+        <template v-if="children.length>1 || (!is_single && children.length>=1)">
+            <div class="game-nav-node collapse" :class="{in: is_expanded}">
                 <template v-for="child in children">
-                    <qi-game-tree-node :game="game" :active-node="activeNode" :node="child" :move-nr="moveNr+1"
+                    <qi-game-tree-node :game="game" :active_node="active_node" :node="child" :move_nr="move_nr+1"
                             :expanded.sync="expanded"></qi-game-tree-node>
                 </template>
             </div>
@@ -33,7 +33,7 @@
 <script>
     export default {
         name: 'qi-game-tree-node',
-        props: ['game', 'activeNode', 'node', 'moveNr', 'expanded'],
+        props: ['game', 'active_node', 'node', 'move_nr', 'expanded'],
 
         computed: {
             color() {
@@ -46,47 +46,47 @@
             children() {
                 var children = [];
 
-                (this.node.Children || []).forEach(function(child) {
+                (this.node.children || []).forEach(function(child) {
                     children.push(this.game.board.tree[child]);
                 }.bind(this));
 
                 return children;
             },
 
-            isSingle() {
-                if(this.node.parent_id < 0 || !this.game.board.tree) {
+            is_single() {
+                if(this.node.parent_id === null || !this.game.board.tree) {
                     return true;
                 }
 
-                return this.game.board.tree[this.node.parent_id].Children.length < 2;
+                return this.game.board.tree[this.node.parent_id].children.length < 2;
             },
 
-            isExpanded() {
+            is_expanded() {
                 return this.node && !!this.expanded['n' + this.node.id];
             },
 
-            isActive() {
-                if(!this.activeNode) {
+            is_active() {
+                if(!this.active_node) {
                     return false;
                 }
 
-                return this.activeNode.id == this.node.id;
+                return this.active_node.id == this.node.id;
             }
         },
 
         methods: {
-            navigate(nodeID) {
-                this.$dispatch('game-tree-node', nodeID);
+            navigate(node_id) {
+                this.$dispatch('game-tree-node', node_id);
             },
 
-            toggleNode() {
+            toggle_node() {
                 if(!this.node) {
                     return;
                 }
 
                 // Keys cannot begin with a number, so prefix with 'n'
-                var nodeID = 'n' + this.node.id;
-                this.$set('expanded.'+nodeID, !this.expanded[nodeID]);
+                var node_id = 'n' + this.node.id;
+                this.$set('expanded.'+node_id, !this.expanded[node_id]);
             }
         }
     }

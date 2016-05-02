@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi import app
-from . import auth, index, socket, rooms, play, games, users
+from flask import Blueprint, send_file
+from weiqi.identicon import generate_identicon
+
+bp = Blueprint('users', __name__)
 
 
-app.register_blueprint(auth.bp, url_prefix='/api/auth')
-app.register_blueprint(rooms.bp, url_prefix='/api/rooms')
-app.register_blueprint(play.bp, url_prefix='/api/play')
-app.register_blueprint(games.bp, url_prefix='/api/games')
-app.register_blueprint(users.bp, url_prefix='/api/users')
+@bp.route('/<user_id>/avatar')
+def avatar(user_id):
+    identicon = generate_identicon(user_id.encode())
+    return send_file(identicon, mimetype='image/png', cache_timeout=3600*24)

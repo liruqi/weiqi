@@ -22,7 +22,7 @@
             <p class="text-center" v-if="stage=='playing'">
                 {{time}}
             </p>
-            <p class="text-center" data-bind="visible: game().Stage!='playing'">
+            <p class="text-center" data-bind="visible: game().stage!='playing'">
                 <span data-bind="text: whitePoints()"></span>
             </p>
         </template>

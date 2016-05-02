@@ -27,8 +27,8 @@
                         </div>
                     </div>
 
-                    <p class="text-center" v-if="game.Result">
-                        {{game.Result}}
+                    <p class="text-center" v-if="game.result">
+                        {{game.result}}
                     </p>
 
                     <template v-if="is_player && has_started">
@@ -45,7 +45,7 @@
                         </button>
                     </template>
 
-                    <qi-game-navigation :game="game" :is-player="is_player" :has-control="has_control" :force_node_id.sync="force_node_id"></qi-game-navigation>
+                    <qi-game-navigation :game="game" :is_player="is_player" :has_control="has_control" :force_node_id.sync="force_node_id"></qi-game-navigation>
                 </div>
             </div>
 
@@ -131,13 +131,13 @@
 
             black_time() {
                 if(this.game.timing && this.game.timing.black) {
-                    return this.formatTime(this.game.timing.black.Main);
+                    return this.format_time(this.game.timing.black.Main);
                 }
             },
 
             white_time() {
                 if(this.game.timing && this.game.timing.white) {
-                    return this.formatTime(this.game.timing.white.Main);
+                    return this.format_time(this.game.timing.white.Main);
                 }
             },
 
@@ -158,15 +158,15 @@
         },
 
         watch: {
-            'game.board.last_inserted_node_id': function(nodeID) {
-                if(this.game.board.current_node_id != nodeID) {
+            'game.board.last_inserted_node_id': function(node_id) {
+                if(this.game.board.current_node_id != node_id) {
                     return;
                 }
 
-                var node = this.game.board.tree[nodeID];
+                var node = this.game.board.tree[node_id];
 
                 // No sound for pass/resign
-                if(node.Move < 0) {
+                if(node.move < 0) {
                     return;
                 }
 
@@ -178,15 +178,15 @@
             },
 
             'game_has_update[$route.params.game_id]': function() {
-                this.clearUpdate();
+                this.clear_update();
             }
         },
 
         ready() {
             this.open_game(this.$route.params.game_id);
-            this.clearUpdate();
-            this.timer = setInterval(this.updateTimer, 200);
-            this.updateTimer();
+            this.clear_update();
+            this.timer = setInterval(this.update_timer, 200);
+            this.update_timer();
         },
 
         destroyed() {
@@ -224,11 +224,11 @@
         },
 
         methods: {
-            clearUpdate() {
+            clear_update() {
                 this.clear_game_update(this.$route.params.game_id);
             },
 
-            updateTimer() {
+            update_timer() {
                 if(this.game.id === false) {
                     return;
                 }
@@ -248,7 +248,7 @@
                 return (n < 10) ? ("0" + n) : n;
             },
 
-            formatTime(time) {
+            format_time(time) {
                 var sec = Math.ceil(time / 1000000000);
                 var min = Math.floor(sec / 60);
 
@@ -264,7 +264,7 @@
                             label: this.$t('game.pass')
                         }
                     },
-                    message: this.$t('game.confirmPass'),
+                    message: this.$t('game.confirm_pass'),
                     callback: function (res) {
                         if (res) {
                             this.$http.post('/api/games/' + this.$route.params.game_id + '/move', {move: -1});
@@ -281,7 +281,7 @@
                             className: 'btn-danger'
                         }
                     },
-                    message: this.$t('game.confirmResign'),
+                    message: this.$t('game.confirm_resign'),
                     callback: function(res) {
                         if(res) {
                             this.$http.post('/api/games/'+this.$route.params.game_id+'/move', {move: -2});
@@ -291,7 +291,7 @@
             },
 
             confirmScore() {
-                this.$http.post('/api/games/'+this.$route.params.game_id+'/confirm-score', {result: this.game.Result});
+                this.$http.post('/api/games/'+this.$route.params.game_id+'/confirm-score', {result: this.game.result});
             }
         }
     }

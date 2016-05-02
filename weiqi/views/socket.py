@@ -54,6 +54,7 @@ def _connection_data():
         })
 
     data.update(_connection_data_rooms())
+    data.update(_connection_data_games())
 
     return data
 
@@ -67,6 +68,15 @@ def _connection_data_rooms():
         logs[room.id] = [m.to_frontend() for m in room.messages]
 
     return {'rooms': rooms, 'room_logs': logs}
+
+
+def _connection_data_games():
+    if not current_user.is_authenticated:
+        return {}
+
+    return {
+        'open_games': [g.to_frontend(full=True) for g in current_user.open_games]
+    }
 
 
 def _join_open_rooms_and_games():

@@ -1,28 +1,28 @@
 <template>
-    <div v-if="game.is_demo || !isPlayer || game.stage=='finished'">
+    <div v-show="is_visible">
         <div class="game-navigation">
             <div class="game-nav-node">
-                <qi-game-tree-node v-if="rootNode" :game="game" :active-node="currentNode" :node="rootNode"
-                        :move-nr="1" :expanded.sync="expanded"></qi-game-tree-node>
+                <qi-game-tree-node v-if="root_node" :game="game" :active_node="current_node" :node="root_node"
+                        :move_nr="1" :expanded.sync="expanded"></qi-game-tree-node>
             </div>
         </div>
 
         <div class="game-nav-buttons">
-            <button class="btn btn-default btn-xs" @click="firstMove()">&laquo;</button>
-            <button class="btn btn-default btn-xs" @click="previousMove()">&lsaquo;</button>
-            <button class="btn btn-default btn-xs" @click="nextMove()">&rsaquo;</button>
-            <button class="btn btn-default btn-xs" @click="lastMove()">&raquo;</button>
+            <button class="btn btn-default btn-xs" @click="first_move()">&laquo;</button>
+            <button class="btn btn-default btn-xs" @click="previous_move()">&lsaquo;</button>
+            <button class="btn btn-default btn-xs" @click="next_move()">&rsaquo;</button>
+            <button class="btn btn-default btn-xs" @click="last_move()">&raquo;</button>
         </div>
 
-        <button v-el:back-to-game v-if="!game.is_demo || !hasControl" class="btn btn-default btn-xs btn-block" @click="backToGame()">
-            {{$t('game.backToGame')}}
+        <button v-el:back-to-game v-if="!game.is_demo || !has_control" class="btn btn-default btn-xs btn-block" @click="back_to_game()">
+            {{$t('game.back_to_game')}}
         </button>
     </div>
 </template>
 
 <script>
     export default {
-        props: ['game', 'isPlayer', 'hasControl', 'force_node_id'],
+        props: ['game', 'is_player', 'has_control', 'force_node_id'],
         components: {
             'qi-game-tree-node': require('./game_tree_node.vue')
         },
@@ -33,24 +33,84 @@
             }
         },
 
-        methods: {
-            previousMove() {
-                var node = this.currentNode;
-
-                if(node && node.parent_id >= 0) {
-                    this.setNodeID(node.parent_id)
-                }
+        events: {
+            'game-tree-node': function(node_id) {
+                this.set_node_id(node_id);
             },
 
-            nextMove() {
-                if(!this.hasNodes) {
+            'game-navigate': function(step) {
+                if(this.is_player && this.game.stage != 'finished') {
                     return;
                 }
 
-                var node = this.currentNode;
+                if(step > 0) {
+                    this.next_move();
+                } else if(step < 0) {
+                    this.previous_move();
+                }
+            }
+        },
 
-                if(node && node.Children && node.Children.length > 0) {
-                    this.setNodeID(node.Children[0]);
+        ready() {
+            this.handle_node_change(this.current_node);
+        },
+
+        watch: {
+            'current_node': function(node) {
+                this.handle_node_change(node);
+            }
+        },
+
+        computed: {
+            is_visible() {
+                return this.game.is_demo || !this.is_player || this.game.stage=='finished';
+            },
+
+            has_nodes() {
+                return (this.game.board.tree || []).length > 0;
+            },
+
+            current_node() {
+                if(!this.has_nodes) {
+                    return null;
+                }
+
+                var node_id = this.force_node_id;
+
+                if(node_id === false) {
+                    node_id = this.game.board.current_node_id;
+                }
+
+                return this.game.board.tree[node_id];
+            },
+
+            root_node() {
+                if(!this.has_nodes) {
+                    return;
+                }
+
+                return this.game.board.tree[0];
+            }
+        },
+
+        methods: {
+            previous_move() {
+                var node = this.current_node;
+
+                if(node && node.parent_id !== null) {
+                    this.set_node_id(node.parent_id)
+                }
+            },
+
+            next_move() {
+                if(!this.has_nodes) {
+                    return;
+                }
+
+                var node = this.current_node;
+
+                if(node && node.children && node.children.length > 0) {
+                    this.set_node_id(node.children[0]);
                 }
 
                 if(this.force_node_id == this.game.board.current_node_id) {
@@ -58,37 +118,37 @@
                 }
             },
 
-            firstMove() {
-                if(!this.hasNodes) {
+            first_move() {
+                if(!this.has_nodes) {
                     return;
                 }
 
-                this.setNodeID(0);
+                this.set_node_id(0);
             },
 
-            lastMove() {
-                if(!this.hasNodes) {
+            last_move() {
+                if(!this.has_nodes) {
                     return;
                 }
 
-                var node = this.currentNode;
+                var node = this.current_node;
 
-                while(node.Children && node.Children.length > 0) {
-                    node = this.game.board.tree[node.Children[0]];
+                while(node.children && node.children.length > 0) {
+                    node = this.game.board.tree[node.children[0]];
                 }
 
-                this.setNodeID(node.id);
+                this.set_node_id(node.id);
             },
 
-            backToGame() {
+            back_to_game() {
                 this.force_node_id = false;
             },
 
-            setNodeID(nodeID) {
-                if(this.game.is_demo && this.hasControl) {
-                    this.$http.post('/api/games/'+this.game.id+'/set-current-node', {nodeID: nodeID});
+            set_node_id(node_id) {
+                if(this.game.is_demo && this.has_control) {
+                    this.$http.post('/api/games/'+this.game.id+'/set-current-node', {node_id: node_id});
                 } else {
-                    this.force_node_id = nodeID;
+                    this.force_node_id = node_id;
 
                     if(this.force_node_id == this.game.board.current_node_id) {
                         this.force_node_id = false;
@@ -96,26 +156,26 @@
                 }
             },
 
-            handleNodeChange(node) {
+            handle_node_change(node) {
                 if(!node || !this.game.board.tree) {
                     return;
                 }
 
-                this.expandNodePath(node);
+                this.expand_node_path(node);
 
                 this.$nextTick(function() {
-                    this.scrollToNode(node);
+                    this.scroll_to_node(node);
                 });
             },
 
-            expandNodePath(node) {
-                while(node.parent_id >= 0) {
+            expand_node_path(node) {
+                while(node.parent_id !== null) {
                     this.$set('expanded.n' + node.parent_id, true);
                     node = this.game.board.tree[node.parent_id];
                 }
             },
 
-            scrollToNode(node) {
+            scroll_to_node(node) {
                 var nav = jQuery('.game-navigation');
                 var el = jQuery('#game-nav-node-' + node.id);
                 var labelH = el.find('.game-nav-node-label').first().height();
@@ -123,62 +183,6 @@
                 nav.animate({
                     scrollTop: nav[0].scrollTop + (el.offset().top - nav.offset().top) - nav.height() / 2 + labelH / 2
                 });
-            }
-        },
-
-        events: {
-            'game-tree-node': function(nodeID) {
-                this.setNodeID(nodeID);
-            },
-
-            'game-navigate': function(step) {
-                if(this.isPlayer && this.game.stage != 'finished') {
-                    return;
-                }
-
-                if(step > 0) {
-                    this.nextMove();
-                } else if(step < 0) {
-                    this.previousMove();
-                }
-            }
-        },
-
-        ready() {
-            this.handleNodeChange(this.currentNode);
-        },
-
-        watch: {
-            'currentNode': function(node) {
-                this.handleNodeChange(node);
-            }
-        },
-
-        computed: {
-            hasNodes() {
-                return (this.game.board.tree || []).length > 0;
-            },
-
-            currentNode() {
-                if(!this.hasNodes) {
-                    return null;
-                }
-
-                var nodeID = this.force_node_id;
-
-                if(nodeID === false) {
-                    nodeID = this.game.board.current_node_id;
-                }
-
-                return this.game.board.tree[nodeID];
-            },
-
-            rootNode() {
-                if(!this.hasNodes) {
-                    return;
-                }
-
-                return this.game.board.tree[0];
             }
         }
     }

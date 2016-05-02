@@ -54,14 +54,14 @@
                             <td>{{game.demo_title}}</td>
                         </template>
                         <template v-else>
-                            <td :class="{winner: game.Result.startsWith('W+')}">
+                            <td :class="{winner: game.result.startsWith('W+')}">
                                 <qi-user-context :user_id="game.White" :rating="game.WhiteRating"></qi-user-context>
                             </td>
-                            <td :class="{winner: game.Result.startsWith('B+')}">
+                            <td :class="{winner: game.result.startsWith('B+')}">
                                 <qi-user-context :user_id="game.Black" :rating="game.BlackRating"></qi-user-context>
                             </td>
                         </template>
-                        <td>{{game.Result || '-'}}</td>
+                        <td>{{game.result || '-'}}</td>
                         <td>{{game.Size}}x{{game.Size}}</td>
                         <td>{{moment(game.created_at).format('YYYY-MM-DD HH:mm')}}</td>
                         <td>

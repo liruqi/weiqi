@@ -130,7 +130,7 @@ const mutations = {
 
         if(game) {
             game.stage = 'finished';
-            game.Result = data.Result;
+            game.result = data.result;
         }
 
         state.active_games = state.active_games.filter(function(game) {
@@ -159,33 +159,33 @@ const mutations = {
             return;
         }
 
-        game.stage = data.Stage;
-        game.Result = data.Result;
-        game.timing = data.Timing;
+        game.stage = data.stage;
+        game.result = data.result;
+        game.timing = data.timing;
 
-        if(data.Node) {
+        if(data.node) {
             if(!game.board.tree) {
-                Vue.set(game.board, 'Tree', []);
+                Vue.set(game.board, 'tree', []);
             }
 
-            if (!game.board.tree[data.Node.id]) {
+            if (!game.board.tree[data.node.id]) {
                 // This value will be needed to detect if a game update created a new node.
                 // Useful for determining if a sound should be played.
-                Vue.set(game.board, 'last_inserted_node_id', data.Node.id);
-                game.board.tree.push(data.Node);
+                Vue.set(game.board, 'last_inserted_node_id', data.node.id);
+                game.board.tree.push(data.node);
             } else {
-                game.board.tree.$set(data.Node.id, data.Node);
+                game.board.tree.$set(data.node.id, data.node);
             }
 
-            game.board.current_node_id = data.Node.id;
+            game.board.current_node_id = data.node.id;
 
-            if(data.Node.parent_id >= 0) {
-                if (!game.board.tree[data.Node.parent_id].Children) {
-                    Vue.set(game.board.tree[data.Node.parent_id], 'Children', []);
+            if(data.node.parent_id !== null) {
+                if (!game.board.tree[data.node.parent_id].children) {
+                    Vue.set(game.board.tree[data.node.parent_id], 'children', []);
                 }
 
-                if(game.board.tree[data.Node.parent_id].Children.indexOf(data.Node.id) == -1) {
-                    game.board.tree[data.Node.parent_id].Children.push(data.Node.id);
+                if(game.board.tree[data.node.parent_id].children.indexOf(data.node.id) == -1) {
+                    game.board.tree[data.node.parent_id].children.push(data.node.id);
                 }
             }
         }

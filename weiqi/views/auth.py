@@ -26,9 +26,8 @@ bp = Blueprint('auth', __name__)
 
 @bp.route('/sign-up', methods=['POST'])
 def sign_up():
-    user = User(
-        display=request.form['display'],
-        email=request.form['email'])
+    user = User(display=request.form['display'],
+                email=request.form['email'])
 
     user.set_password(request.form['password'])
     _sign_up_rating(user, request.form['rank'])

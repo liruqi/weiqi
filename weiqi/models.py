@@ -84,6 +84,13 @@ class User(db.Model, UserMixin):
             'rating': self.rating,
         }
 
+    @property
+    def open_games(self):
+        return Game.query.join(Room).join(RoomUser).filter(
+            ((Game.is_demo.isnot(True)) & (Game.stage != 'finished') &
+             ((Game.black_user == self) | (Game.white_user == self))) |
+            (RoomUser.user == self))
+
 
 class Connection(db.Model):
     __tablename__ = 'connections'

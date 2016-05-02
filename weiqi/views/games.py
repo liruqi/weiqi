@@ -42,6 +42,8 @@ def game_move(game_id):
         db.session.rollback()
         raise
 
+    _emit_game_update(game)
+
     return jsonify({})
 
 
@@ -79,3 +81,13 @@ def _game_move(game, move):
     if game.board.both_passed:
         game.stage = 'counting'
         # TODO: update score
+
+
+def _emit_game_update(game):
+    emit('game_update', {
+        'game_id': game.id,
+        'stage': game.stage,
+        'result': game.result,
+        'timing': None,  # TODO: timing
+        'node': game.board.current_node.to_dict(),
+    }, room='game/'+str(game.id), namespace=None)
