@@ -72,7 +72,7 @@ class SocketHandler(WebSocketHandler):
         service_names = {s.__service_name__: s for s in self._services}
         service_class = service_names.get(service)
 
-        if not service:
+        if not service_class:
             raise ValueError('service "{}" not found'.format(service))
 
         with session() as db:
