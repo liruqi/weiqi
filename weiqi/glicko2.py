@@ -46,7 +46,6 @@ Convert back to the Glicko1 scale.
 
 import math
 from json import JSONEncoder
-from weiqi import app
 
 WIN = 1.0
 DRAW = 0.5
@@ -241,7 +240,8 @@ def new_volatility(old_vol, est_var, est_imp):
         iter += 1
 
     if iter == max_iter-1:
-        app.logger.debug("Too many iterations for volatility calculation")
+        pass
+        # logger.debug("Too many iterations for volatility calculation")
 
     new_vol = math.exp(A / 2)
 

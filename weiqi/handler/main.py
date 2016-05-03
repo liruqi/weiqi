@@ -14,11 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#from weiqi import app, init_app, db
-#from . import conftest
-#
-#app.config['TESTING'] = True
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-#
-#init_app()
-#db.create_all()
+from weiqi.handler.base import BaseHandler
+
+
+class MainHandler(BaseHandler):
+    def get(self):
+        self.render("index.html")
+
+
+class PingHandler(BaseHandler):
+    def get(self):
+        self.write('pong')

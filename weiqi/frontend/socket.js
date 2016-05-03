@@ -1,36 +1,41 @@
-import io from 'socket.io-client';
+import pako from 'pako';
 import store from './vuex/store';
 import { server_messages } from './vuex/actions';
 
 var socket;
 
 export default function configWebsocket() {
-    socket = io('http://' + document.domain + ':' + location.port, {
-        reconnection: false,
+    socket = new WebSocket('ws://' + window.location.host + '/api/socket');
+    socket.binaryType = 'arraybuffer';
 
-        // socket.io-client v1.4.5 can currently only connect via websockets
-        // see: https://github.com/miguelgrinberg/Flask-SocketIO/issues/219
-        transports: ['websocket']
-    });
+    socket.onopen = function() {
+    };
 
-    socket.on('connect', function() {
-    });
+    socket.onmessage = function(e) {
+        var data = pako.inflate(e.data, {to: 'string'});
+        var msg = JSON.parse(data);
 
-    socket.on('disconnect', function() {
+        console.log(msg);
+
+        var handler = server_messages[msg.method];
+
+        if(!handler) {
+            console.log("unhandled message: ", msg.method);
+        } else {
+            handler(store, msg.data);
+        }
+    };
+
+    socket.onclose = function() {
         jQuery("#qi-disconnected").modal("show");
-    });
-
-    Object.keys(server_messages).forEach(function(key) {
-        socket.on(key, function(data) {
-            if(key != 'pong') {
-                console.log(key);
-                console.log(data);
-            }
-            server_messages[key](store, data);
-        });
-    });
+    };
 }
 
-export function emit(topic, data) {
-    socket.emit(topic, data);
+export function send(topic, data) {
+    var msg = JSON.stringify({'topic': topic, 'data': data});
+    msg = pako.deflate(msg);
+    socket.send(msg);
+}
+
+export function request(topic, data) {
 }

@@ -17,7 +17,7 @@
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy import FuzzyText
-from weiqi import db
+from weiqi.db import session
 from weiqi.models import User, Room, RoomUser, Automatch, Game
 from weiqi.board import Board
 
@@ -25,7 +25,7 @@ from weiqi.board import Board
 class UserFactory(SQLAlchemyModelFactory):
     class Meta:
         model = User
-        sqlalchemy_session = db.session
+        sqlalchemy_session = session
 
     id = factory.Sequence(lambda n: n)
     email = FuzzyText(suffix='@test.test')
@@ -49,7 +49,7 @@ class RoomFactory(SQLAlchemyModelFactory):
 class RoomUserFactory(SQLAlchemyModelFactory):
     class Meta:
         model = RoomUser
-        sqlalchemy_session = db.session
+        sqlalchemy_session = session
 
     room = factory.SubFactory(RoomFactory)
     user = factory.SubFactory(UserFactory)
@@ -60,7 +60,7 @@ class RoomUserFactory(SQLAlchemyModelFactory):
 class AutomatchFactory(SQLAlchemyModelFactory):
     class Meta:
         model = Automatch
-        sqlalchemy_session = db.session
+        sqlalchemy_session = session
 
     user = factory.SubFactory(UserFactory, rating=1000)
     user_rating = factory.lazy_attribute(lambda o: o.user.rating)
@@ -72,7 +72,7 @@ class AutomatchFactory(SQLAlchemyModelFactory):
 class GameFactory(SQLAlchemyModelFactory):
     class Meta:
         model = Game
-        sqlalchemy_session = db.session
+        sqlalchemy_session = session
 
     room = factory.SubFactory(RoomFactory)
     is_demo = False

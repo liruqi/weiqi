@@ -14,11 +14,31 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#from weiqi import app, init_app, db
-#from . import conftest
-#
-#app.config['TESTING'] = True
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-#
-#init_app()
-#db.create_all()
+from tornado.web import RequestHandler
+from weiqi import settings
+from weiqi.db import session
+from weiqi.models import User
+
+
+class BaseHandler(RequestHandler):
+    def initialize(self, pubsub):
+        self.pubsub = pubsub
+
+    def get_current_user(self):
+        id = self.get_secure_cookie(settings.COOKIE_NAME)
+
+        if not id:
+            return None
+
+        if not self.db.query(User).get(int(id)):
+            return None
+
+        return int(id)
+
+    def query_current_user(self):
+        return self.db.query(User).get(self.current_user)
+
+    def _execute(self, *args, **kwargs):
+        with session() as db:
+            self.db = db
+            super()._execute(*args, **kwargs)

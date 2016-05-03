@@ -18,15 +18,17 @@ from datetime import datetime
 import re
 import bcrypt
 import json
-from flask_login import UserMixin
+from sqlalchemy import (Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Enum, TypeDecorator, Text,
+                        CheckConstraint)
+from sqlalchemy.orm import validates, relationship, deferred
 from sqlalchemy.orm.attributes import flag_modified
-from weiqi import db
+from weiqi.db import Base
 from weiqi.glicko2 import player_from_dict, RatingEncoder
 from weiqi.board import board_from_dict, BLACK, WHITE
 
 
-class RatingData(db.TypeDecorator):
-    impl = db.Text
+class RatingData(TypeDecorator):
+    impl = Text
 
     def process_bind_param(self, value, dialect):
         return json.dumps(value, cls=RatingEncoder)
@@ -36,28 +38,28 @@ class RatingData(db.TypeDecorator):
         return player_from_dict(data)
 
 
-class User(db.Model, UserMixin):
+class User(Base):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    email = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
 
-    display = db.Column(db.String, nullable=False)
+    display = Column(String, nullable=False)
 
-    rating = db.Column(db.Float, nullable=False, default=0)
-    rating_data = db.deferred(db.Column(RatingData, nullable=False))
+    rating = Column(Float, nullable=False, default=0)
+    rating_data = deferred(Column(RatingData, nullable=False))
 
-    is_online = db.Column(db.Boolean, nullable=False, default=False)
+    is_online = Column(Boolean, nullable=False, default=False)
 
-    rooms = db.relationship('RoomUser', back_populates='user')
-    messages = db.relationship('RoomMessage', back_populates='user')
-    connections = db.relationship('Connection', back_populates='user')
-    automatch = db.relationship('Automatch', back_populates='user')
+    rooms = relationship('RoomUser', back_populates='user')
+    messages = relationship('RoomMessage', back_populates='user')
+    connections = relationship('Connection', back_populates='user')
+    automatch = relationship('Automatch', back_populates='user')
 
     def set_password(self, pw):
         self.password = bcrypt.hashpw(pw.encode(), bcrypt.gensalt()).decode()
@@ -65,13 +67,13 @@ class User(db.Model, UserMixin):
     def check_password(self, pw):
         return bcrypt.hashpw(pw.encode(), self.password.encode()) == self.password.encode()
 
-    @db.validates('email')
+    @validates('email')
     def validate_email(self, key, val):
         if not re.match(r'^[^@]+@[^@]+\.[^@]+$', val):
             raise ValueError('invalid email address')
         return val
 
-    @db.validates('display')
+    @validates('display')
     def validate_display(self, key, val):
         if not re.match(r'^[a-zA-Z0-9_-]{2,12}$', val):
             raise ValueError('invalid display name')
@@ -84,42 +86,41 @@ class User(db.Model, UserMixin):
             'rating': self.rating,
         }
 
-    @property
-    def open_games(self):
-        return Game.query.join(Room).join(RoomUser).filter(
+    def open_games(self, db):
+        return db.query(Game).join(Room).join(RoomUser).filter(
             ((Game.is_demo.isnot(True)) & (Game.stage != 'finished') &
              ((Game.black_user == self) | (Game.white_user == self))) |
             (RoomUser.user == self))
 
 
-class Connection(db.Model):
+class Connection(Base):
     __tablename__ = 'connections'
 
-    id = db.Column(db.String, primary_key=True)
+    id = Column(String, primary_key=True)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    user_id = db.Column(db.ForeignKey('users.id'), nullable=True)
-    user = db.relationship('User', back_populates='connections')
+    user_id = Column(ForeignKey('users.id'), nullable=True)
+    user = relationship('User', back_populates='connections')
 
-    ip = db.Column(db.String)
+    ip = Column(String)
 
 
-class Room(db.Model):
+class Room(Base):
     __tablename__ = 'rooms'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    name = db.Column(db.String, nullable=False, default='')
-    type = db.Column(db.Enum('main', 'direct', 'game', name='room_type'), nullable=False)
-    is_default = db.Column(db.Boolean, nullable=False, default=False)
+    name = Column(String, nullable=False, default='')
+    type = Column(Enum('main', 'direct', 'game', name='room_type'), nullable=False)
+    is_default = Column(Boolean, nullable=False, default=False)
 
-    users = db.relationship('RoomUser', back_populates='room')
-    messages = db.relationship('RoomMessage', back_populates='room')
-    games = db.relationship('Game', back_populates='room')
+    users = relationship('RoomUser', back_populates='room')
+    messages = relationship('RoomMessage', back_populates='room')
+    games = relationship('Game', back_populates='room')
 
     def to_frontend(self):
         return {
@@ -128,26 +129,26 @@ class Room(db.Model):
             'type': self.type,
         }
 
-    @classmethod
-    def open_rooms(cls, user):
-        if not user or not user.is_authenticated:
-            return cls.query.filter_by(type='main')
-        return cls.query.join('users').filter_by(user_id=user.id)
+    @staticmethod
+    def open_rooms(db, user):
+        if not user:
+            return db.query(Room).filter_by(type='main')
+        return db.query(Room).join('users').filter_by(user_id=user.id)
 
 
-class RoomUser(db.Model):
+class RoomUser(Base):
     __tablename__ = 'room_users'
 
-    room_id = db.Column(db.ForeignKey('rooms.id'), primary_key=True)
-    user_id = db.Column(db.ForeignKey('users.id'), primary_key=True)
+    room_id = Column(ForeignKey('rooms.id'), primary_key=True)
+    user_id = Column(ForeignKey('users.id'), primary_key=True)
 
-    room = db.relationship('Room', back_populates='users')
-    user = db.relationship('User', back_populates='rooms', lazy='joined')
+    room = relationship('Room', back_populates='users')
+    user = relationship('User', back_populates='rooms', lazy='joined')
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    has_unread = db.Column(db.Boolean, nullable=False, default=False)
+    has_unread = Column(Boolean, nullable=False, default=False)
 
     def to_frontend(self):
         return {
@@ -158,24 +159,24 @@ class RoomUser(db.Model):
         }
 
 
-class RoomMessage(db.Model):
+class RoomMessage(Base):
     __tablename__ = 'room_messages'
 
-    id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    room_id = db.Column(db.ForeignKey('rooms.id'), nullable=False)
-    room = db.relationship('Room', back_populates='messages')
+    room_id = Column(ForeignKey('rooms.id'), nullable=False)
+    room = relationship('Room', back_populates='messages')
 
-    user_id = db.Column(db.ForeignKey('users.id'), nullable=False)
-    user = db.relationship('User', back_populates='messages')
+    user_id = Column(ForeignKey('users.id'), nullable=False)
+    user = relationship('User', back_populates='messages')
 
-    user_display = db.Column(db.String, nullable=False)
-    user_rating = db.Column(db.Float, nullable=False)
+    user_display = Column(String, nullable=False)
+    user_rating = Column(Float, nullable=False)
 
-    message = db.Column(db.String, nullable=False)
+    message = Column(String, nullable=False)
 
-    @db.validates('message')
+    @validates('message')
     def validate_message(self, key, val):
         if not val or not val.strip():
             raise ValueError('message cannot be empty')
@@ -193,26 +194,26 @@ class RoomMessage(db.Model):
         }
 
 
-class Automatch(db.Model):
+class Automatch(Base):
     __tablename__ = 'automatch'
 
-    id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    user_id = db.Column(db.ForeignKey('users.id'), nullable=False)
-    user = db.relationship('User', back_populates='automatch')
+    user_id = Column(ForeignKey('users.id'), nullable=False)
+    user = relationship('User', back_populates='automatch')
 
-    user_rating = db.Column(db.Float, nullable=False)
+    user_rating = Column(Float, nullable=False)
 
-    preset = db.Column(db.String, nullable=False)
-    min_rating = db.Column(db.Float, nullable=False)
-    max_rating = db.Column(db.Float, nullable=False)
+    preset = Column(String, nullable=False)
+    min_rating = Column(Float, nullable=False)
+    max_rating = Column(Float, nullable=False)
 
-    __table_args__ = (db.CheckConstraint('min_rating <= max_rating', name='rating_check'),)
+    __table_args__ = (CheckConstraint('min_rating <= max_rating', name='rating_check'),)
 
 
-class BoardData(db.TypeDecorator):
-    impl = db.Text
+class BoardData(TypeDecorator):
+    impl = Text
 
     def process_bind_param(self, value, dialect):
         return json.dumps(value.to_dict())
@@ -221,54 +222,54 @@ class BoardData(db.TypeDecorator):
         return board_from_dict(json.loads(value))
 
 
-class Game(db.Model):
+class Game(Base):
     __tablename__ = 'games'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    room_id = db.Column(db.ForeignKey('rooms.id'), nullable=False)
-    room = db.relationship('Room', back_populates='games')
+    room_id = Column(ForeignKey('rooms.id'), nullable=False)
+    room = relationship('Room', back_populates='games')
 
-    is_demo = db.Column(db.Boolean, nullable=False, default=False)
-    is_ranked = db.Column(db.Boolean, nullable=False, default=True)
+    is_demo = Column(Boolean, nullable=False, default=False)
+    is_ranked = Column(Boolean, nullable=False, default=True)
 
-    stage = db.Column(db.Enum('playing', 'counting', 'finished', name='game_stage'), nullable=False)
-    title = db.Column(db.String, nullable=False, default='')
+    stage = Column(Enum('playing', 'counting', 'finished', name='game_stage'), nullable=False)
+    title = Column(String, nullable=False, default='')
 
-    board = db.deferred(db.Column(BoardData, nullable=False))
-    komi = db.Column(db.Float, nullable=False)
+    board = deferred(Column(BoardData, nullable=False))
+    komi = Column(Float, nullable=False)
 
-    result = db.Column(db.String, nullable=False, default='')
-    result_black_confirmed = db.Column(db.String, nullable=False, default='')
-    result_white_confirmed = db.Column(db.String, nullable=False, default='')
+    result = Column(String, nullable=False, default='')
+    result_black_confirmed = Column(String, nullable=False, default='')
+    result_white_confirmed = Column(String, nullable=False, default='')
 
-    black_user_id = db.Column(db.ForeignKey('users.id'), nullable=True)
-    black_user = db.relationship('User', foreign_keys=[black_user_id])
-    black_display = db.Column(db.String, nullable=False, default='')
-    black_rating = db.Column(db.Float, nullable=True)
+    black_user_id = Column(ForeignKey('users.id'), nullable=True)
+    black_user = relationship('User', foreign_keys=[black_user_id])
+    black_display = Column(String, nullable=False, default='')
+    black_rating = Column(Float, nullable=True)
 
-    white_user_id = db.Column(db.ForeignKey('users.id'), nullable=True)
-    white_user = db.relationship('User', foreign_keys=[white_user_id])
-    white_display = db.Column(db.String, nullable=False, default='')
-    white_rating = db.Column(db.Float, nullable=True)
+    white_user_id = Column(ForeignKey('users.id'), nullable=True)
+    white_user = relationship('User', foreign_keys=[white_user_id])
+    white_display = Column(String, nullable=False, default='')
+    white_rating = Column(Float, nullable=True)
 
-    demo_owner_id = db.Column(db.ForeignKey('users.id'), nullable=True)
-    demo_owner = db.relationship('User', foreign_keys=[demo_owner_id])
-    demo_owner_display = db.Column(db.String, nullable=False, default='')
-    demo_owner_rating = db.Column(db.Float, nullable=True)
+    demo_owner_id = Column(ForeignKey('users.id'), nullable=True)
+    demo_owner = relationship('User', foreign_keys=[demo_owner_id])
+    demo_owner_display = Column(String, nullable=False, default='')
+    demo_owner_rating = Column(Float, nullable=True)
 
-    demo_control_id = db.Column(db.ForeignKey('users.id'), nullable=True)
-    demo_control = db.relationship('User', foreign_keys=[demo_control_id])
-    demo_control_display = db.Column(db.String, nullable=False, default='')
+    demo_control_id = Column(ForeignKey('users.id'), nullable=True)
+    demo_control = relationship('User', foreign_keys=[demo_control_id])
+    demo_control_display = Column(String, nullable=False, default='')
 
     __table_args__ = (
-        db.CheckConstraint('NOT is_ranked OR NOT is_demo'),
-        db.CheckConstraint('is_demo OR black_user_id IS NOT NULL'),
-        db.CheckConstraint('is_demo OR white_user_id IS NOT NULL'),
-        db.CheckConstraint('NOT is_demo OR demo_owner_id IS NOT NULL'),
+        CheckConstraint('NOT is_ranked OR NOT is_demo'),
+        CheckConstraint('is_demo OR black_user_id IS NOT NULL'),
+        CheckConstraint('is_demo OR white_user_id IS NOT NULL'),
+        CheckConstraint('NOT is_demo OR demo_owner_id IS NOT NULL'),
     )
 
     @property

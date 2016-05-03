@@ -1,10 +1,11 @@
-from flask import Flask
-from flask_socketio import SocketIO
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_login import LoginManager
-from . import settings, cache_bust
+#from flask import Flask
+#from flask_socketio import SocketIO
+#from flask_sqlalchemy import SQLAlchemy
+#from flask_migrate import Migrate
+#from flask_login import LoginManager
+#from . import settings, cache_bust
 
+"""
 app = Flask(__name__)
 app.config.from_object('weiqi.settings')
 app.secret_key = settings.SECRET_KEY
@@ -25,3 +26,4 @@ def init_app():
     cache_bust.init_cache_buster(app)
 
     app.app_context().push()
+"""

@@ -41,8 +41,7 @@ gulp.task('sass:watch', function() {
 
 gulp.task('server', function() {
     var spawn = require('child_process').spawn;
-    //spawn('python', ['-m', 'tornado.autoreload', 'main.py'], {stdio: 'inherit'})
-    spawn('./manage.py', ['runserver'], {stdio: 'inherit'})
+    spawn('python', ['-m', 'tornado.autoreload', 'main.py'], {stdio: 'inherit'})
 });
 
 gulp.task('testjs', function(done) {
