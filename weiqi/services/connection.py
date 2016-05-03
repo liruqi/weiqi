@@ -19,6 +19,8 @@ from weiqi.models import Game, Room, RoomUser, Connection
 
 
 class ConnectionService(BaseService):
+    __service_name__ = 'connection'
+
     @BaseService.register
     def connect(self):
         self.socket.send('connection_data', self._connection_data())

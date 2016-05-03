@@ -27,8 +27,9 @@ from weiqi.models import User
 class SocketHandler(WebSocketHandler):
     def initialize(self, pubsub):
         self.id = str(uuid.uuid4())
-        self.subs = set()
         self.pubsub = pubsub
+        self._subs = set()
+        self._services = [ConnectionService]
 
     def open(self):
         self._execute_service('connection', 'connect')
@@ -37,20 +38,23 @@ class SocketHandler(WebSocketHandler):
         pass
 
     def on_close(self):
-        for topic in self.subs:
+        for topic in self._subs:
             self.pubsub.unsubscribe(topic, self._on_pubsub)
 
         self._execute_service('connection', 'disconnect')
 
     def subscribe(self, topic):
-        if topic not in self.subs:
+        if topic not in self._subs:
             self.pubsub.subscribe(topic, self._on_pubsub)
-            self.subs.add(topic)
+            self._subs.add(topic)
 
     def unsubscribe(self, topic):
-        if topic in self.subs:
+        if topic in self._subs:
             self.pubsub.unsubscribe(topic, self._on_pubsub)
-            self.subs.remove(topic)
+            self._subs.remove(topic)
+
+    def is_subscribed(self, topic):
+        return topic in self._subs
 
     def publish(self, topic, data):
         self.pubsub.publish(topic, data)
@@ -65,9 +69,8 @@ class SocketHandler(WebSocketHandler):
         self.send(topic, data)
 
     def _execute_service(self, service, method, data=None):
-        service_class = {
-            'connection': ConnectionService,
-        }.get(service)
+        service_names = {s.__service_name__: s for s in self._services}
+        service_class = service_names.get(service)
 
         if not service:
             raise ValueError('service "{}" not found'.format(service))
