@@ -14,46 +14,41 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from flask_login import current_user
-import weiqi
+from weiqi.services import PlayService
 from weiqi.models import Automatch, Game
-from weiqi.test.utils import login
 from weiqi.test.factories import UserFactory, AutomatchFactory
 
 
-def test_automatch_inserting(app):
+def test_automatch_inserting(db, socket):
     user = UserFactory(rating=300)
-    login(app, user)
 
-    res = app.post('/api/play/automatch', data={'preset': 'fast', 'max_hc': 0})
+    svc = PlayService(db, socket, user)
+    svc.execute('automatch', {'preset': 'fast', 'max_hc': 0})
 
-    assert res.status_code == 200
-    assert Automatch.query.count() == 1
+    assert db.query(Automatch).count() == 1
 
-    item = Automatch.query.first()
-    assert item.user == current_user
-    assert item.user_rating == current_user.rating
+    item = db.query(Automatch).first()
+    assert item.user == user
+    assert item.user_rating == user.rating
     assert item.preset == 'fast'
     assert item.min_rating == 300
     assert item.max_rating == 399
 
 
-def test_automatch_create_game(app):
+def test_automatch_create_game(db, socket):
     user = UserFactory(rating=1500)
     other = UserFactory(rating=1600)
     AutomatchFactory(user=other, user_rating=1600, user__rating=1600, min_rating=1500, max_rating=1700)
-    login(app, user)
 
-    client = weiqi.socketio.test_client(weiqi.app)
+    socket.subscribe('game_started')
 
-    res = app.post('/api/play/automatch', data={'preset': 'fast', 'max_hc': 1})
-    recv = client.get_received()
+    svc = PlayService(db, socket, user)
+    svc.execute('automatch', {'preset': 'fast', 'max_hc': 1})
 
-    assert res.status_code == 200
-    assert Automatch.query.count() == 0
-    assert Game.query.count() == 1
+    assert db.query(Automatch).count() == 0
+    assert db.query(Game).count() == 1
 
-    game = Game.query.first()
+    game = db.query(Game).first()
     assert not game.is_demo
     assert game.is_ranked
     assert game.board is not None
@@ -74,6 +69,7 @@ def test_automatch_create_game(app):
     assert game.white_rating in [user.rating, other.rating]
     assert game.black_rating != game.white_rating
 
-    assert len(recv) == 2
-    assert recv[1]['name'] == 'game_started'
-    assert recv[1]['args'][0] == game.to_frontend()
+    print(socket.sent_messages)
+    assert len(socket.sent_messages) == 1
+    assert socket.sent_messages[0]['method'] == 'game_started'
+    assert socket.sent_messages[0]['data'] == game.to_frontend()

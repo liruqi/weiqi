@@ -20,22 +20,33 @@ import json
 import uuid
 from weiqi import settings
 from weiqi.db import session
-from weiqi.services import ConnectionService
+from weiqi.services import ConnectionService, RoomService, GameService, PlayService
 from weiqi.models import User
 
 
-class SocketHandler(WebSocketHandler):
+class SocketMixin:
     def initialize(self, pubsub):
         self.id = str(uuid.uuid4())
         self.pubsub = pubsub
         self._subs = set()
-        self._services = [ConnectionService]
+        self._services = [ConnectionService, RoomService, GameService, PlayService]
+        self._compress = True
 
     def open(self):
         self._execute_service('connection', 'connect')
 
-    def on_message(self, message):
-        pass
+    def on_message(self, data):
+        if self._compress:
+            msg = json.loads(zlib.decompress(data).decode())
+        else:
+            msg = json.loads(data)
+
+        service, method = msg.get('method').split('.', 1)
+
+        res = self._execute_service(service, method, msg.get('data'))
+
+        if msg.get('id') is not None:
+            self._send_data({'method': 'response', 'id': msg.get('id'), 'data': res})
 
     def on_close(self):
         for topic in self._subs:
@@ -60,12 +71,19 @@ class SocketHandler(WebSocketHandler):
         self.pubsub.publish(topic, data)
 
     def send(self, topic, data):
-        message = {'method': topic, 'data': data}
-        message = json.dumps(message)
-        message = zlib.compress(message.encode())
-        self.write_message(message, binary=True)
+        self._send_data({'method': topic, 'data': data})
+
+    def _send_data(self, data):
+        message = data
+
+        if self._compress:
+            message = json.dumps(data)
+            message = zlib.compress(message.encode())
+
+        self.write_message(message, binary=self._compress)
 
     def _on_pubsub(self, topic, data):
+        topic = topic.split('/')[0]
         self.send(topic, data)
 
     def _execute_service(self, service, method, data=None):
@@ -83,4 +101,8 @@ class SocketHandler(WebSocketHandler):
                 user = db.query(User).get(int(user_id))
 
             svc = service_class(db, self, user)
-            svc.execute(method, data)
+            return svc.execute(method, data)
+
+
+class SocketHandler(SocketMixin, WebSocketHandler):
+    pass

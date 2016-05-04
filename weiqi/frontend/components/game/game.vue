@@ -63,6 +63,7 @@
     import { Howl } from 'howler';
     import moment from 'moment';
     import { open_game, update_game_time, clear_game_update } from './../../vuex/actions';
+    import * as socket from '../../socket';
 
     export default {
         mixins: [require('./../../mixins/title.vue')],
@@ -106,6 +107,10 @@
                 return this.game.white_display + ' - ' + this.game.black_display;
             },
 
+            game_id() {
+                return this.$route.params.game_id;
+            },
+
             game() {
                 var empty = {
                     id: false,
@@ -118,7 +123,7 @@
                     }
                 };
 
-                return this.open_games.find(function(game) { return game.id == this.$route.params.game_id; }.bind(this)) || empty;
+                return this.open_games.find(function(game) { return game.id == this.game_id; }.bind(this)) || empty;
             },
 
             is_player() {
@@ -177,13 +182,13 @@
                 }
             },
 
-            'game_has_update[$route.params.game_id]': function() {
+            'game_has_update[game_id]': function() {
                 this.clear_update();
             }
         },
 
         ready() {
-            this.open_game(this.$route.params.game_id);
+            this.open_game(this.game_id);
             this.clear_update();
             this.timer = setInterval(this.update_timer, 200);
             this.update_timer();
@@ -198,14 +203,14 @@
                 if(this.game.is_demo && this.has_control) {
                     switch(this.demo_tool) {
                         case 'move':
-                            this.$http.post('/api/games/' + this.$route.params.game_id + '/move', {move: coord});
+                            socket.send('games.move', {'game_id': this.game_id, 'move': coord});
                             break;
                     }
                 } else if(!this.game.is_demo && this.is_player) {
                     if (this.game.stage == 'counting') {
-                        this.$http.post('/api/games/' + this.$route.params.game_id + '/toggle-marked-dead', {coord: coord});
+                        socket.send('games.toggle_marked_dead', {'game_id': this.game_id, 'coord': coord});
                     } else if (this.game.stage != 'finished') {
-                        this.$http.post('/api/games/' + this.$route.params.game_id + '/move', {move: coord});
+                        socket.send('games.move', {'game_id': this.game_id, 'move': coord});
                     }
                 }
             },
@@ -225,7 +230,7 @@
 
         methods: {
             clear_update() {
-                this.clear_game_update(this.$route.params.game_id);
+                this.clear_game_update(this.game_id);
             },
 
             update_timer() {
@@ -267,7 +272,7 @@
                     message: this.$t('game.confirm_pass'),
                     callback: function (res) {
                         if (res) {
-                            this.$http.post('/api/games/' + this.$route.params.game_id + '/move', {move: -1});
+                            this.$http.post('/api/games/' + this.game_id + '/move', {move: -1});
                         }
                     }.bind(this)
                 });
@@ -284,14 +289,14 @@
                     message: this.$t('game.confirm_resign'),
                     callback: function(res) {
                         if(res) {
-                            this.$http.post('/api/games/'+this.$route.params.game_id+'/move', {move: -2});
+                            this.$http.post('/api/games/'+this.game_id+'/move', {move: -2});
                         }
                     }.bind(this)
                 });
             },
 
             confirmScore() {
-                this.$http.post('/api/games/'+this.$route.params.game_id+'/confirm-score', {result: this.game.result});
+                this.$http.post('/api/games/'+this.game_id+'/confirm-score', {result: this.game.result});
             }
         }
     }

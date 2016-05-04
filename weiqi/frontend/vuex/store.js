@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import moment from 'moment';
-import { emit } from '../socket';
+import * as socket from '../socket';
 
 Vue.use(Vuex);
 
@@ -251,12 +251,11 @@ const mutations = {
             return;
         }
 
-        emit('open_game', game_id);
-        //Vue.http.post('/api/games/'+game_id+'/open');
+        socket.send('games.open', {'game_id': game_id});
     },
 
     CLOSE_GAME(state, game_id) {
-        Vue.http.post('/api/games/'+game_id+'/close');
+        socket.send('games.close', {'game_id': game_id});
 
         state.open_games = state.open_games.filter(function(game) {
             return game.id != game_id;
@@ -268,8 +267,8 @@ const mutations = {
             return;
         }
 
-        Vue.http.get('/api/rooms/'+room_id+'/users').then(function(res) {
-            Vue.set(state.room_users, room_id, res.data.users);
+        socket.send('rooms.users', {'room_id': room_id}, function(data) {
+            Vue.set(state.room_users, room_id, data.users);
         });
     },
     

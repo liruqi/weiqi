@@ -18,8 +18,8 @@ import time
 import tornado.web
 from weiqi import settings
 from weiqi.db import create_db, session
-from weiqi.models import Connection
-from weiqi.handler import auth, socket, main as main_handler, room
+from weiqi.models import Connection, Automatch, User
+from weiqi.handler import auth, socket, index
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import Ampq
 
@@ -33,18 +33,16 @@ class Application(tornado.web.Application):
             return route, cls, dict(pubsub=self.pubsub)
 
         handlers = [
-            handler(r'/api/ping', main_handler.PingHandler),
+            handler(r'/api/ping', index.PingHandler),
             handler(r'/api/socket', socket.SocketHandler),
             handler(r'/api/auth/email-exists', auth.EmailExistsHandler),
             handler(r'/api/auth/sign-up', auth.SignUpHandler),
             handler(r'/api/auth/sign-in', auth.SignInHandler),
             handler(r'/api/auth/logout', auth.LogoutHandler),
 
-            handler(r'/api/rooms/(.*?)/message', room.MessageHandler),
-            handler(r'/api/rooms/(.*?)/users', room.UsersHandler),
-            handler(r'/api/rooms/(.*?)/mark-read', room.MarkReadHandler),
+            handler(r'/api/users/(.*?)/avatar', index.AvatarHandler),
 
-            handler(r'.*', main_handler.MainHandler),
+            handler(r'.*', index.IndexHandler),
         ]
 
         super().__init__(
@@ -75,3 +73,5 @@ def _cleanup_db():
     """Cleans DB state before starting the server."""
     with session() as db:
         db.query(Connection).delete()
+        db.query(Automatch).delete()
+        db.query(User).update({'is_online': False})

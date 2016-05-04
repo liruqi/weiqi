@@ -15,24 +15,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi.test.base import BaseAsyncHTTPTestCase
-from weiqi.db import session
+from weiqi.test import session
+from weiqi.test.factories import RoomFactory
 from weiqi.models import User
+from weiqi.rating import min_rating
 
 
 class TestSignUp(BaseAsyncHTTPTestCase):
     def test_sign_up(self):
+        RoomFactory(is_default=False)
+        room = RoomFactory(is_default=True)
+
         res = self.post('/api/auth/sign-up', {
             'display': 'display',
             'email': 'test@test.test',
-            'rating': 100,
+            'rank': '3k',
             'password': 'pw',
         })
         self.assertEqual(res.code, 200)
 
-        with session() as db:
-            user = db.query(User).one()
+        user = session.query(User).one()
 
-            self.assertEqual(user.display, 'display')
-            self.assertEqual(user.email, 'test@test.test')
-            self.assertEqual(user.rating, 100)
-            self.assertTrue(user.check_password('pw'))
+        self.assertEqual(user.display, 'display')
+        self.assertEqual(user.email, 'test@test.test')
+        self.assertEqual(user.rating, min_rating('3k'))
+        self.assertTrue(user.check_password('pw'))
+        self.assertIsNotNone(user.rating_data)
+        self.assertEqual(user.rating_data.rating, min_rating('3k'))
+
+        self.assertEqual(len(user.rooms), 1)
+        self.assertEqual(user.rooms[0].room_id, room.id)

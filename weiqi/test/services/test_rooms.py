@@ -14,55 +14,60 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.test.utils import get_json, login
+import pytest
 from weiqi.test.factories import RoomFactory, RoomUserFactory
+from weiqi.services import RoomService, ServiceError
+from weiqi.models import User, RoomMessage
 
 
-def test_room_users(app):
+def test_room_users(db, socket):
     ru = RoomUserFactory()
+    svc = RoomService(db, socket, ru.user)
+    data = svc.execute('users', {'room_id': ru.room_id})
 
-    res, data = get_json(app, '/api/rooms/'+str(ru.room.id)+'/users')
-
-    assert res.status_code == 200
     assert data.get('users') is not None
     assert len(data.get('users')) == 1
 
 
-def test_room_users_offline(app):
+def test_room_users_offline(db, socket):
     room = RoomFactory()
     ru = RoomUserFactory(room=room, user__is_online=True)
     RoomUserFactory(room=room, user__is_online=False)
     ru2 = RoomUserFactory(room=room, user__is_online=True)
 
-    res, data = get_json(app, '/api/rooms/'+str(room.id)+'/users')
+    svc = RoomService(db, socket, ru.user)
+    data = svc.execute('users', {'room_id': ru.room_id})
 
     users = data.get('users')
     user_ids = [u['user_id'] for u in users]
 
-    assert res.status_code == 200
     assert users is not None
     assert len(users) == 2
     assert ru.user_id in user_ids
     assert ru2.user_id in user_ids
 
 
-def test_message(app):
+def test_message(db, socket):
     ru = RoomUserFactory()
-    login(app, ru.user)
+    svc = RoomService(db, socket, ru.user)
+    svc.execute('message', {'room_id': ru.room_id, 'message': 'test'})
 
-    res = app.post('/api/rooms/'+str(ru.room_id)+'/message', data={'message': 'test'})
+    assert db.query(RoomMessage).count() == 1
 
-    assert res.status_code == 200
-    assert len(ru.room.messages) == 1
+    msg = db.query(RoomMessage).first()
+    assert msg.message == 'test'
+    assert msg.user == ru.user
+    assert msg.room == ru.room
 
 
-def test_message_not_in_room(app):
+def test_message_not_in_room(db, socket):
     room = RoomFactory()
     ru = RoomUserFactory()
-    login(app, ru.user)
 
-    res = app.post('/api/rooms/'+str(room.id)+'/message', data={'message': 'test'})
+    svc = RoomService(db, socket, ru.user)
 
-    assert res.status_code == 404
+    with pytest.raises(ServiceError):
+        svc.execute('message', {'room_id': room.id, 'message': 'test'})
+
     assert len(ru.room.messages) == 0
     assert len(room.messages) == 0

@@ -15,28 +15,38 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
-from weiqi import db
+from weiqi.message.pubsub import PubSub
+from weiqi.message.broker import DummyBroker
+from weiqi.handler.socket import SocketMixin
+from weiqi.test import session
 from weiqi.models import User, Room, RoomMessage, RoomUser, Connection, Automatch, Game
 
 
 @pytest.fixture
-def app(request):
-    from weiqi import app
-    client = app.test_client()
-    client.__enter__()
+def socket():
+    socket = DummySocket()
+    socket.initialize(PubSub(DummyBroker()))
+    return socket
 
-    RoomUser.query.delete()
-    RoomMessage.query.delete()
-    Connection.query.delete()
-    Room.query.delete()
-    User.query.delete()
-    Automatch.query.delete()
-    Game.query.delete()
 
-    db.session.commit()
+@pytest.fixture
+def db():
+    session.query(User).delete()
+    session.query(RoomUser).delete()
+    session.query(RoomMessage).delete()
+    session.query(Connection).delete()
+    session.query(Room).delete()
+    session.query(User).delete()
+    session.query(Automatch).delete()
+    session.query(Game).delete()
+    return session
 
-    def cleanup():
-        client.__exit__(None, None, None)
 
-    request.addfinalizer(cleanup)
-    return client
+class DummySocket(SocketMixin):
+    def initialize(self, pubsub):
+        super().initialize(pubsub)
+        self.sent_messages = []
+        self._compress = False
+
+    def write_message(self, msg, *args, **kwargs):
+        self.sent_messages.append(msg)

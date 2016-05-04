@@ -14,5 +14,33 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class RoomService:
-    pass
+from weiqi.services import BaseService
+from weiqi.models import Room, RoomMessage, RoomUser
+
+
+class RoomService(BaseService):
+    __service_name__ = 'rooms'
+
+    @BaseService.authenticated
+    @BaseService.register
+    def message(self, room_id, message):
+        ru = self.db.query(RoomUser).filter_by(user=self.user, room_id=room_id).one()
+
+        msg = RoomMessage(
+            room=ru.room,
+            user=self.user,
+            user_display=self.user.display,
+            user_rating=self.user.rating,
+            message=message)
+
+        self.db.add(msg)
+        self.db.commit()
+
+        self.socket.publish('room_message/'+str(room_id), msg.to_frontend())
+
+    @BaseService.register
+    def users(self, room_id):
+        room = self.db.query(Room).get(room_id)
+        query = self.db.query(RoomUser).filter_by(room_id=room.id).join('user').filter_by(is_online=True)
+
+        return {'users': [ru.to_frontend() for ru in query]}

@@ -24,6 +24,10 @@ class ConnectionService(BaseService):
     @BaseService.register
     def connect(self):
         self.socket.send('connection_data', self._connection_data())
+
+        self.socket.subscribe('game_started')
+        self.socket.subscribe('game_finished')
+
         self._join_open_rooms_and_games()
         self._insert_connection()
         self._update_status()
@@ -75,10 +79,13 @@ class ConnectionService(BaseService):
 
     def _join_open_rooms_and_games(self):
         for room in Room.open_rooms(self.db, self.user):
-            self.socket.subscribe('room/'+str(room.id))
+            self.socket.subscribe('room_message/'+str(room.id))
+            self.socket.subscribe('room_user/'+str(room.id))
+            self.socket.subscribe('room_user_left/'+str(room.id))
 
             if room.type == 'game':
-                self.socket.subscribe('game/'+str(room.games[0].id))
+                self.socket.subscribe('game_data/'+str(room.games[0].id))
+                self.socket.subscribe('game_update/'+str(room.games[0].id))
 
     def _join_room_user(self, room_id):
         self.socket.subscribe('room/'+str(room_id))

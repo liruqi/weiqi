@@ -14,37 +14,37 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.test.utils import login
+import pytest
+from weiqi.services import GameService, ServiceError
 from weiqi.test.factories import GameFactory
 from weiqi.board import BLACK, WHITE, EMPTY
 
 
-def test_move(app):
+def test_move(db, socket):
     game = GameFactory()
-    login(app, game.black_user)
 
-    res = app.post('/api/games/'+str(game.id)+'/move', data={'move': 30})
+    svc = GameService(db, socket, game.black_user)
+    svc.execute('move', {'game_id': game.id, 'move': 30})
 
-    assert res.status_code == 200
     assert game.board.at(30) == BLACK
     assert game.board.current == WHITE
 
 
-def test_move_current_color(app):
+def test_move_current_color(db, socket):
     game = GameFactory()
-    login(app, game.white_user)
+    svc = GameService(db, socket, game.white_user)
 
-    res = app.post('/api/games/'+str(game.id)+'/move', data={'move': 30})
+    with pytest.raises(ServiceError):
+        svc.execute('move', {'game_id': game.id, 'move': 30})
 
-    assert res.status_code == 403
     assert game.board.at(30) == EMPTY
 
 
-def test_move_finished(app):
+def test_move_finished(db, socket):
     game = GameFactory(stage='finished')
-    login(app, game.black_user)
+    svc = GameService(db, socket, game.black_user)
 
-    res = app.post('/api/games/'+str(game.id)+'/move', data={'move': 30})
+    with pytest.raises(ServiceError):
+        svc.execute('move', {'game_id': game.id, 'move': 30})
 
-    assert res.status_code == 403
     assert game.board.at(30) == EMPTY

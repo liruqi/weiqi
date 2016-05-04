@@ -14,7 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from tornado.web import HTTPError
 from weiqi.db import Session
+
+
+class ServiceError(Exception):
+    pass
 
 
 class BaseService:
@@ -36,11 +41,22 @@ class BaseService:
         cls._methods[func.__name__] = func
         return func
 
+    @classmethod
+    def authenticated(cls, func):
+        def inner(self, *args, **kwargs):
+            if not self.user:
+                raise HTTPError(403)
+            return func(self, *args, **kwargs)
+        return inner
+
     def execute(self, method, data=None):
         if method not in self._methods:
-            raise ValueError('invalid method')
+            raise ServiceError('invalid method "{}"'.format(method))
 
-        self._methods[method](self, **(data or {}))
+        try:
+            return self._methods[method](self, **(data or {}))
+        except Exception as e:
+            raise ServiceError('method failed to execute') from e
 
     def close(self):
         if self._close_session:

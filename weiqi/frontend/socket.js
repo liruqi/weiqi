@@ -3,6 +3,8 @@ import store from './vuex/store';
 import { server_messages } from './vuex/actions';
 
 var socket;
+var message_counter = 0;
+var request_handler = {};
 
 export default function configWebsocket() {
     socket = new WebSocket('ws://' + window.location.host + '/api/socket');
@@ -14,15 +16,26 @@ export default function configWebsocket() {
     socket.onmessage = function(e) {
         var data = pako.inflate(e.data, {to: 'string'});
         var msg = JSON.parse(data);
+        var handler;
 
         console.log(msg);
 
-        var handler = server_messages[msg.method];
-
-        if(!handler) {
-            console.log("unhandled message: ", msg.method);
+        if(msg.method == 'response') {
+            handler = request_handler[msg.id];
+            if(handler) {
+                handler(msg.data);
+                delete request_handler[msg.id];
+            } else {
+                console.log('got response for unknown id: ', msg.id);
+            }
         } else {
-            handler(store, msg.data);
+            handler = server_messages[msg.method];
+
+            if (!handler) {
+                console.log("unhandled message: ", msg.method);
+            } else {
+                handler(store, msg.data);
+            }
         }
     };
 
@@ -31,11 +44,16 @@ export default function configWebsocket() {
     };
 }
 
-export function send(topic, data) {
-    var msg = JSON.stringify({'topic': topic, 'data': data});
+export function send(method, data, success) {
+    message_counter += 1;
+    var msg = {'method': method, 'data': data};
+
+    if(success) {
+        msg.id = message_counter;
+        request_handler[msg.id] = success;
+    }
+
+    msg = JSON.stringify(msg);
     msg = pako.deflate(msg);
     socket.send(msg);
-}
-
-export function request(topic, data) {
 }

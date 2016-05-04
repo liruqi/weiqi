@@ -23,9 +23,9 @@ DEBUG = True
 SECRET = b'j$\x1eM\xe2K\xda\xc0zndD\x80\x10\xc0\x8c\xba\xa1\xaeC\x01y\xe7\xe1'
 COOKIE_NAME = 'weiqi'
 
-TEMPLATE_PATH = os.path.join(BASE_DIR, 'weiqi', 'templates')
-STATIC_PATH = os.path.join(BASE_DIR, 'weiqi', 'static')
+TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
+STATIC_PATH = os.path.join(BASE_DIR, 'static')
 
 LISTEN_PORT = 8080
 DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
-AMPQ_URL = 'amqp://guest:guest@localhost:5672/'
+AMPQ_URL = 'amqp://guest:guest@127.0.0.1:5672/'

@@ -55,6 +55,7 @@
 <script>
     import moment from 'moment';
     import { clear_room_update } from '../../vuex/actions';
+    import * as socket from '../../socket';
 
     export default {
         props: ['room_id', 'title', 'show_only_user_ids'],
@@ -114,10 +115,7 @@
 
         methods: {
             send_message() {
-                this.$http.post('/api/rooms/'+this.room_id+'/message', {
-                    message: this.message
-                });
-
+                socket.send('rooms.message', {'room_id': this.room_id, 'message': this.message});
                 this.message = '';
             },
 

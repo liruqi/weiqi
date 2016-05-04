@@ -24,7 +24,7 @@ from weiqi.db import create_db, create_schema
 
 
 def all():
-    return unittest.defaultTestLoader.loadTestsFromName('weiqi.test.handler.test_auth')
+    return unittest.defaultTestLoader.loadTestsFromName('weiqi.test.services.test_rooms')
     #return unittest.defaultTestLoader.discover(os.path.join('weiqi', 'test'), pattern='*.py')
 
 

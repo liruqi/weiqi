@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .base import BaseService
+from .base import BaseService, ServiceError
 from .connection import ConnectionService
 from .rooms import RoomService
+from .games import GameService
+from .play import PlayService

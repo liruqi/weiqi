@@ -14,13 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from flask import Blueprint, send_file
+from weiqi.handler.base import BaseHandler
 from weiqi.identicon import generate_identicon
 
-bp = Blueprint('users', __name__)
+
+class IndexHandler(BaseHandler):
+    def get(self):
+        self.render("index.html")
 
 
-@bp.route('/<user_id>/avatar')
-def avatar(user_id):
-    identicon = generate_identicon(user_id.encode())
-    return send_file(identicon, mimetype='image/png', cache_timeout=3600*24)
+class PingHandler(BaseHandler):
+    def get(self):
+        self.write('pong')
+
+
+class AvatarHandler(BaseHandler):
+    def get(self, user_id):
+        identicon = generate_identicon(user_id.encode())
+
+        self.set_header('Content-Type', 'image/png')
+        self.write(identicon.read())

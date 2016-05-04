@@ -22,13 +22,13 @@ gulp.task('scripts', function() {
         .pipe(source('all.js'))
         //.pipe(buffer())
         //.pipe(uglify())
-        .pipe(gulp.dest('./weiqi/static/dist'));
+        .pipe(gulp.dest('./static/dist'));
 });
 
 gulp.task('sass', function() {
     return gulp.src('./weiqi/frontend/css/**/*.scss')
         .pipe(sass())
-        .pipe(gulp.dest('./weiqi/static/dist'))
+        .pipe(gulp.dest('./static/dist'))
 });
 
 gulp.task('scripts:watch', function() {
