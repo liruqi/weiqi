@@ -9,7 +9,8 @@ export const server_messages = {
     'game_finished': make_action('MSG_GAME_FINISHED'),
     'game_data': make_action('MSG_GAME_DATA'),
     'game_update': make_action('MSG_GAME_UPDATE'),
-    'load_direct_room': make_action('MSG_LOAD_DIRECT_ROOM')
+    'load_direct_room': make_action('MSG_LOAD_DIRECT_ROOM'),
+    'direct_message': make_action('MSG_DIRECT_MESSAGE'),
 };
 
 export const update_route = make_action('UPDATE_ROUTE');

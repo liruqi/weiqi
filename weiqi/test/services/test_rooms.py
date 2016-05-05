@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
-from weiqi.test.factories import RoomFactory, RoomUserFactory
+from weiqi.test.factories import RoomFactory, RoomUserFactory, UserFactory
 from weiqi.services import RoomService, ServiceError
-from weiqi.models import User, RoomMessage
+from weiqi.models import User, RoomMessage, Room, RoomUser
 
 
 def test_room_users(db, socket):
@@ -69,5 +69,48 @@ def test_message_not_in_room(db, socket):
     with pytest.raises(ServiceError):
         svc.execute('message', {'room_id': room.id, 'message': 'test'})
 
-    assert len(ru.room.messages) == 0
-    assert len(room.messages) == 0
+    assert len(ru.room.messages.all()) == 0
+    assert len(room.messages.all()) == 0
+
+
+def test_open_direct(db, socket):
+    user = UserFactory()
+    other = UserFactory()
+
+    svc = RoomService(db, socket, user)
+    direct = svc.execute('open_direct', {'user_id': other.id})
+
+    assert db.query(Room).count() == 1
+    room = db.query(Room).first()
+    assert len(room.users.all()) == 2
+    assert set(u.user for u in room.users) == {user, other}
+
+    svc = RoomService(db, socket, other)
+    other_direct = svc.open_direct(user.id)
+    assert db.query(Room).count() == 1
+    other_room = db.query(Room).first()
+    assert other_room == room
+
+    assert direct['room'] == other_direct['room']
+
+
+def test_message_direct(db, socket):
+    user = UserFactory()
+    other = UserFactory()
+    svc = RoomService(db, socket, user)
+    socket.subscribe('direct_message/'+str(user.id))
+    socket.subscribe('direct_message/'+str(other.id))
+
+    svc.open_direct(other.id)
+    room = db.query(Room).first()
+
+    svc.execute('message', {'room_id': room.id, 'message': 'test'})
+
+    assert db.query(RoomMessage).count() == 1
+    assert len(socket.sent_messages) == 2
+    assert socket.sent_messages[0]['method'] == 'direct_message'
+    assert socket.sent_messages[0]['data']['room_id'] == room.id
+    assert socket.sent_messages[1]['method'] == 'direct_message'
+    assert socket.sent_messages[1]['data']['room_id'] == room.id
+
+    assert db.query(RoomUser).filter_by(user=other, room=room).first().has_unread

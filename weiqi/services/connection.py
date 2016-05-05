@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi.services import BaseService, UserService
-from weiqi.models import Game, Room, RoomUser, Connection
+from weiqi.models import Game, Room, RoomUser, Connection, User
+from weiqi import settings
 
 
 class ConnectionService(BaseService):
@@ -27,6 +28,9 @@ class ConnectionService(BaseService):
 
         self.socket.subscribe('game_started')
         self.socket.subscribe('game_finished')
+
+        if self.user:
+            self.socket.subscribe('direct_message/'+str(self.user.id))
 
         self._join_open_rooms_and_games()
         self._insert_connection()
@@ -56,6 +60,7 @@ class ConnectionService(BaseService):
 
         data.update(self._connection_data_rooms())
         data.update(self._connection_data_games())
+        data.update(self._connection_data_direct_rooms())
 
         return data
 
@@ -76,6 +81,31 @@ class ConnectionService(BaseService):
         return {
             'open_games': [g.to_frontend(full=True) for g in self.user.open_games(self.db)]
         }
+
+    def _connection_data_direct_rooms(self):
+        if not self.user:
+            return {}
+
+        direct = []
+
+        query = self.db.query(RoomUser).join(Room)
+        query = query.filter((Room.type == 'direct') & (RoomUser.user == self.user))
+        query = query.limit(settings.DIRECT_ROOMS_LIMIT)
+
+        for ru in query:
+            other = self.db.query(RoomUser).filter((RoomUser.room_id == ru.room_id) &
+                                                   (RoomUser.user != self.user)).first()
+            direct.append({
+                'other_user_id': other.user_id,
+                'other_display': other.user.display,
+                'is_online': other.user.is_online,
+                'is_active': True,
+                'has_unread': ru.has_unread,
+                'room': ru.room.to_frontend(),
+                'room_logs': [m.to_frontend() for m in ru.room.messages.limit(settings.ROOM_MESSAGES_LIMIT)]
+            })
+
+        return {'direct_rooms': direct}
 
     def _join_open_rooms_and_games(self):
         for room in Room.open_rooms(self.db, self.user):

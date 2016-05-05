@@ -14,11 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.services import BaseService
-from weiqi.models import Connection
+from weiqi.services import BaseService, ServiceError
+from weiqi.models import Connection, User, Game
 
 
 class UserService(BaseService):
+    __service_name__ = 'users'
+
     def publish_status(self):
         if not self.user:
             return
@@ -30,3 +32,24 @@ class UserService(BaseService):
                 self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
             else:
                 self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())
+
+    @BaseService.register
+    def profile(self, user_id):
+        user = self.db.query(User).get(user_id)
+        if not user:
+            return {}
+
+        return {
+            'id': user_id,
+            'created_at': user.created_at.isoformat(),
+            'rating': user.rating,
+            'display': user.display,
+        }
+
+    @BaseService.register
+    def games(self, user_id):
+        user = self.db.query(User).get(user_id)
+        if not user:
+            return []
+
+        return [g.to_frontend() for g in user.games(self.db)]

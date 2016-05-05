@@ -55,7 +55,7 @@ def test_automatch_create_game(db, socket):
     assert game.board.size == 9
     assert game.komi == 7.5
     assert game.stage == 'playing'
-    assert len(game.room.users) == 2
+    assert len(game.room.users.all()) == 2
 
     assert game.black_user in [user, other]
     assert game.white_user in [user, other]
@@ -69,7 +69,6 @@ def test_automatch_create_game(db, socket):
     assert game.white_rating in [user.rating, other.rating]
     assert game.black_rating != game.white_rating
 
-    print(socket.sent_messages)
     assert len(socket.sent_messages) == 1
     assert socket.sent_messages[0]['method'] == 'game_started'
     assert socket.sent_messages[0]['data'] == game.to_frontend()

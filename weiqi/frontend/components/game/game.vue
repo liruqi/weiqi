@@ -203,14 +203,14 @@
                 if(this.game.is_demo && this.has_control) {
                     switch(this.demo_tool) {
                         case 'move':
-                            socket.send('games.move', {'game_id': this.game_id, 'move': coord});
+                            socket.send('games/move', {'game_id': this.game_id, 'move': coord});
                             break;
                     }
                 } else if(!this.game.is_demo && this.is_player) {
                     if (this.game.stage == 'counting') {
-                        socket.send('games.toggle_marked_dead', {'game_id': this.game_id, 'coord': coord});
+                        socket.send('games/toggle_marked_dead', {'game_id': this.game_id, 'coord': coord});
                     } else if (this.game.stage != 'finished') {
-                        socket.send('games.move', {'game_id': this.game_id, 'move': coord});
+                        socket.send('games/move', {'game_id': this.game_id, 'move': coord});
                     }
                 }
             },
@@ -272,7 +272,7 @@
                     message: this.$t('game.confirm_pass'),
                     callback: function (res) {
                         if (res) {
-                            socket.send('games.move', {'game_id': this.game_id, 'move': -1});
+                            socket.send('games/move', {'game_id': this.game_id, 'move': -1});
                         }
                     }.bind(this)
                 });
@@ -289,14 +289,14 @@
                     message: this.$t('game.confirm_resign'),
                     callback: function(res) {
                         if(res) {
-                            socket.send('games.move', {'game_id': this.game_id, 'move': -2});
+                            socket.send('games/move', {'game_id': this.game_id, 'move': -2});
                         }
                     }.bind(this)
                 });
             },
 
             confirm_score() {
-                socket.send('games.confirm_score', {'game_id': this.game_id, 'result': this.game.result});
+                socket.send('games/confirm_score', {'game_id': this.game_id, 'result': this.game.result});
             }
         }
     }

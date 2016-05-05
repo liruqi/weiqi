@@ -79,7 +79,7 @@ const mutations = {
         }
 
         if(state.direct_rooms[data.user_id]) {
-            state.direct_rooms[data.user_id].is_online = data.is_online;
+            state.direct_rooms[data.user_id].is_online = true;
         }
 
         if(!state.room_users[data.room_id]) {
@@ -94,6 +94,10 @@ const mutations = {
     },
     
     MSG_ROOM_USER_LEFT(state, data) {
+        if(state.direct_rooms[data.user_id]) {
+            state.direct_rooms[data.user_id].is_online = false;
+        }
+
         if(!state.room_users[data.room_id]) {
             return;
         }
@@ -196,15 +200,16 @@ const mutations = {
     },
     
     MSG_LOAD_DIRECT_ROOM(state, room) {
-        Vue.set(state.direct_rooms, room.Otheruser_id, {
-            room_id: room.Room.id,
-            Otheruser_id: room.Otheruser_id,
+        Vue.set(state.direct_rooms, room.other_user_id, {
+            room_id: room.room.id,
+            other_user_id: room.other_user_id,
+            other_display: room.other_display,
             is_online: room.is_online,
-            IsActive: room.IsActive
+            is_active: room.is_active
         });
         
-        Vue.set(state.room_logs, room.Room.id, room.room_logs);
-        Vue.set(state.room_has_update, room.Room.id, room.HasUnread);
+        Vue.set(state.room_logs, room.room.id, room.room_logs);
+        Vue.set(state.room_has_update, room.room.id, room.has_unread);
     },
     
     UPDATE_ROUTE(state, route) {
@@ -251,11 +256,11 @@ const mutations = {
             return;
         }
 
-        socket.send('games.open', {'game_id': game_id});
+        socket.send('games/open', {'game_id': game_id});
     },
 
     CLOSE_GAME(state, game_id) {
-        socket.send('games.close', {'game_id': game_id});
+        socket.send('games/close', {'game_id': game_id});
 
         state.open_games = state.open_games.filter(function(game) {
             return game.id != game_id;
@@ -267,7 +272,7 @@ const mutations = {
             return;
         }
 
-        socket.send('rooms.users', {'room_id': room_id}, function(data) {
+        socket.send('rooms/users', {'room_id': room_id}, function(data) {
             Vue.set(state.room_users, room_id, data.users);
         });
     },
@@ -277,20 +282,28 @@ const mutations = {
     },
     
     LOAD_DIRECT_ROOM(state, user_id) {
-        Vue.http.post('/api/users/' + user_id + '/open-direct').then(function(res) {
-            mutations.MSG_LOAD_DIRECT_ROOM(state, res.data);
-        }, function() {})
+        socket.send('rooms/open_direct', {'user_id': user_id}, function(data) {
+            mutations.MSG_LOAD_DIRECT_ROOM(state, data);
+        });
+    },
+    
+    MSG_DIRECT_MESSAGE(state, data) {
+        if(data.user_id == state.auth.user.user_id || state.direct_rooms[data.user_id]) {
+            mutations.MSG_ROOM_MESSAGE(state, data);
+        } else {
+            mutations.LOAD_DIRECT_ROOM(state, data.user_id);
+        }
     },
     
     CLEAR_ROOM_UPDATE(state, room_id) {
         Vue.set(state.room_has_update, room_id, false);
 
-        var isDirect = Object.keys(state.direct_rooms).find(function(user_id) {
+        var is_direct = Object.keys(state.direct_rooms).find(function(user_id) {
             return state.direct_rooms[user_id].room_id == room_id;
         });
 
-        if(isDirect) {
-            Vue.http.post('/api/rooms/' + room_id + '/mark-read');
+        if(is_direct) {
+            socket.send('rooms/mark_read', {'room_id': room_id});
         }
     },
     

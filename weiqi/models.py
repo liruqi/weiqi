@@ -57,7 +57,7 @@ class User(Base):
     is_online = Column(Boolean, nullable=False, default=False)
 
     rooms = relationship('RoomUser', back_populates='user')
-    messages = relationship('RoomMessage', back_populates='user')
+    messages = relationship('RoomMessage', back_populates='user', lazy='dynamic')
     connections = relationship('Connection', back_populates='user')
     automatch = relationship('Automatch', back_populates='user')
 
@@ -92,6 +92,11 @@ class User(Base):
              ((Game.black_user == self) | (Game.white_user == self))) |
             (RoomUser.user == self))
 
+    def games(self, db):
+        return db.query(Game).filter((Game.black_user == self) |
+                                     (Game.white_user == self) |
+                                     (Game.demo_owner == self))
+
     def apply_rating_data_change(self):
         """Notifies sqlalchemy about a change in the `rating_data` field.
 
@@ -125,8 +130,8 @@ class Room(Base):
     type = Column(Enum('main', 'direct', 'game', name='room_type'), nullable=False)
     is_default = Column(Boolean, nullable=False, default=False)
 
-    users = relationship('RoomUser', back_populates='room')
-    messages = relationship('RoomMessage', back_populates='room')
+    users = relationship('RoomUser', back_populates='room', lazy='dynamic')
+    messages = relationship('RoomMessage', back_populates='room', lazy='dynamic')
     games = relationship('Game', back_populates='room')
 
     def to_frontend(self):

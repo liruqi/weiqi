@@ -2,7 +2,7 @@
     <div class="room-page">
         <div class="flex-column">
             <template v-if="room">
-                <qi-room-logs :room_id="room.room_id" :title="$route.params.user_id"></qi-room-logs>
+                <qi-room-logs :room_id="room.room_id" :title="room.other_display"></qi-room-logs>
             </template>
             <template v-else>
                 <div id="page-load-spinner">
@@ -40,7 +40,7 @@
 
         computed: {
             window_title() {
-                return this.$route.params.user_id;
+                return this.room.other_display;
             },
 
             room() {

@@ -115,7 +115,7 @@
 
         methods: {
             send_message() {
-                socket.send('rooms.message', {'room_id': this.room_id, 'message': this.message});
+                socket.send('rooms/message', {'room_id': this.room_id, 'message': this.message});
                 this.message = '';
             },
 

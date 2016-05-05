@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .base import BaseService, ServiceError
-from .user import UserService
 from .rating import RatingService
-from .connection import ConnectionService
 from .rooms import RoomService
+from .users import UserService
+from .connection import ConnectionService
 from .games import GameService
 from .play import PlayService

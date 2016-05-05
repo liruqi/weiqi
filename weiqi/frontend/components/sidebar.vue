@@ -112,7 +112,8 @@
             <template v-for="room in direct_rooms">
                 <li v-link-active :class="{highlight: room_has_update[room.room_id]}">
                     <a v-link="{name:'user_message', params:{user_id:$key}}">
-                        <i :class="{'text-success': room.is_online, 'text-info': room_has_update[room.room_id]}" class="fa fa-user"></i> {{$key}}
+                        <i :class="{'text-success': room.is_online, 'text-info': room_has_update[room.room_id]}" class="fa fa-user"></i>
+                        {{room.other_display}}
                     </a>
                 </li>
             </template>

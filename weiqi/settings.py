@@ -29,3 +29,6 @@ STATIC_PATH = os.path.join(BASE_DIR, 'static')
 LISTEN_PORT = 8080
 DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
 AMPQ_URL = 'amqp://guest:guest@127.0.0.1:5672/'
+
+ROOM_MESSAGES_LIMIT = 30
+DIRECT_ROOMS_LIMIT = 10
