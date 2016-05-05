@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi.services import BaseService, UserService
-from weiqi.models import Game, Room, RoomUser, Connection, User
+from weiqi.models import Game, Room, RoomUser, Connection
 from weiqi import settings
 
 

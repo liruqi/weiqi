@@ -15,7 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import logging
 import tornado.web
+import tornado.options
 from weiqi import settings
 from weiqi.db import create_db, session
 from weiqi.models import Connection, Automatch, User
@@ -55,11 +57,16 @@ class Application(tornado.web.Application):
 
 
 def main():
+    tornado.options.parse_command_line()
+
+    logging.info("Starting application ...")
+
     create_db()
     _cleanup_db()
 
     app = create_app()
     app.listen(settings.LISTEN_PORT)
+    logging.info("Listening on :{}".format(settings.LISTEN_PORT))
 
     tornado.ioloop.IOLoop.current().add_timeout(time.time() + .1, app.broker.run)
     tornado.ioloop.IOLoop.current().start()
