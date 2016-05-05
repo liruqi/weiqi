@@ -37,7 +37,6 @@ class Application(tornado.web.Application):
         handlers = [
             handler(r'/api/ping', index.PingHandler),
             handler(r'/api/socket', socket.SocketHandler),
-            handler(r'/api/auth/email-exists', auth.EmailExistsHandler),
             handler(r'/api/auth/sign-up', auth.SignUpHandler),
             handler(r'/api/auth/sign-in', auth.SignInHandler),
             handler(r'/api/auth/logout', auth.LogoutHandler),

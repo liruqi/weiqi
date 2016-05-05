@@ -17,7 +17,7 @@
 from sqlalchemy.orm import undefer
 from contextlib import contextmanager
 from weiqi.db import transaction
-from weiqi.services import BaseService, ServiceError, UserService, RatingService
+from weiqi.services import BaseService, ServiceError, UserService, RatingService, RoomService
 from weiqi.models import Game
 from weiqi.board import RESIGN
 from weiqi.scoring import count_score
@@ -36,7 +36,14 @@ class GameService(BaseService):
 
     @BaseService.register
     def open(self, game_id):
-        pass
+        game = self.db.query(Game).get(game_id)
+        if not game:
+            return
+
+        RoomService(self.db, self.socket, self.user).join_room(game.room_id)
+
+        self.socket.subscribe('game/'+str(game_id))
+        self.socket.send('game_data', game.to_frontend(full=True))
 
     @BaseService.authenticated
     @BaseService.register

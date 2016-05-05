@@ -7,7 +7,6 @@ Vue.use(Vuex);
 
 const state = {
     loaded: false,
-    pong: 0,
     
     route: {},
     
@@ -57,10 +56,6 @@ const mutations = {
         });
 
         state.loaded = true;
-    },
-    
-    MSG_PONG(state, data) {
-        state.pong = data;
     },
 
     MSG_ROOM_MESSAGE(state, data) {

@@ -76,6 +76,7 @@
 
 <script>
     import Vue from 'vue';
+    import * as socket from '../../socket';
 
     export default {
         mixins: [require('../../mixins/forms.vue')],
@@ -92,14 +93,14 @@
 
         validators: {
             email_exists(email) {
-                return Vue.http.post('/api/auth/email-exists', {email: email}).then(function(res) {
-                    if(res.data === false) {
-                        return Promise.resolve();
-                    } else {
-                        return Promise.reject();
-                    }
-                }, function() {
-                    return Promise.reject();
+                return new Promise(function(resolve, reject) {
+                    socket.send('users/email_exists', {'email': email}, function(data) {
+                        if(!data) {
+                            return resolve();
+                        } else {
+                            return reject();
+                        }
+                    });
                 });
             }
         },

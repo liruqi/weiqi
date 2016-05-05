@@ -53,13 +53,6 @@ class SignUpHandler(BaseHandler):
             self.db.add(ru)
 
 
-class EmailExistsHandler(BaseHandler):
-    def post(self):
-        email = self.get_body_argument('email')
-        exists = self.db.query(User).filter_by(email=email).count() > 0
-        self.write('true' if exists else 'false')
-
-
 class SignInHandler(BaseHandler):
     def post(self):
         email = self.get_body_argument('email')

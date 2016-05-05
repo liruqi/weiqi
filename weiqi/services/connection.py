@@ -42,11 +42,8 @@ class ConnectionService(BaseService):
         UserService(self.db, self.socket, self.user).publish_status()
 
     @BaseService.register
-    def open_game(self, game_id):
-        game = self.db.query(Game).get(game_id)
-        self.socket.subscribe('game/'+str(game_id))
-        self._join_room_user(game.room_id)
-        self.socket.send('game_data', game.to_frontend(full=True))
+    def ping(self):
+        return 'pong'
 
     def _connection_data(self):
         data = {}
@@ -116,13 +113,6 @@ class ConnectionService(BaseService):
             if room.type == 'game':
                 self.socket.subscribe('game_data/'+str(room.games[0].id))
                 self.socket.subscribe('game_update/'+str(room.games[0].id))
-
-    def _join_room_user(self, room_id):
-        self.socket.subscribe('room/'+str(room_id))
-
-        if self.user:
-            if self.db.query(RoomUser).filter_by(room_id=room_id, user=self.user).count() == 0:
-                self.db.add(RoomUser(room_id=room_id, user=self.user))
 
     def _insert_connection(self):
         conn = Connection(id=self.socket.id,

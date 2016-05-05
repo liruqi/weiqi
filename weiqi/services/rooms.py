@@ -112,3 +112,12 @@ class RoomService(BaseService):
             return
 
         ru.has_unread = False
+
+    def join_room(self, room_id):
+        self.socket.subscribe('room_message/'+str(room_id))
+        self.socket.subscribe('room_user/'+str(room_id))
+        self.socket.subscribe('room_user_left/'+str(room_id))
+
+        if self.user:
+            if self.db.query(RoomUser).filter_by(room_id=room_id, user=self.user).count() == 0:
+                self.db.add(RoomUser(room_id=room_id, user=self.user))

@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.services import BaseService, ServiceError
-from weiqi.models import Connection, User, Game
+from weiqi.services import BaseService
+from weiqi.models import Connection, User
 
 
 class UserService(BaseService):
@@ -32,6 +32,10 @@ class UserService(BaseService):
                 self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
             else:
                 self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())
+
+    @BaseService.register
+    def email_exists(self, email):
+        return self.db.query(User).filter_by(email=email).count() > 0
 
     @BaseService.register
     def profile(self, user_id):
