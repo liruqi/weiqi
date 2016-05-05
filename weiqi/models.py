@@ -92,6 +92,13 @@ class User(Base):
              ((Game.black_user == self) | (Game.white_user == self))) |
             (RoomUser.user == self))
 
+    def apply_rating_data_change(self):
+        """Notifies sqlalchemy about a change in the `rating_data` field.
+
+        Needs to be called after in-place changes to the field.
+        """
+        flag_modified(self, 'rating_data')
+
 
 class Connection(Base):
     __tablename__ = 'connections'
@@ -278,6 +285,15 @@ class Game(Base):
             return self.demo_owner
         return self.black_user if self.board.current == BLACK else self.white_user
 
+    @property
+    def winner_loser(self):
+        if self.result.lower().startswith('b+'):
+            return self.black_user, self.white_user
+        elif self.result.lower().startswith('w+'):
+            return self.white_user, self.black_user
+        else:
+            raise ValueError('could not determine winner and loser from game result: {}'.format(self.result))
+
     def to_frontend(self, full=False):
         """Returns a dictionary with the game information.
         Will not return board data unless `full` is set to True.
@@ -317,8 +333,7 @@ class Game(Base):
     def apply_board_change(self):
         """Notifies sqlalchemy about a change in the `board` field.
 
-        This is required because sqlalchemy detects only changes for field values, but `board`
-        is usually changed in-place.
+        Needs to be called after in-place changes to the field.
         """
         flag_modified(self, 'board')
 

@@ -20,6 +20,7 @@ from factory.fuzzy import FuzzyText
 from weiqi.models import User, Room, RoomUser, Automatch, Game
 from weiqi.board import Board
 from weiqi.test import session
+from weiqi.glicko2 import Player
 
 
 class UserFactory(SQLAlchemyModelFactory):
@@ -33,6 +34,7 @@ class UserFactory(SQLAlchemyModelFactory):
     display = FuzzyText()
     is_online = True
     rating = 1000
+    rating_data = factory.lazy_attribute(lambda o: Player(o.rating))
 
 
 class RoomFactory(SQLAlchemyModelFactory):
@@ -84,6 +86,7 @@ class GameFactory(SQLAlchemyModelFactory):
     stage = 'playing'
     board = factory.lazy_attribute(lambda o: Board(9))
     komi = 7.5
+    result = ''
     black_user = factory.SubFactory(UserFactory)
     black_display = factory.lazy_attribute(lambda o: o.black_user.display)
     black_rating = factory.lazy_attribute(lambda o: o.black_user.rating)

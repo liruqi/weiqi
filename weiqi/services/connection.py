@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.services import BaseService
+from weiqi.services import BaseService, UserService
 from weiqi.models import Game, Room, RoomUser, Connection
 
 
@@ -30,12 +30,12 @@ class ConnectionService(BaseService):
 
         self._join_open_rooms_and_games()
         self._insert_connection()
-        self._update_status()
+        UserService(self.db, self.socket, self.user).publish_status()
 
     @BaseService.register
     def disconnect(self):
         self._delete_connection()
-        self._update_status()
+        UserService(self.db, self.socket, self.user).publish_status()
 
     @BaseService.register
     def open_game(self, game_id):
@@ -103,15 +103,3 @@ class ConnectionService(BaseService):
 
     def _delete_connection(self):
         self.db.query(Connection).filter_by(id=self.socket.id).delete()
-
-    def _update_status(self):
-        if not self.user:
-            return
-
-        self.user.is_online = self.db.query(Connection).filter_by(user_id=self.user.id).count() > 0
-
-        for ru in self.user.rooms:
-            if self.user.is_online:
-                self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
-            else:
-                self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())

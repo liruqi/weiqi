@@ -56,6 +56,8 @@ class BaseService:
         try:
             return self._methods[method](self, **(data or {}))
         except Exception as e:
+            if isinstance(e, ServiceError):
+                raise
             raise ServiceError('method failed to execute') from e
 
     def close(self):

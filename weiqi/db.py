@@ -43,14 +43,20 @@ def create_schema():
 def session():
     sess = Session()
 
-    try:
+    with transaction(sess):
         yield sess
+
+    sess.close()
+
+
+@contextmanager
+def transaction(sess):
+    try:
+        yield
         sess.commit()
     except:
         sess.rollback()
         raise
-    finally:
-        sess.close()
 
 
 class GUID(TypeDecorator):

@@ -61,6 +61,12 @@ def neighbors(coord, size):
     return n
 
 
+def opposite(color):
+    if color == EMPTY:
+        return EMPTY
+    return BLACK if color == WHITE else WHITE
+
+
 def validate_move(move, size):
     if move < RESIGN or move >= size*size:
         raise ValueError('invalid move: {}'.format(move))
@@ -91,12 +97,17 @@ class IllegalMoveError(Exception):
 
 
 class Board:
-    def __init__(self, size=9):
+    def __init__(self, size=9, handicap=0):
         self.size = size
+        self.handicap = handicap
         self.current = BLACK
         self.tree = []
-        self.pos = [EMPTY]*size*size
         self.current_node_id = None
+        self._pos = [EMPTY]*size*size
+        self._pos_node_id = None
+
+        if self.handicap > 0:
+            self.place_handicap(self.handicap)
 
     def __str__(self):
         board = ''
@@ -114,9 +125,18 @@ class Board:
             'size': self.size,
             'current': self.current,
             'tree': [n.to_dict() for n in self.tree],
-            'pos': self.pos,
             'current_node_id': self.current_node_id,
         }
+
+    @property
+    def length(self):
+        return self.size*self.size
+
+    @property
+    def pos(self):
+        if self._pos_node_id != self.current_node_id:
+            self._rebuild_pos()
+        return self._pos
 
     def at(self, coord):
         return self.pos[coord]
@@ -149,7 +169,7 @@ class Board:
 
         if move in [PASS, RESIGN]:
             self._add_move(move)
-            self.current = WHITE if self.current == BLACK else BLACK
+            self.current = opposite(self.current)
             return
 
         self.validate_legal(move)
@@ -160,7 +180,7 @@ class Board:
 
         self.pos[move] = self.current
         self._add_move(move, caps)
-        self.current = WHITE if self.current == BLACK else BLACK
+        self.current = opposite(self.current)
 
     def validate_legal(self, coord):
         if self.at(coord) != EMPTY:
@@ -226,6 +246,34 @@ class Board:
         populate(coord)
         return chain
 
+    def loose_chain_at(self, coord) -> set:
+        """Returns all stones loosely connected to the given coordinate.
+
+        A stone is loosely connected if it is either connected directly or can be reached by only passing empty spaces.
+        """
+        chain = set()
+        visited = set()
+        color = self.at(coord)
+
+        if color == EMPTY:
+            return chain
+
+        def populate(c):
+            for n in neighbors(c, self.size):
+                if n in visited:
+                    continue
+
+                visited.add(n)
+
+                if self.at(n) == color:
+                    chain.add(n)
+
+                if self.at(n) in [color, EMPTY]:
+                    populate(n)
+
+        populate(coord)
+        return chain
+
     def chain_liberties(self, chain) -> set:
         libs = set()
 
@@ -244,6 +292,17 @@ class Board:
 
         self._add_node(node)
 
+    def add_edits(self, black, white, empty):
+        node = Node()
+        node.action = NODE_EDIT
+        node.edits = {}
+
+        node.edits.update({str(c): BLACK for c in black})
+        node.edits.update({str(c): WHITE for c in white})
+        node.edits.update({str(c): EMPTY for c in empty})
+
+        self._add_node(node)
+
     def _add_node(self, node):
         node.id = len(self.tree)
 
@@ -254,6 +313,70 @@ class Board:
         self.tree.append(node)
         self.current_node_id = node.id
 
+    def _rebuild_pos(self):
+        """Rebuilds the current position based on the tree data."""
+        if self.current_node_id is None:
+            return
+
+        path = self._node_path(self.current_node_id)
+        self._pos = [EMPTY]*self.length
+
+        for node in path:
+            if node.action == NODE_BLACK:
+                self._pos[node.move] = BLACK
+            elif node.action == NODE_WHITE:
+                self._pos[node.move] = WHITE
+            elif node.action == NODE_EDIT:
+                for coord, color in node.edits.items():
+                    self._pos[int(coord)] = color
+
+            for c in node.captures:
+                self._pos[c] = EMPTY
+
+        self._pos_node_id = self.current_node_id
+
+    def _node_path(self, node_id):
+        path = []
+        node = self.tree[node_id]
+
+        while node:
+            path.append(node)
+            node = self.tree[node.parent_id] if node.parent_id is not None else None
+
+        path.reverse()
+        return path
+
+    def is_marked_dead(self, coord):
+        if not self.current_node or not self.current_node.marked_dead:
+            return False
+
+        return self.current_node.marked_dead.get(str(coord), False)
+
+    def mark_dead(self, coord):
+        if self.at(coord) == EMPTY or not self.current_node:
+            return
+
+        for c in self.loose_chain_at(coord):
+            self.current_node.marked_dead[str(c)] = True
+
+    def toggle_marked_dead(self, coord):
+        if self.at(coord) == EMPTY or not self.current_node:
+            return
+
+        marked_dead = self.current_node.marked_dead.get(str(coord), False)
+
+        for c in self.loose_chain_at(coord):
+            if marked_dead:
+                self.current_node.marked_dead.pop(str(c), None)
+            else:
+                self.current_node.marked_dead[str(c)] = True
+
+    def place_handicap(self, hc):
+        if hc < 2:
+            return
+
+        self.add_edits(handicap_coords(self.size, hc), [], [])
+
 
 def board_from_string(pos, size=9) -> Board:
     pos = re.sub(r'\s', '', pos)
@@ -262,7 +385,11 @@ def board_from_string(pos, size=9) -> Board:
         raise ValueError('board string has incorrect length: {}'.format(len(pos)))
 
     board = Board(size)
-    board.pos = list(pos)
+
+    black = [coord for coord, color in enumerate(list(pos)) if color == BLACK]
+    white = [coord for coord, color in enumerate(list(pos)) if color == WHITE]
+
+    board.add_edits(black, white, [])
 
     return board
 
@@ -270,7 +397,6 @@ def board_from_string(pos, size=9) -> Board:
 def board_from_dict(data) -> Board:
     board = Board(data['size'])
     board.current = data['current']
-    board.pos = data['pos']
     board.current_node_id = data['current_node_id']
     board.tree = [node_from_dict(n) for n in data['tree']]
     return board
@@ -280,3 +406,50 @@ def node_from_dict(data) -> Node:
     node = Node()
     node.__dict__.update(data)
     return node
+
+
+def handicap_coords(size, hc):
+    if hc < 2:
+        return []
+    if hc > 9:
+        raise ValueError('invalid handicap count: {}'.format(hc))
+
+    dist = (2 if size == 9 else 3)
+    middle = int((size + 1) / 2)
+    tengen = coord2d(middle, middle, size)
+
+    corners = [
+        coord2d(size-dist, dist+1, size),
+        coord2d(dist+1, size-dist, size),
+        coord2d(size-dist, size-dist, size),
+        coord2d(dist+1, dist+1, size),
+    ]
+
+    left_right = [
+        coord2d(dist+1, middle, size),
+        coord2d(size-dist, middle, size),
+    ]
+
+    top_bottom = [
+        coord2d(middle, size-dist, size),
+        coord2d(middle, dist+1, size),
+    ]
+
+    if hc <= 4:
+        return corners[:hc]
+
+    if hc == 5:
+        return corners + [tengen]
+
+    clr = corners + left_right
+
+    if hc == 6:
+        return clr
+
+    if hc == 7:
+        return clr + [tengen]
+
+    if hc == 8:
+        return clr + top_bottom
+
+    return clr + [tengen] + top_bottom

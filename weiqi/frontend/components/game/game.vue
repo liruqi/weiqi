@@ -36,8 +36,8 @@
                             {{$t('game.pass')}}
                         </button>
 
-                        <button class="btn btn-default btn-block" v-if="game.stage=='counting'" @click="confirmScore()">
-                            {{$t('game.confirmScore')}}
+                        <button class="btn btn-default btn-block" v-if="game.stage=='counting'" @click="confirm_score()">
+                            {{$t('game.confirm_score')}}
                         </button>
 
                         <button class="btn btn-default btn-block" v-if="game.stage!='finished'" @click="resign()">
@@ -272,7 +272,7 @@
                     message: this.$t('game.confirm_pass'),
                     callback: function (res) {
                         if (res) {
-                            this.$http.post('/api/games/' + this.game_id + '/move', {move: -1});
+                            socket.send('games.move', {'game_id': this.game_id, 'move': -1});
                         }
                     }.bind(this)
                 });
@@ -289,14 +289,14 @@
                     message: this.$t('game.confirm_resign'),
                     callback: function(res) {
                         if(res) {
-                            this.$http.post('/api/games/'+this.game_id+'/move', {move: -2});
+                            socket.send('games.move', {'game_id': this.game_id, 'move': -2});
                         }
                     }.bind(this)
                 });
             },
 
-            confirmScore() {
-                this.$http.post('/api/games/'+this.game_id+'/confirm-score', {result: this.game.result});
+            confirm_score() {
+                socket.send('games.confirm_score', {'game_id': this.game_id, 'result': this.game.result});
             }
         }
     }

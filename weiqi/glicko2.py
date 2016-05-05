@@ -142,6 +142,11 @@ class Player(Rating):
 
         self.results.clear()
 
+    def clone(self):
+        player = Player(self.rating, self.deviation, self.volatility)
+        player.results = list(self.results)
+        return player
+
 
 def player_from_dict(data):
     if not data:

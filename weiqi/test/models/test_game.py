@@ -14,10 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .base import BaseService, ServiceError
-from .user import UserService
-from .rating import RatingService
-from .connection import ConnectionService
-from .rooms import RoomService
-from .games import GameService
-from .play import PlayService
+import pytest
+
+
+def test_winner_loser():
+    pytest.skip('not implemented')

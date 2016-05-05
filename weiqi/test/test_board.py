@@ -15,9 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
-import json
 from weiqi.board import (Board, coord2d, coord_to_2d, BLACK, WHITE, NODE_BLACK, NODE_WHITE, board_from_string,
-                         IllegalMoveError, PASS, RESIGN, board_from_dict)
+                         IllegalMoveError, PASS, RESIGN, board_from_dict, neighbors)
 
 
 def test_coord_to_2d():
@@ -25,6 +24,13 @@ def test_coord_to_2d():
     x, y = coord_to_2d(coord, 9)
     assert x == 4
     assert y == 5
+
+
+def test_neighbors():
+    assert set(neighbors(coord2d(1, 1), 9)) == {coord2d(2, 1), coord2d(1, 2)}
+    assert set(neighbors(coord2d(9, 9), 9)) == {coord2d(9, 8), coord2d(8, 9)}
+    assert set(neighbors(coord2d(5, 5), 9)) == {coord2d(5, 4), coord2d(5, 6),
+                                                coord2d(4, 5), coord2d(6, 5)}
 
 
 def test_from_string():
@@ -180,7 +186,32 @@ def test_chain():
 
 
 def test_loose_chain():
-    pytest.skip('not implemented')
+    board = board_from_string(
+        '.........'
+        '.x.......'
+        '.x.xooooo'
+        '..ooxxx..'
+        '..ox.....'
+        '..o.x...x'
+        '..o...oox'
+        '..o...ox.'
+        '..o...o.x')
+
+    coords = {
+        coord2d(5, 4),
+        coord2d(6, 4),
+        coord2d(7, 4),
+        coord2d(4, 5),
+        coord2d(5, 6),
+        coord2d(9, 6),
+        coord2d(9, 7),
+        coord2d(8, 8),
+        coord2d(9, 9),
+    }
+
+    chain = board.loose_chain_at(coord2d(5, 6))
+
+    assert chain == coords
 
 
 def test_chain_liberties():
@@ -253,12 +284,143 @@ def test_both_passed():
 
 
 def test_mark_dead():
-    pytest.skip('not implemented')
+    board = board_from_string(
+        '..xo.....'
+        '..xoooo..'
+        '..xxxxooo'
+        '.....xxxx'
+        'xxxx.....'
+        'ooox.xxxx'
+        '..ox.xooo'
+        '..ox.xo..'
+        '..ox.xo.o')
+
+    board.mark_dead(coord2d(7, 7))
+    chain = board.loose_chain_at(coord2d(7, 7))
+
+    for coord in range(board.length):
+        assert board.is_marked_dead(coord) == (coord in chain)
 
 
 def test_toggle_marked_dead():
-    pytest.skip('not implemented')
+    board = board_from_string(
+        '..xo.....'
+        '..xoooo..'
+        '..xxxxooo'
+        '.....xxxx'
+        'xxxx.....'
+        'ooox.xxxx'
+        '..ox.xooo'
+        '..ox.xo..'
+        '..ox.xo.o')
+
+    coord = coord2d(7, 7)
+    board.mark_dead(coord)
+    board.toggle_marked_dead(coord)
+
+    chain = board.loose_chain_at(coord2d(1, 6))
+    board.toggle_marked_dead(coord2d(1, 6))
+
+    for c in range(board.length):
+        assert board.is_marked_dead(c) == (c in chain)
 
 
 def test_place_hc():
-    pytest.skip('not implemented')
+    tests = {
+        0: ('.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'),
+        1: ('.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'
+            '.........'),
+        2: ('.........'
+            '.........'
+            '......x..'
+            '.........'
+            '.........'
+            '.........'
+            '..x......'
+            '.........'
+            '.........'),
+        3: ('.........'
+            '.........'
+            '......x..'
+            '.........'
+            '.........'
+            '.........'
+            '..x...x..'
+            '.........'
+            '.........'),
+        4: ('.........'
+            '.........'
+            '..x...x..'
+            '.........'
+            '.........'
+            '.........'
+            '..x...x..'
+            '.........'
+            '.........'),
+        5: ('.........'
+            '.........'
+            '..x...x..'
+            '.........'
+            '....x....'
+            '.........'
+            '..x...x..'
+            '.........'
+            '.........'),
+        6: ('.........'
+            '.........'
+            '..x...x..'
+            '.........'
+            '..x...x..'
+            '.........'
+            '..x...x..'
+            '.........'
+            '.........'),
+        7: ('.........'
+            '.........'
+            '..x...x..'
+            '.........'
+            '..x.x.x..'
+            '.........'
+            '..x...x..'
+            '.........'
+            '.........'),
+        8: ('.........'
+            '.........'
+            '..x.x.x..'
+            '.........'
+            '..x...x..'
+            '.........'
+            '..x.x.x..'
+            '.........'
+            '.........'),
+        9: ('.........'
+            '.........'
+            '..x.x.x..'
+            '.........'
+            '..x.x.x..'
+            '.........'
+            '..x.x.x..'
+            '.........'
+            '.........'),
+    }
+
+    for hc, pos in tests.items():
+        board = Board(9)
+        board.place_handicap(hc)
+
+        assert str(board) == str(board_from_string(pos))

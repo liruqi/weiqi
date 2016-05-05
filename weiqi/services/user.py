@@ -14,10 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .base import BaseService, ServiceError
-from .user import UserService
-from .rating import RatingService
-from .connection import ConnectionService
-from .rooms import RoomService
-from .games import GameService
-from .play import PlayService
+from weiqi.services import BaseService
+from weiqi.models import Connection
+
+
+class UserService(BaseService):
+    def publish_status(self):
+        if not self.user:
+            return
+
+        self.user.is_online = self.db.query(Connection).filter_by(user_id=self.user.id).count() > 0
+
+        for ru in self.user.rooms:
+            if self.user.is_online:
+                self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
+            else:
+                self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())

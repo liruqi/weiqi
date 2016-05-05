@@ -151,10 +151,10 @@
                             params.type = "outline"
                         }
 
-                        if(color == '.' && node.score_points[coord] == 1) {
+                        if(color == '.' && node.score_points[coord] == 'x') {
                             params.type = "mini";
                             params.c = WGo.B;
-                        } else if(color == '.' && node.score_points[coord] == 2) {
+                        } else if(color == '.' && node.score_points[coord] == 'o') {
                             params.type = "mini";
                             params.c = WGo.W;
                         } else if(color == '.') {

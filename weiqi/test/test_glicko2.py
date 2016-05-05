@@ -33,9 +33,9 @@ def player():
 @pytest.fixture
 def opponents():
     return [
-        Rating(1400, 30, DEFAULT_VOLATILITY),
-        Rating(1550, 100, DEFAULT_VOLATILITY),
-        Rating(1700, 300, DEFAULT_VOLATILITY),
+        Player(1400, 30, DEFAULT_VOLATILITY),
+        Player(1550, 100, DEFAULT_VOLATILITY),
+        Player(1700, 300, DEFAULT_VOLATILITY),
     ]
 
 @pytest.fixture
