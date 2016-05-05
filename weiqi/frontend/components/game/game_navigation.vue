@@ -180,6 +180,7 @@
                 var el = jQuery('#game-nav-node-' + node.id);
                 var labelH = el.find('.game-nav-node-label').first().height();
 
+                nav.stop();
                 nav.animate({
                     scrollTop: nav[0].scrollTop + (el.offset().top - nav.offset().top) - nav.height() / 2 + labelH / 2
                 });
