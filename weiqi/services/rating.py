@@ -37,7 +37,9 @@ class RatingService(BaseService):
     Handicap is handled by altering the opponents rating before calculation, adding or removing rating points
     relative to the handicap.
     """
+
     def update_ratings(self, game):
+        """Updates the ratings for both players of a game."""
         if not game.is_ranked or game.stage != 'finished':
             return
 
@@ -63,8 +65,8 @@ class RatingService(BaseService):
         loser.rating_data.add_result(self._rating_to_result(winner.rating_data, winner_hc, LOSS))
         loser.apply_rating_data_change()
 
-        # Recalculate rating data of this period to get the current rating as it would be if
-        # this was the end of the rating period.
+        # Recalculate rating data of this period to get the current rating, but keep all results intact as
+        # the rating period has not ended yet.
 
         data = winner.rating_data.clone()
         data.update_rating()
