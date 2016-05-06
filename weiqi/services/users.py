@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi.services import BaseService
-from weiqi.models import Connection, User
+from weiqi.models import Connection, User, Game
 
 
 class UserService(BaseService):
@@ -57,3 +57,12 @@ class UserService(BaseService):
             return []
 
         return [g.to_frontend() for g in user.games(self.db)]
+
+    def publish_rating_update(self):
+        if not self.user:
+            return
+
+        self.socket.publish('rating_update/'+str(self.user.id), {
+            'rating': self.user.rating,
+            'wins': Game.count_wins(self.db, self.user)
+        })

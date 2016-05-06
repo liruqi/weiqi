@@ -32,6 +32,7 @@ class ConnectionService(BaseService):
         if self.user:
             self.socket.subscribe('direct_message/'+str(self.user.id))
             self.socket.subscribe('automatch_status/'+str(self.user.id))
+            self.socket.subscribe('rating_update/'+str(self.user.id))
 
         self._join_open_rooms_and_games()
         self._insert_connection()

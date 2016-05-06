@@ -94,6 +94,32 @@ def test_resign_counting(db, socket):
     assert game.stage == 'finished'
 
 
+def test_game_finished(db, socket):
+    game = GameFactory()
+    socket.subscribe('game_finished')
+    socket.subscribe('game_data/'+str(game.id))
+
+    svc = GameService(db, socket, game.black_user)
+    svc.execute('move', {'game_id': game.id, 'move': RESIGN})
+
+    assert len(socket.sent_messages) == 2
+    assert socket.sent_messages[0]['method'] == 'game_finished'
+    assert socket.sent_messages[1]['method'] == 'game_data'
+
+
+def test_game_finished_rating_update(db, socket):
+    game = GameFactory()
+    socket.subscribe('rating_update/'+str(game.black_user_id))
+    socket.subscribe('rating_update/'+str(game.white_user_id))
+
+    svc = GameService(db, socket, game.black_user)
+    svc.execute('move', {'game_id': game.id, 'move': RESIGN})
+
+    assert len(socket.sent_messages) == 2
+    assert socket.sent_messages[0]['method'] == 'rating_update'
+    assert socket.sent_messages[1]['method'] == 'rating_update'
+
+
 def test_stages_playing_counting(db, socket):
     game = GameFactory()
     svc = GameService(db, socket, game.black_user)

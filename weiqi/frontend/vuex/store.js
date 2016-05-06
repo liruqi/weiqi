@@ -69,10 +69,6 @@ const mutations = {
     },
 
     MSG_ROOM_USER(state, data) {
-        if(data.user_id == state.auth.user.user_id) {
-            state.auth.user.rating = data.user_rating;
-        }
-
         if(state.direct_rooms[data.user_id]) {
             state.direct_rooms[data.user_id].is_online = true;
         }
@@ -205,6 +201,11 @@ const mutations = {
         
         Vue.set(state.room_logs, room.room.id, room.room_logs);
         Vue.set(state.room_has_update, room.room.id, room.has_unread);
+    },
+    
+    MSG_RATING_UPDATE(state, data) {
+        state.auth.user.rating = data.rating;
+        state.auth.user.wins = data.wins;
     },
     
     UPDATE_ROUTE(state, route) {

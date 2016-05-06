@@ -11,6 +11,7 @@ export const server_messages = {
     'game_update': make_action('MSG_GAME_UPDATE'),
     'load_direct_room': make_action('MSG_LOAD_DIRECT_ROOM'),
     'direct_message': make_action('MSG_DIRECT_MESSAGE'),
+    'rating_update': make_action('MSG_RATING_UPDATE'),
 };
 
 export const update_route = make_action('UPDATE_ROUTE');

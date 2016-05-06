@@ -172,6 +172,8 @@ class GameService(BaseService):
 
         if game.is_ranked:
             RatingService(self.db).update_ratings(game)
+            UserService(self.db, self.socket, game.black_user).publish_rating_update()
+            UserService(self.db, self.socket, game.white_user).publish_rating_update()
 
         self.socket.publish('game_finished', game.to_frontend())
         self._publish_game_data(game)
