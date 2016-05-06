@@ -19,7 +19,7 @@ import re
 import bcrypt
 import json
 from sqlalchemy import (Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Enum, TypeDecorator, Text,
-                        CheckConstraint)
+                        CheckConstraint, Binary)
 from sqlalchemy.orm import validates, relationship, deferred
 from sqlalchemy.orm.attributes import flag_modified
 from weiqi.db import Base
@@ -56,6 +56,8 @@ class User(Base):
     rating_data = deferred(Column(RatingData, nullable=False))
 
     is_online = Column(Boolean, nullable=False, default=False)
+
+    avatar = deferred(Column(Binary))
 
     rooms = relationship('RoomUser', back_populates='user')
     messages = relationship('RoomMessage', back_populates='user', lazy='dynamic')

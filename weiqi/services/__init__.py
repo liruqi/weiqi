@@ -21,3 +21,4 @@ from .users import UserService
 from .connection import ConnectionService
 from .games import GameService
 from .play import PlayService
+from .settings import SettingsService

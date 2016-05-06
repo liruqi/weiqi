@@ -20,7 +20,7 @@ import json
 import uuid
 from weiqi import settings
 from weiqi.db import session
-from weiqi.services import ConnectionService, RoomService, GameService, PlayService, UserService
+from weiqi.services import ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService
 from weiqi.models import User
 
 
@@ -29,7 +29,7 @@ class SocketMixin:
         self.id = str(uuid.uuid4())
         self.pubsub = pubsub
         self._subs = set()
-        self._services = [ConnectionService, RoomService, GameService, PlayService, UserService]
+        self._services = [ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService]
         self._compress = True
 
     def open(self):

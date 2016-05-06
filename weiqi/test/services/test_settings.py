@@ -14,27 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.handler.base import BaseHandler
-from weiqi.identicon import generate_identicon
-from weiqi.models import User
+from weiqi.services import SettingsService
+from weiqi.test.factories import UserFactory
 
 
-class IndexHandler(BaseHandler):
-    def get(self):
-        self.render("index.html")
+def test_change_password(db, socket):
+    user = UserFactory()
+    svc = SettingsService(db, socket, user)
 
+    svc.execute('change_password', {'password': 'newpw'})
 
-class PingHandler(BaseHandler):
-    def get(self):
-        self.write('pong')
-
-
-class AvatarHandler(BaseHandler):
-    def get(self, user_id):
-        avatar = self.db.query(User.avatar).filter_by(id=user_id).scalar()
-
-        if not avatar:
-            avatar = generate_identicon(user_id.encode()).getvalue()
-
-        self.set_header('Content-Type', 'image/png')
-        self.write(avatar)
+    assert user.check_password('newpw')

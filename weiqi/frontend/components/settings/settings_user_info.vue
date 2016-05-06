@@ -26,6 +26,7 @@
 
 <script>
     import Vue from 'vue';
+    import * as socket from '../../socket';
 
     export default {
         mixins: [require('../../mixins/forms.vue')],
@@ -38,14 +39,14 @@
         },
 
         ready() {
-            this.$http.get('/api/settings').then(function(resp) {
-                this.email = resp.data.Email;
-                this.savedEmail = resp.data.Email;
+            socket.send('settings/user_info', {}, function(data) {
+                this.email = data.email;
+                this.savedEmail = data.email;
 
                 this.$nextTick(function() {
                     this.$resetValidation();
                 });
-            }.bind(this), function() {});
+            }.bind(this));
         },
 
         validators: {
@@ -54,14 +55,14 @@
                     return true;
                 }
 
-                return Vue.http.post('/api/auth/email-exists', {email: email}).then(function(res) {
-                    if(res.data === false) {
-                        return Promise.resolve();
-                    } else {
-                        return Promise.reject();
-                    }
-                }, function() {
-                    return Promise.reject();
+                return new Promise(function(resolve, reject) {
+                    socket.send('users/email_exists', {'email': email}, function(data) {
+                        if(!data) {
+                            return resolve();
+                        } else {
+                            return reject();
+                        }
+                    });
                 });
             }
         },
@@ -72,11 +73,11 @@
                     email: this.email
                 };
 
-                this.$http.post('/api/settings/update', data).then(function() {
+                socket.send('settings/save_user_info', data, function() {
                     this.$nextTick(function() {
                         this.$resetValidation();
                     });
-                }.bind(this), function() {});
+                }.bind(this));
             }
         }
     }

@@ -29,6 +29,8 @@
 </template>
 
 <script>
+    import * as socket from '../../socket';
+
     export default {
         mixins: [require('../../mixins/forms.vue')],
 
@@ -47,14 +49,14 @@
 
         methods: {
             save() {
-                this.$http.post('/api/settings/change-password', {password:this.password}).then(function() {
+                socket.send('settings/change_password', {password: this.password}, function() {
                     this.password = '';
                     this.confirm = '';
 
                     this.$nextTick(function() {
                         this.$resetValidation();
                     });
-                }.bind(this), function() {});
+                }.bind(this));
             }
         }
     }

@@ -34,12 +34,17 @@
                     <h3 class="modal-title">{{$t('settings.avatar.header')}}</h3>
                 </div>
                 <div class="modal-body">
-                    <p>{{$t('settings.avatar.cropHelp')}}</p>
+                    <p>{{$t('settings.avatar.crop_help')}}</p>
                     <img id="avatar-cropper" class="img-responsive" style="visibility: hidden;">
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-default" data-dismiss="modal">{{$t('settings.avatar.cancel')}}</button>
-                    <button class="btn btn-primary" @click="save()">{{$t('settings.save')}}</button>
+                    <button class="btn btn-default" data-dismiss="modal" :disabled="uploading">
+                        {{$t('settings.avatar.cancel')}}
+                    </button>
+                    <button class="btn btn-primary" @click="save()" :disabled="uploading">
+                        <i class="fa fa-fw fa-spinner fa-spin" v-if="uploading"></i>
+                        {{$t('settings.save')}}
+                    </button>
                 </div>
             </div>
         </div>
@@ -50,8 +55,15 @@
     import bootbox from 'bootbox';
     import cropper from 'cropper';
     import { reload_user_avatar } from '../../vuex/actions';
+    import * as socket from '../../socket';
 
     export default {
+        data() {
+            return {
+                uploading: false,
+            }
+        },
+
         vuex: {
             getters: {
                 user: function(state) { return state.auth.user; }
@@ -62,11 +74,11 @@
 
         methods: {
             deleteAvatar() {
-                bootbox.confirm(this.$t('settings.avatar.confirmDelete'), function(res) {
+                bootbox.confirm(this.$t('settings.avatar.confirm_delete'), function(res) {
                     if (res) {
-                        this.$http.post('/api/settings/delete-avatar').then(function() {
+                        socket.send('settings/delete_avatar', {}, function() {
                             this.reload_user_avatar();
-                        }.bind(this), function() {});
+                        }.bind(this));
                     }
                 }.bind(this));
             },
@@ -91,10 +103,12 @@
 
                 var dataURL = canvas.toDataURL("image/png");
 
-                this.$http.post('/api/settings/upload-avatar', {avatar: dataURL}).then(function() {
+                this.uploading = true;
+                socket.send('settings/upload_avatar', {avatar: dataURL}, function() {
+                    this.uploading = false;
                     jQuery('#avatar-modal').modal('hide');
                     this.reload_user_avatar();
-                }.bind(this), function() {});
+                }.bind(this));
             },
         },
 
