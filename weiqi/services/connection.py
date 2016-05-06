@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi.services import BaseService, UserService
-from weiqi.models import Room, RoomUser, Connection, Automatch
+from weiqi.models import Game, Room, RoomUser, Connection, Automatch
 from weiqi import settings
 
 
@@ -58,6 +58,7 @@ class ConnectionService(BaseService):
                 'user_id': self.user.id,
                 'user_display': self.user.display,
                 'rating': self.user.rating,
+                'wins': Game.count_wins(self.db, self.user),
             })
 
         data.update(self._connection_data_rooms())

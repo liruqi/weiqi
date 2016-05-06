@@ -301,6 +301,13 @@ class Game(Base):
         else:
             raise ValueError('could not determine winner and loser from game result: {}'.format(self.result))
 
+    @staticmethod
+    def count_wins(db, user):
+        return db.query(Game).filter(
+            ((Game.is_ranked == True) & (Game.stage == 'finished')) &
+            (((Game.black_user == user) & (Game.result.startswith('B+'))) |
+             ((Game.white_user == user) & (Game.result.startswith('W+'))))).count()
+
     def to_frontend(self, full=False):
         """Returns a dictionary with the game information.
         Will not return board data unless `full` is set to True.
