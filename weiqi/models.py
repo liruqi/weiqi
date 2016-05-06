@@ -52,6 +52,7 @@ class User(Base):
     display = Column(String, nullable=False)
 
     rating = Column(Float, nullable=False, default=0)
+    last_rating_update_at = Column(DateTime, default=datetime.utcnow)
     rating_data = deferred(Column(RatingData, nullable=False))
 
     is_online = Column(Boolean, nullable=False, default=False)

@@ -18,6 +18,7 @@ import time
 import logging
 import tornado.web
 import tornado.options
+import tornado.httpserver
 from weiqi import settings
 from weiqi.db import create_db, session
 from weiqi.models import Connection, Automatch, User
@@ -49,7 +50,7 @@ class Application(tornado.web.Application):
         super().__init__(
             handlers,
             debug=settings.DEBUG,
-            autoreload=settings.DEBUG,
+            autoreload=(settings.DEBUG and settings.NUM_PROCESSES == 1),
             cookie_secret=settings.SECRET,
             template_path=settings.TEMPLATE_PATH,
             static_path=settings.STATIC_PATH)
@@ -60,12 +61,15 @@ def main():
 
     logging.info("Starting application ...")
 
+    app = create_app()
+
+    logging.info("Listening on :{}".format(settings.LISTEN_PORT))
+    server = tornado.httpserver.HTTPServer(app)
+    server.bind(settings.LISTEN_PORT)
+    server.start(settings.NUM_PROCESSES)
+
     create_db()
     _cleanup_db()
-
-    app = create_app()
-    app.listen(settings.LISTEN_PORT)
-    logging.info("Listening on :{}".format(settings.LISTEN_PORT))
 
     tornado.ioloop.IOLoop.current().add_timeout(time.time() + .1, app.broker.run)
     tornado.ioloop.IOLoop.current().start()
