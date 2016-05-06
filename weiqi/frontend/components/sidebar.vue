@@ -1,25 +1,27 @@
 <template>
     <aside class="main-sidebar sidebar">
         <div class="user-panel">
-            <div class="pull-left image">
-                <a v-link="{name:'user', params:{user_id:user.user_id}}">
-                    <img :src="user.avatar_url" class="avatar">
-                </a>
-            </div>
-            <div class="pull-left info">
-                <p>
-                    <a v-link="{name:'user', params:{user_id:user.user_id}}">{{user.user_display}}</a>
-                </p>
+            <template v-if="user.logged_in">
+                <div class="pull-left image">
+                    <a v-link="{name:'user', params:{user_id:user.user_id}}">
+                        <img :src="user.avatar_url" class="avatar">
+                    </a>
+                </div>
+                <div class="pull-left info">
+                    <p>
+                        <a v-link="{name:'user', params:{user_id:user.user_id}}">{{user.user_display}}</a>
+                    </p>
 
-                <span v-if="user.logged_in">
-                    <i class="fa fa-trophy"></i>
-                    {{user.wins}}
-                    &mdash;
-                    <qi-rating-rank v-if="user.rating != null" :rating="user.rating"></qi-rating-rank>
-                </span>
-            </div>
+                    <span>
+                        <i class="fa fa-trophy"></i>
+                        {{user.wins}}
+                        &mdash;
+                        <qi-rating-rank v-if="user.rating != null" :rating="user.rating"></qi-rating-rank>
+                    </span>
+                </div>
 
-            <div class="clearfix"></div>
+                <div class="clearfix"></div>
+            </template>
 
             <div class="user-buttons">
                 <button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#qi-sign-in" v-if="!user.logged_in">
