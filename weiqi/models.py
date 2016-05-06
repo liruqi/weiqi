@@ -308,6 +308,11 @@ class Game(Base):
             (((Game.black_user == user) & (Game.result.startswith('B+'))) |
              ((Game.white_user == user) & (Game.result.startswith('W+'))))).count()
 
+    @staticmethod
+    def active_games(db):
+        return db.query(Game).filter(
+            ((Game.is_ranked == True) & (Game.stage != 'finished')))
+
     def to_frontend(self, full=False):
         """Returns a dictionary with the game information.
         Will not return board data unless `full` is set to True.

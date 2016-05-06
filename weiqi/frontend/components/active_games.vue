@@ -12,7 +12,6 @@
                 <tr>
                     <th>{{$t('game.white')}}</th>
                     <th>{{$t('game.black')}}</th>
-                    <th>{{$t('game.size')}}</th>
                     <th>{{$t('game.started')}}</th>
                 </tr>
             </thead>
@@ -26,13 +25,12 @@
                     </template>
                     <template v-else>
                         <td>
-                            <qi-username-rank :user_id="game.white_user_id" :rating="game.white_rating"></qi-username-rank>
+                            <qi-username-rank :user_id="game.white_user_id" :display="game.white_display" :rating="game.white_rating"></qi-username-rank>
                         </td>
                         <td>
-                            <qi-username-rank :user_id="game.black_user_id" :rating="game.black_rating"></qi-username-rank>
+                            <qi-username-rank :user_id="game.black_user_id" :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
                         </td>
                     </template>
-                    <td>{{game.Size}}x{{game.Size}}</td>
                     <td>{{started[game.id]}}</td>
                 </tr>
             </tbody>

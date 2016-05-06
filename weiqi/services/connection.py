@@ -65,6 +65,7 @@ class ConnectionService(BaseService):
         data.update(self._connection_data_rooms())
         data.update(self._connection_data_games())
         data.update(self._connection_data_direct_rooms())
+        data.update(self._connection_data_active_games())
 
         return data
 
@@ -110,6 +111,11 @@ class ConnectionService(BaseService):
             })
 
         return {'direct_rooms': direct}
+
+    def _connection_data_active_games(self):
+        return {
+            'active_games': [g.to_frontend() for g in Game.active_games(self.db)]
+        }
 
     def _join_open_rooms_and_games(self):
         for room in Room.open_rooms(self.db, self.user):
