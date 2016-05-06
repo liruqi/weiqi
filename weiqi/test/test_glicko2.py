@@ -123,6 +123,18 @@ def test_update_rating(player, opponents, results):
     assert math.isclose(player.volatility, 0.05999, abs_tol=0.00001)
 
 
+def test_update_rating_inactive(player):
+    rating = player.rating
+    deviation = player.deviation
+    volatility = player.volatility
+
+    player.update_rating()
+
+    assert math.isclose(player.rating, rating)
+    assert player.deviation > deviation
+    assert math.isclose(player.volatility, volatility)
+
+
 def test_player_from_dict(player):
     data = json.loads(json.dumps(player, cls=RatingEncoder))
     loaded = player_from_dict(data)

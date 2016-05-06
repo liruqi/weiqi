@@ -115,23 +115,28 @@ class Player(Rating):
         """Recalculates the player rating and clears all results."""
         p2 = self.to_glicko2()
 
-        gees = []
-        ees = []
-        res = []
-        for r in self.results:
-            opponent = r.to_glicko2()
-            gees.append(calc_g(opponent.deviation))
-            ees.append(calc_e(p2.rating, opponent.rating, opponent.deviation))
-            res.append(r.result)
+        if not self.results:
+            # For inactive players only step 6 of the paper applies.
+            new_dev = math.sqrt((p2.deviation*p2.deviation) + (p2.volatility*p2.volatility))
+            rating = rating_from_glicko2(p2.rating, new_dev, p2.volatility)
+        else:
+            gees = []
+            ees = []
+            res = []
+            for r in self.results:
+                opponent = r.to_glicko2()
+                gees.append(calc_g(opponent.deviation))
+                ees.append(calc_e(p2.rating, opponent.rating, opponent.deviation))
+                res.append(r.result)
 
-        est_var = estimate_variance(gees, ees)
-        est_imp_part = estimate_improvement_partial(gees, ees, res)
-        est_imp = est_var * est_imp_part
-        new_vol = new_volatility(p2.volatility, est_var, est_imp)
-        new_dev = new_deviation(p2.deviation, new_vol, est_var)
-        new_rat = new_rating(p2.rating, new_dev, est_imp_part)
+            est_var = estimate_variance(gees, ees)
+            est_imp_part = estimate_improvement_partial(gees, ees, res)
+            est_imp = est_var * est_imp_part
+            new_vol = new_volatility(p2.volatility, est_var, est_imp)
+            new_dev = new_deviation(p2.deviation, new_vol, est_var)
+            new_rat = new_rating(p2.rating, new_dev, est_imp_part)
 
-        rating = rating_from_glicko2(new_rat, new_dev, new_vol)
+            rating = rating_from_glicko2(new_rat, new_dev, new_vol)
 
         # Upper bound by the default deviation
         rating.deviation = min(rating.deviation, DEFAULT_DEVIATION)
