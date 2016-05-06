@@ -58,6 +58,8 @@
 </template>
 
 <script>
+    import * as socket from '../socket';
+
     export default {
         data() {
             return {
@@ -78,9 +80,9 @@
             },
 
             play() {
-                this.$http.post('/api/play/automatch', {preset: this.preset, max_hc: this.max_hc}).then(function() {
+                socket.send('play/automatch', {preset: this.preset, max_hc: this.max_hc}, function() {
                     jQuery('#qi-play-dialog').modal('hide');
-                }, function() {});
+                });
             }
         }
     }

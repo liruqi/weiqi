@@ -21,6 +21,7 @@ from weiqi.test.factories import UserFactory, AutomatchFactory
 
 def test_automatch_inserting(db, socket):
     user = UserFactory(rating=300)
+    socket.subscribe('automatch_status/'+str(user.id))
 
     svc = PlayService(db, socket, user)
     svc.execute('automatch', {'preset': 'fast', 'max_hc': 0})
@@ -34,6 +35,23 @@ def test_automatch_inserting(db, socket):
     assert item.min_rating == 300
     assert item.max_rating == 399
 
+    assert len(socket.sent_messages) == 1
+    assert socket.sent_messages[0]['method'] == 'automatch_status'
+    assert socket.sent_messages[0]['data']['in_queue']
+
+
+def test_automatch_twice(db, socket):
+    user = UserFactory()
+    svc = PlayService(db, socket, user)
+
+    svc.execute('automatch', {'preset': 'fast', 'max_hc': 0})
+    svc.execute('automatch', {'preset': 'medium', 'max_hc': 0})
+
+    assert db.query(Automatch).count() == 1
+    item = db.query(Automatch).first()
+    assert item.user == user
+    assert item.preset == 'medium'
+
 
 def test_automatch_create_game(db, socket):
     user = UserFactory(rating=1500)
@@ -41,6 +59,8 @@ def test_automatch_create_game(db, socket):
     AutomatchFactory(user=other, user_rating=1600, user__rating=1600, min_rating=1500, max_rating=1700)
 
     socket.subscribe('game_started')
+    socket.subscribe('automatch_status/'+str(user.id))
+    socket.subscribe('automatch_status/'+str(other.id))
 
     svc = PlayService(db, socket, user)
     svc.execute('automatch', {'preset': 'fast', 'max_hc': 1})
@@ -69,6 +89,10 @@ def test_automatch_create_game(db, socket):
     assert game.white_rating in [user.rating, other.rating]
     assert game.black_rating != game.white_rating
 
-    assert len(socket.sent_messages) == 1
+    assert len(socket.sent_messages) == 3
     assert socket.sent_messages[0]['method'] == 'game_started'
     assert socket.sent_messages[0]['data'] == game.to_frontend()
+    assert socket.sent_messages[1]['method'] == 'automatch_status'
+    assert not socket.sent_messages[1]['data']['in_queue']
+    assert socket.sent_messages[2]['method'] == 'automatch_status'
+    assert not socket.sent_messages[2]['data']['in_queue']

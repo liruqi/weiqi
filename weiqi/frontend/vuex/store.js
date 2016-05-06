@@ -103,7 +103,7 @@ const mutations = {
     },
 
     MSG_AUTOMATCH_STATUS(state, data) {
-        state.auth.user.automatch = data.InQueue;
+        state.auth.user.automatch = data.in_queue;
     },
     
     MSG_GAME_STARTED(state, data) {

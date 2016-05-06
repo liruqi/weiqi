@@ -30,6 +30,8 @@ class PlayService(BaseService):
         game = None
 
         try:
+            self.db.query(Automatch).filter_by(user=self.user).delete()
+
             query = self.db.query(Automatch).with_for_update()
             query = query.filter(Automatch.min_rating <= self.user.rating,
                                  Automatch.max_rating >= self.user.rating,
@@ -56,6 +58,10 @@ class PlayService(BaseService):
 
         if game:
             self._publish_game_started(game)
+            self._publish_automatch(game.black_user, False)
+            self._publish_automatch(game.white_user, False)
+        else:
+            self._publish_automatch(self.user, True)
 
     def _create_game(self, user, other, preset, ranked):
         room = Room(type='game')
@@ -90,7 +96,11 @@ class PlayService(BaseService):
     @BaseService.authenticated
     @BaseService.register
     def cancel_automatch(self):
-        pass
+        self.db.query(Automatch).filter_by(user=self.user).delete()
+        self._publish_automatch(self.user, False)
+
+    def _publish_automatch(self, user, in_queue):
+        self.socket.publish('automatch_status/'+str(user.id), {'in_queue': in_queue})
 
     @BaseService.authenticated
     @BaseService.register

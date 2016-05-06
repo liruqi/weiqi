@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi.services import BaseService, UserService
-from weiqi.models import Game, Room, RoomUser, Connection
+from weiqi.models import Room, RoomUser, Connection, Automatch
 from weiqi import settings
 
 
@@ -31,6 +31,7 @@ class ConnectionService(BaseService):
 
         if self.user:
             self.socket.subscribe('direct_message/'+str(self.user.id))
+            self.socket.subscribe('automatch_status/'+str(self.user.id))
 
         self._join_open_rooms_and_games()
         self._insert_connection()
@@ -39,6 +40,10 @@ class ConnectionService(BaseService):
     @BaseService.register
     def disconnect(self):
         self._delete_connection()
+
+        if self.user:
+            self.db.query(Automatch).filter_by(user=self.user).delete()
+
         UserService(self.db, self.socket, self.user).publish_status()
 
     @BaseService.register

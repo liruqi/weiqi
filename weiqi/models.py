@@ -282,6 +282,7 @@ class Game(Base):
         CheckConstraint('NOT is_ranked OR NOT is_demo'),
         CheckConstraint('is_demo OR black_user_id IS NOT NULL'),
         CheckConstraint('is_demo OR white_user_id IS NOT NULL'),
+        CheckConstraint('is_demo OR black_user_id != white_user_id'),
         CheckConstraint('NOT is_demo OR demo_owner_id IS NOT NULL'),
     )
 

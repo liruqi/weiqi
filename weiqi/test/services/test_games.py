@@ -21,6 +21,20 @@ from weiqi.test.factories import GameFactory
 from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN
 
 
+def test_open(db, socket):
+    game = GameFactory()
+
+    svc = GameService(db, socket, game.black_user)
+    svc.execute('open', {'game_id': game.id})
+
+    assert socket.is_subscribed('game_data/'+str(game.id))
+    assert socket.is_subscribed('game_update/'+str(game.id))
+
+    assert socket.is_subscribed('room_message/'+str(game.room_id))
+    assert socket.is_subscribed('room_user/'+str(game.room_id))
+    assert socket.is_subscribed('room_user_left/'+str(game.room_id))
+
+
 def test_move(db, socket):
     game = GameFactory()
 

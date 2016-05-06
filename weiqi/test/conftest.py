@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
+from tornado.httputil import HTTPServerRequest
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import DummyBroker
 from weiqi.handler.socket import SocketMixin
@@ -47,6 +48,7 @@ class DummySocket(SocketMixin):
         super().initialize(pubsub)
         self.sent_messages = []
         self._compress = False
+        self.request = HTTPServerRequest('GET', '/socket')
 
     def write_message(self, msg, *args, **kwargs):
         self.sent_messages.append(msg)

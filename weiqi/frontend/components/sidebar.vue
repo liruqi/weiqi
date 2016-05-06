@@ -32,7 +32,7 @@
                     <template v-if="user.automatch">
                         <button type="button" class="btn btn-primary col-xs-10" @click="cancel_automatch">
                             <i class="fa fa-spinner fa-spin"></i>&nbsp;&nbsp;
-                            {{$t('sidebar.searchingAutomatch')}}
+                            {{$t('sidebar.searching_automatch')}}
                         </button>
                     </template>
                     <template v-else>
@@ -145,6 +145,7 @@
 
 <script>
     import { close_game } from '../vuex/actions';
+    import * as socket from '../socket';
 
     export default {
         vuex: {
@@ -181,7 +182,7 @@
 
         methods: {
             cancel_automatch() {
-                this.$http.post('/api/play/automatch/cancel');
+                socket.send('play/cancel_automatch');
             },
 
             can_close_game(game_id) {

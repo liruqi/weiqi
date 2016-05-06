@@ -42,7 +42,8 @@ class GameService(BaseService):
 
         RoomService(self.db, self.socket, self.user).join_room(game.room_id)
 
-        self.socket.subscribe('game/'+str(game_id))
+        self.socket.subscribe('game_data/'+str(game_id))
+        self.socket.subscribe('game_update/'+str(game_id))
         self.socket.send('game_data', game.to_frontend(full=True))
 
     @BaseService.authenticated
