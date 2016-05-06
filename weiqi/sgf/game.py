@@ -27,6 +27,7 @@ def game_from_sgf(sgf):
 def game_from_node(node):
     game = Game(is_demo=True)
     game.board = Board(int(node.prop_one('SZ', '19')))
+    game.komi = float(node.prop_one('KM', 6.5))
     game.result = node.prop_one('RE')
     game.black_display = node.prop_one('PB')
     game.white_display = node.prop_one('PW')
@@ -46,11 +47,11 @@ def _replay_game(board, node):
                         _prop_coords(node.props.get('aw'), board.size),
                         _prop_coords(node.props.get('ae'), board.size))
 
-    if node.props.get('B'):
+    if node.prop_one('B'):
         board.current = BLACK
         board.play(coord_from_sgf(node.prop_one('B'), board.size))
 
-    if node.props.get('W'):
+    if node.prop_one('W'):
         board.current = WHITE
         board.play(coord_from_sgf(node.prop_one('W'), board.size))
 

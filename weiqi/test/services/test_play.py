@@ -96,3 +96,18 @@ def test_automatch_create_game(db, socket):
     assert not socket.sent_messages[1]['data']['in_queue']
     assert socket.sent_messages[2]['method'] == 'automatch_status'
     assert not socket.sent_messages[2]['data']['in_queue']
+
+
+def test_upload_sgf(db, socket):
+    user = UserFactory()
+    svc = PlayService(db, socket, user)
+
+    game_id = svc.execute('upload_sgf', {'sgf': '(;B[dd]W[qq])'})
+    game = db.query(Game).get(game_id)
+
+    assert game is not None
+    assert game.room is not None
+    assert game.is_demo
+    assert game.demo_owner == user
+    assert game.demo_owner_rating == user.rating
+    assert game.demo_owner_display == user.display

@@ -81,7 +81,7 @@
                             'text-warning': game.stage!='finished' && game_has_update[game.id]}"
                             class="fa fa-circle"></i>
 
-                        <span v-if="game.is_demo">{{game.demo_owner_id}}</span>
+                        <span v-if="game.is_demo">{{game.demo_owner_display}}</span>
                         <span v-else>{{game.white_display}} &mdash; {{game.black_display}}</span>
 
                         <span class="sidebar-item-action pull-right" v-if="can_close_game(game.id)" @click.prevent="close_game(game.id)">

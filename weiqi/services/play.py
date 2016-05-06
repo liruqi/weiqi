@@ -18,6 +18,7 @@ from weiqi.services import BaseService
 from weiqi.rating import rating_range
 from weiqi.models import Automatch, Room, RoomUser, Game
 from weiqi.board import Board
+from weiqi.sgf import game_from_sgf
 
 
 class PlayService(BaseService):
@@ -104,8 +105,24 @@ class PlayService(BaseService):
 
     @BaseService.authenticated
     @BaseService.register
-    def upload_sgf(self):
-        pass
+    def upload_sgf(self, sgf):
+        game = game_from_sgf(sgf)
+
+        room = Room(type='game')
+        self.db.add(room)
+
+        game.is_demo = True
+        game.is_ranked = False
+        game.stage = 'finished'
+        game.demo_owner = self.user
+        game.demo_owner_rating = self.user.rating
+        game.demo_owner_display = self.user.display
+        game.room = room
+        self.db.add(game)
+
+        self.db.commit()
+
+        return game.id
 
     @BaseService.authenticated
     @BaseService.register

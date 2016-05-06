@@ -46,8 +46,13 @@ def coord_to_2d(coord, size):
 def coord_from_sgf(coord, size):
     start = ord('a')
     sgf = coord.lower()
+
+    if len(sgf) < 2:
+        raise ValueError('invalid coord: {}'.format(coord))
+
     x = ord(sgf[0]) - start + 1
     y = ord(sgf[1]) - start + 1
+
     return coord2d(x, y, size)
 
 

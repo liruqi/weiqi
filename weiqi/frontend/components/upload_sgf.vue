@@ -3,13 +3,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title">{{$t('uploadSGF.header')}}</h3>
+                    <h3 class="modal-title">{{$t('upload_sgf.header')}}</h3>
                 </div>
 
                 <div class="modal-body">
                     <div class="form-group" :class="{'has-error': !!error}">
-                        <label for="sgf-input">{{$t('uploadSGF.chooseFile')}}</label>
-                        <input id="sgf-input" type="file" @change="fileChosen">
+                        <label for="sgf-input">{{$t('upload_sgf.choose_file')}}</label>
+                        <input id="sgf-input" type="file" @change="file_chosen">
 
                         <p v-if="!!error" class="help-block">{{error}}</p>
                     </div>
@@ -17,10 +17,10 @@
 
                 <div class="modal-footer">
                     <button class="btn btn-primary" @click="upload" :disabled="!sgf">
-                        {{$t('uploadSGF.upload')}}
+                        {{$t('upload_sgf.upload')}}
                     </button>
 
-                    <button class="btn btn-default" data-dismiss="modal">{{$t('uploadSGF.cancel')}}</button>
+                    <button class="btn btn-default" data-dismiss="modal">{{$t('upload_sgf.cancel')}}</button>
                 </div>
             </div>
         </div>
@@ -28,6 +28,8 @@
 </template>
 
 <script>
+    import * as socket from '../socket';
+
     export default {
         data() {
             return {
@@ -37,7 +39,7 @@
         },
 
         methods: {
-            fileChosen() {
+            file_chosen() {
                 var file = jQuery('#sgf-input')[0].files[0];
                 var fr = new FileReader();
 
@@ -54,13 +56,13 @@
             },
 
             upload() {
-                this.$http.post('/api/play/upload-sgf', {sgf: this.sgf}).then(function(res) {
+                socket.send('play/upload_sgf', {sgf: this.sgf}, function(game_id) {
                     jQuery('#qi-upload-sgf').modal('hide');
-                    this.$router.go({name: 'game', params: {game_id: res.data}});
-                }.bind(this), function() {
+                    this.$router.go({name: 'game', params: {game_id: game_id}});
+                }.bind(this)/*, function() {
                     this.error = 'error';
                     this.sgf = '';
-                }.bind(this))
+                }.bind(this)*/);
             }
         }
     }

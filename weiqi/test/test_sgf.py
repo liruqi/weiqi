@@ -90,6 +90,7 @@ def test_game_info():
         """)
 
     assert game.result == 'B+R'
+    assert game.komi == 6.5
     assert game.black_display == 'Black'
     assert game.white_display == 'White'
     assert game.title == 'event'
