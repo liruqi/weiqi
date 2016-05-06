@@ -193,3 +193,18 @@ class GameService(BaseService):
 
     def _publish_game_data(self, game):
         self.socket.publish('game_data/'+str(game.id), game.to_frontend(full=True))
+
+    @BaseService.authenticated
+    @BaseService.register
+    def set_current_node(self, game_id, node_id):
+        game = self.db.query(Game).get(game_id)
+
+        if not game.demo_control == self.user:
+            raise InvalidPlayerError()
+
+        if node_id >= len(game.board.tree):
+            raise ServiceError('invalid node_id')
+
+        game.board.current_node_id = node_id
+        game.apply_board_change()
+        self._publish_game_update(game)

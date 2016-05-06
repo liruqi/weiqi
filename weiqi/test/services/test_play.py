@@ -111,3 +111,5 @@ def test_upload_sgf(db, socket):
     assert game.demo_owner == user
     assert game.demo_owner_rating == user.rating
     assert game.demo_owner_display == user.display
+    assert game.demo_control == user
+    assert game.demo_control_display == user.display

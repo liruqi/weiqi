@@ -117,6 +117,8 @@ class PlayService(BaseService):
         game.demo_owner = self.user
         game.demo_owner_rating = self.user.rating
         game.demo_owner_display = self.user.display
+        game.demo_control = self.user
+        game.demo_control_display = self.user.display
         game.room = room
         self.db.add(game)
 

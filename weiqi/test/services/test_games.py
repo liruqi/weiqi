@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
-from weiqi.services import GameService
+from weiqi.services import GameService, ServiceError
 from weiqi.services.games import InvalidPlayerError, InvalidStageError
-from weiqi.test.factories import GameFactory
+from weiqi.test.factories import GameFactory, DemoGameFactory
 from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN
 
 
@@ -239,8 +239,26 @@ def test_demo_resign(db, socket):
 
 
 def test_demo_set_current_node(db, socket):
-    pytest.skip('not implemented')
+    game = DemoGameFactory()
+    game.board.play(1)
+    game.board.play(2)
+    game.apply_board_change()
+
+    svc = GameService(db, socket, game.demo_control)
+    svc.execute('set_current_node', {'game_id': game.id, 'node_id': 1})
+
+    assert game.board.current_node_id == 1
 
 
 def test_demo_set_current_node_invalid(db, socket):
-    pytest.skip('not implemented')
+    game = DemoGameFactory()
+    game.board.play(1)
+    game.board.play(2)
+    game.apply_board_change()
+
+    svc = GameService(db, socket, game.demo_control)
+
+    with pytest.raises(ServiceError):
+        svc.execute('set_current_node', {'game_id': game.id, 'node_id': 2})
+
+    assert game.board.current_node_id == 1

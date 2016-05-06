@@ -21,6 +21,8 @@
 </template>
 
 <script>
+    import * as socket from '../../socket';
+
     export default {
         props: ['game', 'is_player', 'has_control', 'force_node_id'],
         components: {
@@ -146,7 +148,7 @@
 
             set_node_id(node_id) {
                 if(this.game.is_demo && this.has_control) {
-                    this.$http.post('/api/games/'+this.game.id+'/set-current-node', {node_id: node_id});
+                    socket.send('games/set_current_node', {game_id: this.game.id, node_id: node_id});
                 } else {
                     this.force_node_id = node_id;
 

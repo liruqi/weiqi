@@ -93,3 +93,23 @@ class GameFactory(SQLAlchemyModelFactory):
     white_user = factory.SubFactory(UserFactory)
     white_display = factory.lazy_attribute(lambda o: o.white_user.display)
     white_rating = factory.lazy_attribute(lambda o: o.white_user.rating)
+
+
+class DemoGameFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = Game
+        sqlalchemy_session = session
+        force_flush = True
+
+    room = factory.SubFactory(RoomFactory)
+    is_demo = True
+    is_ranked = False
+    stage = 'finished'
+    board = factory.lazy_attribute(lambda o: Board(9))
+    komi = 7.5
+    result = ''
+    demo_owner = factory.SubFactory(UserFactory)
+    demo_owner_display = factory.lazy_attribute(lambda o: o.demo_owner.display)
+    demo_owner_rating = factory.lazy_attribute(lambda o: o.demo_owner.rating)
+    demo_control = factory.lazy_attribute(lambda o: o.demo_owner)
+    demo_control_display = factory.lazy_attribute(lambda o: o.demo_control.display)
