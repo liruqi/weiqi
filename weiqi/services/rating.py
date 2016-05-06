@@ -81,8 +81,11 @@ class RatingService(BaseService):
 
     def _apply_rating_periods(self, user):
         """Checks when the users rating was last updated and calculates rating periods if necessary."""
-        total = (datetime.utcnow() - user.last_rating_update_at).total_seconds()
-        periods = int(total / settings.RATING_PERIOD_DURATION.total_seconds())
+        if not user.last_rating_update_at:
+            periods = 1
+        else:
+            total = (datetime.utcnow() - user.last_rating_update_at).total_seconds()
+            periods = int(total / settings.RATING_PERIOD_DURATION.total_seconds())
 
         if periods > 0:
             for _ in range(periods):
