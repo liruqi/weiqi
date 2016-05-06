@@ -43,6 +43,14 @@ def coord_to_2d(coord, size):
     return (x+1), (y+1)
 
 
+def coord_from_sgf(coord, size):
+    start = ord('a')
+    sgf = coord.lower()
+    x = ord(sgf[0]) - start + 1
+    y = ord(sgf[1]) - start + 1
+    return coord2d(x, y, size)
+
+
 def neighbors(coord, size):
     x, y = coord_to_2d(coord, size)
     x -= 1
