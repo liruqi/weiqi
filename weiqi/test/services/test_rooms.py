@@ -114,3 +114,31 @@ def test_message_direct(db, socket):
     assert socket.sent_messages[1]['data']['room_id'] == room.id
 
     assert db.query(RoomUser).filter_by(user=other, room=room).first().has_unread
+
+
+def test_join_room(db, socket):
+    user = UserFactory()
+    room = RoomFactory()
+    svc = RoomService(db, socket, user)
+    socket.subscribe('room_user/'+str(room.id))
+
+    svc.join_room(room.id)
+
+    assert db.query(RoomUser).count() == 1
+    ru = db.query(RoomUser).first()
+    assert ru.room == room
+    assert ru.user == user
+
+    assert len(socket.sent_messages) == 1
+    assert socket.sent_messages[0]['method'] == 'room_user'
+
+
+def test_leave_room(db, socket):
+    user = UserFactory()
+    room = RoomFactory()
+    svc = RoomService(db, socket, user)
+
+    svc.join_room(room.id)
+    svc.leave_room(room.id)
+
+    assert db.query(RoomUser).count() == 0

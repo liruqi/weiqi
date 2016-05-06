@@ -120,4 +120,18 @@ class RoomService(BaseService):
 
         if self.user:
             if self.db.query(RoomUser).filter_by(room_id=room_id, user=self.user).count() == 0:
-                self.db.add(RoomUser(room_id=room_id, user=self.user))
+                ru = RoomUser(room_id=room_id, user=self.user)
+                self.db.add(ru)
+                self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
+
+    def leave_room(self, room_id):
+        self.socket.unsubscribe('room_message/'+str(room_id))
+        self.socket.unsubscribe('room_user/'+str(room_id))
+        self.socket.unsubscribe('room_user_left/'+str(room_id))
+
+        if self.user:
+            ru = self.db.query(RoomUser).filter_by(user=self.user, room_id=room_id).first()
+
+            if ru:
+                self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())
+                self.db.delete(ru)

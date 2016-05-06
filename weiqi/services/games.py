@@ -35,7 +35,7 @@ class GameService(BaseService):
     __service_name__ = 'games'
 
     @BaseService.register
-    def open(self, game_id):
+    def open_game(self, game_id):
         game = self.db.query(Game).get(game_id)
         if not game:
             return
@@ -45,6 +45,16 @@ class GameService(BaseService):
         self.socket.subscribe('game_data/'+str(game_id))
         self.socket.subscribe('game_update/'+str(game_id))
         self.socket.send('game_data', game.to_frontend(full=True))
+
+    @BaseService.register
+    def close_game(self, game_id):
+        game = self.db.query(Game).get(game_id)
+        if not game:
+            return
+
+        RoomService(self.db, self.socket, self.user).leave_room(game.room_id)
+        self.socket.unsubscribe('game_data/'+str(game_id))
+        self.socket.unsubscribe('game_update/'+str(game_id))
 
     @BaseService.authenticated
     @BaseService.register

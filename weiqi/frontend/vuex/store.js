@@ -252,11 +252,11 @@ const mutations = {
             return;
         }
 
-        socket.send('games/open', {'game_id': game_id});
+        socket.send('games/open_game', {'game_id': game_id});
     },
 
     CLOSE_GAME(state, game_id) {
-        socket.send('games/close', {'game_id': game_id});
+        socket.send('games/close_game', {'game_id': game_id});
 
         state.open_games = state.open_games.filter(function(game) {
             return game.id != game_id;
