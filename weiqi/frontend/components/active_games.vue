@@ -19,16 +19,16 @@
                 <tr v-for="game in sorted_games" v-link="{name:'game', params:{game_id: game.id}}">
                     <template v-if="game.is_demo">
                         <td colspan="2">
-                            <qi-username-rank :user_id="game.demo_owner_id" :rating="game.demo_owner_rating"></qi-username-rank>
+                            <qi-username-rank :display="game.demo_owner_display" :rating="game.demo_owner_rating"></qi-username-rank>
                             <span v-if="game.demo_title">&mdash; {{game.demo_title}}</span>
                         </td>
                     </template>
                     <template v-else>
                         <td>
-                            <qi-username-rank :user_id="game.white_user_id" :display="game.white_display" :rating="game.white_rating"></qi-username-rank>
+                            <qi-username-rank :display="game.white_display" :rating="game.white_rating"></qi-username-rank>
                         </td>
                         <td>
-                            <qi-username-rank :user_id="game.black_user_id" :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
+                            <qi-username-rank :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
                         </td>
                     </template>
                     <td>{{started[game.id]}}</td>
