@@ -196,6 +196,8 @@
 
   "user_detail": {
     "member_since": "Member since",
+    "last_activity": "Last activity",
+    "online": "Online now",
     "rank": "Rank",
     "games": "Games"
   },

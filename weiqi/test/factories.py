@@ -17,6 +17,7 @@
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy import FuzzyText
+from datetime import datetime
 from weiqi.models import User, Room, RoomUser, Automatch, Game
 from weiqi.board import Board
 from weiqi.test import session
@@ -29,6 +30,7 @@ class UserFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = session
 
     id = factory.Sequence(lambda n: n)
+    last_activity_at = datetime.utcnow()
     email = FuzzyText(suffix='@test.test')
     password = factory.PostGenerationMethodCall('set_password', 'pw')
     display = FuzzyText()

@@ -18,6 +18,7 @@ from tornado.websocket import WebSocketHandler
 import zlib
 import json
 import uuid
+from datetime import datetime
 from weiqi import settings
 from weiqi.db import session
 from weiqi.services import ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService
@@ -99,6 +100,9 @@ class SocketMixin:
 
             if user_id:
                 user = db.query(User).get(int(user_id))
+
+            if user and method != 'ping':
+                user.last_activity_at = datetime.utcnow()
 
             svc = service_class(db, self, user)
             return svc.execute(method, data)

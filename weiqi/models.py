@@ -45,6 +45,7 @@ class User(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_activity_at = Column(DateTime)
 
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)

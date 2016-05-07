@@ -20,6 +20,20 @@
                         </div>
 
                         <div class="row">
+                            <div class="col-xs-6">{{$t('user_detail.last_activity')}}</div>
+                            <div class="col-xs-6">
+                                <span v-if="user.is_online" class="text-success">{{$t('user_detail.online')}}</span>
+                                <span v-else>
+                                    <span v-if="user.last_activity_at"
+                                          title="{{moment(user.last_activity_at).format('YYYY-MM-DD HH:mm')}}">
+                                        {{moment(user.last_activity_at).fromNow()}}
+                                    </span>
+                                    <span v-else>-</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-xs-6">{{$t('user_detail.rank')}}</div>
                             <div class="col-xs-6">
                                 <qi-rating-rank :rating="user.rating"></qi-rating-rank>

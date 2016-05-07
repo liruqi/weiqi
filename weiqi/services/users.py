@@ -46,6 +46,8 @@ class UserService(BaseService):
         return {
             'id': user_id,
             'created_at': user.created_at.isoformat(),
+            'last_activity_at': user.last_activity_at.isoformat() if user.last_activity_at else None,
+            'is_online': user.is_online,
             'rating': user.rating,
             'display': user.display,
         }
