@@ -1,10 +1,12 @@
 <template>
     <div v-show="is_visible">
         <div class="game-navigation">
-            <div class="game-nav-node">
-                <qi-game-tree-node v-if="has_nodes" :game="game" :active_node="current_node" :node_id="0"
-                                   :move_nr="1" :expanded.sync="expanded"></qi-game-tree-node>
-            </div>
+            <qi-game-tree :game="game"
+                          :move_tree="move_tree"
+                          :move_nr_start="1"
+                          :active_node="current_node"
+                          :expanded.sync="expanded">
+            </qi-game-tree>
         </div>
 
         <div class="game-nav-buttons">
@@ -14,7 +16,8 @@
             <button class="btn btn-default btn-xs" @click="last_move()">&raquo;</button>
         </div>
 
-        <button v-el:back-to-game v-if="!game.is_demo || !has_control" class="btn btn-default btn-xs btn-block" @click="back_to_game()">
+        <button v-el:back-to-game v-if="!game.is_demo || !has_control" class="btn btn-default btn-xs btn-block"
+                @click="back_to_game()">
             {{$t('game.back_to_game')}}
         </button>
     </div>
@@ -26,7 +29,8 @@
     export default {
         props: ['game', 'is_player', 'has_control', 'force_node_id'],
         components: {
-            'qi-game-tree-node': require('./game_tree_node.vue')
+            'qi-game-tree-node': require('./game_tree_node.vue'),
+            'qi-game-tree': require('./game_tree.vue')
         },
 
         data() {
@@ -84,6 +88,15 @@
                 }
 
                 return this.game.board.tree[node_id];
+            },
+
+            move_tree() {
+                var tree = [];
+                var node = this.game.board.tree[0];
+
+                this.add_moves_to_tree(tree, node);
+
+                return tree;
             },
         },
 
@@ -178,6 +191,26 @@
                 nav.animate({
                     scrollTop: nav[0].scrollTop + (el.offset().top - nav.offset().top) - nav.height() / 2 + labelH / 2
                 });
+            },
+
+            add_moves_to_tree(tree, node) {
+                if(node.children.length > 1) {
+                    var vars = [];
+
+                    node.children.forEach(function(child) {
+                        var subtree = [];
+                        this.add_moves_to_tree(subtree, this.game.board.tree[child]);
+                        vars.push(subtree);
+                    }.bind(this));
+
+                    tree.push({type: 'variations', vars: vars});
+                } else {
+                    tree.push({type: 'node', node_id: node.id});
+
+                    if(node.children.length == 1) {
+                        this.add_moves_to_tree(tree, this.game.board.tree[node.children[0]]);
+                    }
+                }
             }
         }
     }
