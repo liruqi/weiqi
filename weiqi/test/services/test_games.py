@@ -17,7 +17,7 @@
 import pytest
 from weiqi.services import GameService, ServiceError
 from weiqi.services.games import InvalidPlayerError, InvalidStageError
-from weiqi.test.factories import GameFactory, DemoGameFactory
+from weiqi.test.factories import GameFactory, DemoGameFactory, UserFactory
 from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN
 
 
@@ -228,16 +228,35 @@ def test_start_delay(db, socket):
     pytest.skip('not implemented')
 
 
-def test_demo(db, socket):
-    pytest.skip('not implemented')
+def test_move_demo(db, socket):
+    game = DemoGameFactory()
+
+    svc = GameService(db, socket, game.demo_control)
+    svc.execute('move', {'game_id': game.id, 'move': 30})
+
+    assert game.board.at(30) == BLACK
+    assert game.board.current == WHITE
 
 
 def test_demo_control(db, socket):
-    pytest.skip('not implemented')
+    user = UserFactory()
+    game = DemoGameFactory(demo_control=user)
+
+    svc = GameService(db, socket, game.demo_owner)
+
+    with pytest.raises(InvalidPlayerError):
+        svc.execute('move', {'game_id': game.id, 'move': 30})
+
+    assert game.board.at(30) == EMPTY
+    assert game.board.current == BLACK
 
 
 def test_demo_resign(db, socket):
-    pytest.skip('not implemented')
+    game = DemoGameFactory()
+    svc = GameService(db, socket, game.demo_control)
+
+    with pytest.raises(ServiceError):
+        svc.execute('move', {'game_id': game.id, 'move': RESIGN})
 
 
 def test_demo_set_current_node(db, socket):

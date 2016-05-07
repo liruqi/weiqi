@@ -3,12 +3,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title">{{$t('createDemo.header')}}</h3>
+                    <h3 class="modal-title">{{$t('create_demo.header')}}</h3>
                 </div>
 
                 <div class="modal-body">
                     <div class="form-group">
-                        <input type="text" class="form-control" :placeholder="$t('createDemo.title')" v-model="title">
+                        <input type="text" class="form-control" :placeholder="$t('create_demo.title')" v-model="title">
                     </div>
 
                     <div class="form-group">
@@ -25,10 +25,10 @@
 
                 <div class="modal-footer">
                     <button class="btn btn-primary" @click="create">
-                        {{$t('createDemo.create')}}
+                        {{$t('create_demo.create')}}
                     </button>
 
-                    <button class="btn btn-default" data-dismiss="modal">{{$t('createDemo.cancel')}}</button>
+                    <button class="btn btn-default" data-dismiss="modal">{{$t('create_demo.cancel')}}</button>
                 </div>
             </div>
         </div>
@@ -36,6 +36,8 @@
 </template>
 
 <script>
+    import * as socket from '../socket';
+
     export default {
         data() {
             return {
@@ -46,9 +48,9 @@
 
         methods: {
             create() {
-                this.$http.post('/api/play/create-demo', {title: this.title, size: this.size}).then(function(res) {
+                socket.send('play/create_demo', {title: this.title, size: this.size}, function(game_id) {
                     jQuery('#qi-create-demo').modal('hide');
-                    this.$router.go({name: 'game', params: {game_id: res.data}});
+                    this.$router.go({name: 'game', params: {game_id: game_id}});
                 }.bind(this));
             }
         }

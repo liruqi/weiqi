@@ -93,7 +93,7 @@ class Node:
 
         self.action = None
         self.move = None  # Used for actions NODE_BLACK and NODE_WHITE
-        self.edits = []  # Used for action NODE_EDIT
+        self.edits = {}  # Used for action NODE_EDIT
 
         self.captures = []  # Only set for actions NODE_BLACK and NODE_WHITE
         self.marked_dead = {}
@@ -113,7 +113,6 @@ class Board:
     def __init__(self, size=9, handicap=0):
         self.size = size
         self.handicap = handicap
-        self.current = BLACK
         self.tree = []
         self.current_node_id = None
         self._pos = [EMPTY]*size*size
@@ -159,6 +158,33 @@ class Board:
         return self.tree[self.current_node_id] if self.current_node_id is not None else None
 
     @property
+    def current(self):
+        """Returns the current color based on the previous move."""
+        current = self.current_node
+        if not current:
+            return BLACK
+
+        if current.action == NODE_BLACK:
+            return WHITE
+        elif current.action == NODE_WHITE:
+            return BLACK
+
+        if current.parent_id is None:
+            # Handicap game
+            return WHITE
+
+        if current.edits:
+            return WHITE if list(current.edits.items())[-1][1] == BLACK else BLACK
+
+        return BLACK
+
+    @current.setter
+    def current(self, color):
+        """Sets the current color by playing a PASS if necessary."""
+        if color != self.current:
+            self.play(PASS)
+
+    @property
     def ko(self) -> int:
         if not self.current_node:
             return None
@@ -182,7 +208,6 @@ class Board:
 
         if move in [PASS, RESIGN]:
             self._add_move(move)
-            self.current = opposite(self.current)
             return
 
         self.validate_legal(move)
@@ -193,7 +218,6 @@ class Board:
 
         self.pos[move] = self.current
         self._add_move(move, caps)
-        self.current = opposite(self.current)
 
     def validate_legal(self, coord):
         if self.at(coord) != EMPTY:
@@ -335,9 +359,9 @@ class Board:
         self._pos = [EMPTY]*self.length
 
         for node in path:
-            if node.action == NODE_BLACK:
+            if node.action == NODE_BLACK and node.move not in [PASS, RESIGN]:
                 self._pos[node.move] = BLACK
-            elif node.action == NODE_WHITE:
+            elif node.action == NODE_WHITE and node.move not in [PASS, RESIGN]:
                 self._pos[node.move] = WHITE
             elif node.action == NODE_EDIT:
                 for coord, color in node.edits.items():
@@ -409,7 +433,6 @@ def board_from_string(pos, size=9) -> Board:
 
 def board_from_dict(data) -> Board:
     board = Board(data['size'])
-    board.current = data['current']
     board.current_node_id = data['current_node_id']
     board.tree = [node_from_dict(n) for n in data['tree']]
     return board

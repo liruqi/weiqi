@@ -128,8 +128,27 @@ class PlayService(BaseService):
 
     @BaseService.authenticated
     @BaseService.register
-    def create_demo(self):
-        pass
+    def create_demo(self, title, size):
+        room = Room(type='game')
+        self.db.add(room)
+
+        game = Game(is_demo=True,
+                    is_ranked=False,
+                    room=room,
+                    title=title,
+                    board=Board(int(size)),
+                    komi=7.5,
+                    stage='finished',
+                    demo_owner=self.user,
+                    demo_owner_display=self.user.display,
+                    demo_owner_rating=self.user.rating,
+                    demo_control=self.user,
+                    demo_control_display=self.user.display)
+
+        self.db.add(game)
+        self.db.commit()
+
+        return game.id
 
     @BaseService.authenticated
     @BaseService.register

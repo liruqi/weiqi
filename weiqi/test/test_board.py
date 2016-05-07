@@ -291,6 +291,56 @@ def test_both_passed():
     assert board.both_passed
 
 
+def test_current():
+    board = Board()
+    assert board.current == BLACK
+
+    board.play(1)
+    assert board.current == WHITE
+
+    board.play(2)
+    assert board.current == BLACK
+
+    board.add_edits([3], [], [])
+    assert board.current == WHITE
+
+    board.add_edits([4], [], [])
+    assert board.current == WHITE
+
+    board.add_edits([], [5], [])
+    assert board.current == BLACK
+
+
+def test_current_handicap():
+    board = Board(9, 2)
+    assert board.current == WHITE
+
+    board.play(1)
+    assert board.current == BLACK
+
+
+def test_rebuild_pos():
+    pos = ('.........'
+           '.x.......'
+           '.x.xooooo'
+           '..ooxxx..'
+           '..ox.....'
+           '..o.x...x'
+           '..o...oox'
+           '..o...ox.'
+           '..o...o.x')
+    board = board_from_string(pos)
+
+    board.current = WHITE
+    board.play(PASS)
+    board.play(RESIGN)
+    board._rebuild_pos()
+
+    expected = board_from_string(pos)
+
+    assert str(board) == str(expected)
+
+
 def test_mark_dead():
     board = board_from_string(
         '..xo.....'

@@ -88,7 +88,13 @@ class GameService(BaseService):
             yield game
 
     def _game_move_demo(self, game, move):
-        pass
+        if not self.user == game.demo_control:
+            raise InvalidPlayerError()
+
+        if move == RESIGN:
+            raise ServiceError('cannot resign in demo games')
+
+        game.board.play(move)
 
     def _game_move(self, game, move):
         if self.user not in [game.black_user, game.white_user]:

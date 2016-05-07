@@ -5,7 +5,8 @@
                           :move_tree="move_tree"
                           :move_nr_start="1"
                           :active_node="current_node"
-                          :expanded.sync="expanded">
+                          :expanded.sync="expanded"
+                          :parent_id="false">
             </qi-game-tree>
         </div>
 
@@ -29,7 +30,6 @@
     export default {
         props: ['game', 'is_player', 'has_control', 'force_node_id'],
         components: {
-            'qi-game-tree-node': require('./game_tree_node.vue'),
             'qi-game-tree': require('./game_tree.vue')
         },
 
@@ -91,6 +91,10 @@
             },
 
             move_tree() {
+                if(!this.has_nodes) {
+                    return [];
+                }
+
                 var tree = [];
                 var node = this.game.board.tree[0];
 
@@ -193,8 +197,27 @@
                 });
             },
 
+            is_single(node_id) {
+                var node = this.game.board.tree[node_id];
+
+                if(node.parent_id === null) {
+                    return true;
+                }
+
+                return this.game.board.tree[node.parent_id].children.length < 2;
+            },
+
+            can_collapse(node_id) {
+                var node = this.game.board.tree[node_id];
+                return node.children.length>1 || (!this.is_single(node_id) && node.children.length>=1);
+            },
+
             add_moves_to_tree(tree, node) {
-                if(node.children.length > 1) {
+                var can_collapse = this.can_collapse(node.id);
+
+                tree.push({type: 'node', node_id: node.id, can_collapse: can_collapse});
+
+                if(can_collapse) {
                     var vars = [];
 
                     node.children.forEach(function(child) {
@@ -203,13 +226,9 @@
                         vars.push(subtree);
                     }.bind(this));
 
-                    tree.push({type: 'variations', vars: vars});
-                } else {
-                    tree.push({type: 'node', node_id: node.id});
-
-                    if(node.children.length == 1) {
-                        this.add_moves_to_tree(tree, this.game.board.tree[node.children[0]]);
-                    }
+                    tree.push({type: 'variations', vars: vars, parent_id: node.id});
+                } else if(node.children.length == 1) {
+                    this.add_moves_to_tree(tree, this.game.board.tree[node.children[0]]);
                 }
             }
         }

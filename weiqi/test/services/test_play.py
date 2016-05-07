@@ -113,3 +113,21 @@ def test_upload_sgf(db, socket):
     assert game.demo_owner_display == user.display
     assert game.demo_control == user
     assert game.demo_control_display == user.display
+
+
+def test_create_demo(db, socket):
+    user = UserFactory()
+    svc = PlayService(db, socket, user)
+
+    game_id = svc.execute('create_demo', {'title': 'test', 'size': 19})
+    game = db.query(Game).get(game_id)
+
+    assert game is not None
+    assert game.room is not None
+    assert game.is_demo
+    assert game.title == 'test'
+    assert game.demo_owner == user
+    assert game.demo_owner_rating == user.rating
+    assert game.demo_owner_display == user.display
+    assert game.demo_control == user
+    assert game.demo_control_display == user.display

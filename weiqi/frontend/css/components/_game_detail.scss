@@ -35,7 +35,7 @@
     @include user-select(none);
   }
 
-  .game-nav-node {
+  .game-move-tree {
     margin-left: 20px;
 
     .game-nav-node-label {
@@ -49,7 +49,7 @@
     }
   }
 
-  > .game-nav-node {
+  > .game-move-tree {
     margin-left: 2px;
   }
 

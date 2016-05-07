@@ -6,7 +6,7 @@
                 <h1 class="text-center">{{seconds_to_start}}</h1>
             </template>
             <template v-else>
-                <p v-if="game.is_demo && game.demo_title" class="text-center">{{game.demo_title}}</p>
+                <p v-if="game.is_demo && game.title" class="text-center">{{game.title}}</p>
                 <qi-board v-if="game.board" :board="game.board" :force_node_id="force_node_id" :coordinates="coordinates"></qi-board>
             </template>
         </div>
@@ -102,7 +102,7 @@
         computed: {
             window_title() {
                 if(this.game.is_demo) {
-                    return this.game.demo_title;
+                    return this.game.title;
                 }
                 return this.game.white_display + ' - ' + this.game.black_display;
             },
