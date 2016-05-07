@@ -14,28 +14,21 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os.path
-from datetime import timedelta
+import requests
+from weiqi import settings
 
-BASE_DIR = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
-DEBUG = True
+class RecaptchaError(Exception):
+    pass
 
-SECRET = b'j$\x1eM\xe2K\xda\xc0zndD\x80\x10\xc0\x8c\xba\xa1\xaeC\x01y\xe7\xe1'
-COOKIE_NAME = 'weiqi'
 
-TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
-STATIC_PATH = os.path.join(BASE_DIR, 'static')
+def validate_recaptcha(response):
+    res = requests.post('https://www.google.com/recaptcha/api/siteverify', {
+        'secret': settings.RECAPTCHA_SECRET,
+        'response': response,
+    })
 
-LISTEN_PORT = 8080
-DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
-AMPQ_URL = 'amqp://guest:guest@127.0.0.1:5672/'
+    data = res.json()
 
-RECAPTCHA_SECRET = '6LcuURwTAAAAAGOfleCvBfQSwRVUn29ewOp_6Yhj'
-
-NUM_PROCESSES = 1
-
-ROOM_MESSAGES_LIMIT = 30
-DIRECT_ROOMS_LIMIT = 10
-
-RATING_PERIOD_DURATION = timedelta(hours=1)
+    if not data['success']:
+        raise RecaptchaError('reCAPTCHA verification did not return a success')

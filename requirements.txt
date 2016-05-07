@@ -9,3 +9,4 @@ pytest-cov==2.2.1
 factory-boy==2.7.0
 pika==0.10.0
 Pillow==3.2.0
+requests==2.10.0

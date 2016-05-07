@@ -20,10 +20,13 @@ from weiqi.handler.base import BaseHandler
 from weiqi.models import User, RoomUser, Room
 from weiqi.rating import min_rating
 from weiqi.glicko2 import Player
+from weiqi.recaptcha import validate_recaptcha
 
 
 class SignUpHandler(BaseHandler):
     def post(self):
+        validate_recaptcha(self.get_body_argument('recaptcha'))
+
         user = User(display=self.get_body_argument('display'),
                     email=self.get_body_argument('email'))
 
