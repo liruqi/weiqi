@@ -19,9 +19,9 @@
                     <span class="name">
                         <qi-user-context :user_id="log.user_id" :display="log.user_display" :rating="log.user_rating"></qi-user-context>
 
-                        <small class="text-muted pull-right" title="{{moment(log.created_at).format('YYYY-MM-DD HH:mm:ss')}}">
+                        <small class="text-muted pull-right" title="{{moment(log.created_at).local().format('YYYY-MM-DD HH:mm:ss')}}">
                             <i class="fa fa-clock-o"></i>
-                            {{moment(log.created_at).format('HH:mm')}}
+                            {{moment(log.created_at).local().format('HH:mm')}}
                         </small>
                     </span>
 
@@ -129,7 +129,7 @@
                 }
             },
 
-            moment: moment,
+            moment: moment.utc,
         }
     }
 </script>

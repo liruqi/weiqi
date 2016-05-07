@@ -89,7 +89,7 @@
         methods: {
             update_timing() {
                 this.active_games.forEach(function(game) {
-                    Vue.set(this.started, game.id, moment(game.created_at).fromNow());
+                    Vue.set(this.started, game.id, moment.utc(game.created_at).fromNow());
                 }.bind(this));
             }
         }
