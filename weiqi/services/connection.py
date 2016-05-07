@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.services import BaseService, UserService
+from weiqi.services import BaseService, UserService, GameService, RoomService
 from weiqi.models import Game, Room, RoomUser, Connection, Automatch
 from weiqi import settings
 
@@ -119,13 +119,10 @@ class ConnectionService(BaseService):
 
     def _join_open_rooms_and_games(self):
         for room in Room.open_rooms(self.db, self.user):
-            self.socket.subscribe('room_message/'+str(room.id))
-            self.socket.subscribe('room_user/'+str(room.id))
-            self.socket.subscribe('room_user_left/'+str(room.id))
+            RoomService(self.db, self.socket, self.user).subscribe(room.id)
 
             if room.type == 'game':
-                self.socket.subscribe('game_data/'+str(room.games[0].id))
-                self.socket.subscribe('game_update/'+str(room.games[0].id))
+                GameService(self.db, self.socket, self.user).subscribe(room.games[0].id)
 
     def _insert_connection(self):
         conn = Connection(id=self.socket.id,

@@ -18,7 +18,7 @@ from .base import BaseService, ServiceError
 from .rating import RatingService
 from .rooms import RoomService
 from .users import UserService
-from .connection import ConnectionService
 from .games import GameService
+from .connection import ConnectionService
 from .play import PlayService
 from .settings import SettingsService

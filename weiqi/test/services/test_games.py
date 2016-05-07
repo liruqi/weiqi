@@ -29,6 +29,7 @@ def test_open(db, socket):
 
     assert socket.is_subscribed('game_data/'+str(game.id))
     assert socket.is_subscribed('game_update/'+str(game.id))
+    assert socket.is_subscribed('demo_current_node_id/'+str(game.id))
 
     assert socket.is_subscribed('room_message/'+str(game.room_id))
     assert socket.is_subscribed('room_user/'+str(game.room_id))
@@ -44,6 +45,7 @@ def test_close(db, socket):
 
     assert not socket.is_subscribed('game_data/'+str(game.id))
     assert not socket.is_subscribed('game_update/'+str(game.id))
+    assert not socket.is_subscribed('demo_current_node_id/'+str(game.id))
 
     assert not socket.is_subscribed('room_message/'+str(game.room_id))
     assert not socket.is_subscribed('room_user/'+str(game.room_id))
@@ -244,10 +246,15 @@ def test_demo_set_current_node(db, socket):
     game.board.play(2)
     game.apply_board_change()
 
+    socket.subscribe('demo_current_node_id/'+str(game.id))
     svc = GameService(db, socket, game.demo_control)
     svc.execute('set_current_node', {'game_id': game.id, 'node_id': 1})
 
     assert game.board.current_node_id == 1
+    assert len(socket.sent_messages) == 1
+    assert socket.sent_messages[0]['method'] == 'demo_current_node_id'
+    assert socket.sent_messages[0]['data']['game_id'] == game.id
+    assert socket.sent_messages[0]['data']['node_id'] == 1
 
 
 def test_demo_set_current_node_invalid(db, socket):

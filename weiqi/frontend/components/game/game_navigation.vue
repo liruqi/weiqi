@@ -2,8 +2,8 @@
     <div v-show="is_visible">
         <div class="game-navigation">
             <div class="game-nav-node">
-                <qi-game-tree-node v-if="root_node" :game="game" :active_node="current_node" :node="root_node"
-                        :move_nr="1" :expanded.sync="expanded"></qi-game-tree-node>
+                <qi-game-tree-node v-if="has_nodes" :game="game" :active_node="current_node" :node_id="0"
+                                   :move_nr="1" :expanded.sync="expanded"></qi-game-tree-node>
             </div>
         </div>
 
@@ -85,14 +85,6 @@
 
                 return this.game.board.tree[node_id];
             },
-
-            root_node() {
-                if(!this.has_nodes) {
-                    return;
-                }
-
-                return this.game.board.tree[0];
-            }
         },
 
         methods: {

@@ -208,6 +208,18 @@ const mutations = {
         state.auth.user.wins = data.wins;
     },
     
+    MSG_DEMO_CURRENT_NODE_ID(state, data) {
+        var game = state.open_games.find(function(game) {
+            return game.id == data.game_id;
+        });
+
+        if(!game) {
+            return;
+        }
+        
+        game.board.current_node_id = data.node_id;
+    },
+    
     UPDATE_ROUTE(state, route) {
         Vue.set(state, 'route', route);
     },

@@ -12,6 +12,7 @@ export const server_messages = {
     'load_direct_room': make_action('MSG_LOAD_DIRECT_ROOM'),
     'direct_message': make_action('MSG_DIRECT_MESSAGE'),
     'rating_update': make_action('MSG_RATING_UPDATE'),
+    'demo_current_node_id': make_action('MSG_DEMO_CURRENT_NODE_ID'),
 };
 
 export const update_route = make_action('UPDATE_ROUTE');

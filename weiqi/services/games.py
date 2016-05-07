@@ -42,8 +42,7 @@ class GameService(BaseService):
 
         RoomService(self.db, self.socket, self.user).join_room(game.room_id)
 
-        self.socket.subscribe('game_data/'+str(game_id))
-        self.socket.subscribe('game_update/'+str(game_id))
+        self.subscribe(game.id)
         self.socket.send('game_data', game.to_frontend(full=True))
 
     @BaseService.register
@@ -52,9 +51,18 @@ class GameService(BaseService):
         if not game:
             return
 
+        self.unsubscribe(game.id)
         RoomService(self.db, self.socket, self.user).leave_room(game.room_id)
+
+    def subscribe(self, game_id):
+        self.socket.subscribe('game_data/'+str(game_id))
+        self.socket.subscribe('game_update/'+str(game_id))
+        self.socket.subscribe('demo_current_node_id/'+str(game_id))
+
+    def unsubscribe(self, game_id):
         self.socket.unsubscribe('game_data/'+str(game_id))
         self.socket.unsubscribe('game_update/'+str(game_id))
+        self.socket.unsubscribe('demo_current_node_id/'+str(game_id))
 
     @BaseService.authenticated
     @BaseService.register
@@ -207,4 +215,8 @@ class GameService(BaseService):
 
         game.board.current_node_id = node_id
         game.apply_board_change()
-        self._publish_game_update(game)
+
+        self.socket.publish('demo_current_node_id/'+str(game.id), {
+            'game_id': game.id,
+            'node_id': game.board.current_node_id,
+        })

@@ -114,9 +114,7 @@ class RoomService(BaseService):
         ru.has_unread = False
 
     def join_room(self, room_id):
-        self.socket.subscribe('room_message/'+str(room_id))
-        self.socket.subscribe('room_user/'+str(room_id))
-        self.socket.subscribe('room_user_left/'+str(room_id))
+        self.subscribe(room_id)
 
         if self.user:
             if self.db.query(RoomUser).filter_by(room_id=room_id, user=self.user).count() == 0:
@@ -125,9 +123,7 @@ class RoomService(BaseService):
                 self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
 
     def leave_room(self, room_id):
-        self.socket.unsubscribe('room_message/'+str(room_id))
-        self.socket.unsubscribe('room_user/'+str(room_id))
-        self.socket.unsubscribe('room_user_left/'+str(room_id))
+        self.unsubscribe(room_id)
 
         if self.user:
             ru = self.db.query(RoomUser).filter_by(user=self.user, room_id=room_id).first()
@@ -135,3 +131,13 @@ class RoomService(BaseService):
             if ru:
                 self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())
                 self.db.delete(ru)
+
+    def subscribe(self, room_id):
+        self.socket.subscribe('room_message/'+str(room_id))
+        self.socket.subscribe('room_user/'+str(room_id))
+        self.socket.subscribe('room_user_left/'+str(room_id))
+
+    def unsubscribe(self, room_id):
+        self.socket.unsubscribe('room_message/'+str(room_id))
+        self.socket.unsubscribe('room_user/'+str(room_id))
+        self.socket.unsubscribe('room_user_left/'+str(room_id))
