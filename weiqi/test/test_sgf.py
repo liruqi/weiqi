@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.sgf import Reader, parse_property_name, parse_property_value, parse_sgf, game_from_sgf
-from weiqi.board import coord_from_sgf
+from datetime import datetime
+from weiqi.sgf import (Reader, parse_property_name, parse_property_value, parse_sgf, game_from_sgf, game_to_sgf,
+                       sgf_part_from_node)
+from weiqi.board import coord_from_sgf, coord2d, Board
+from weiqi.models import Game
 
 
 def test_property_name():
@@ -127,3 +130,41 @@ def test_game_board():
     assert child.move == coord_from_sgf('ee', game.board.size)
     assert grand_child.action == 'B'
     assert grand_child.move == coord_from_sgf('gg', game.board.size)
+
+
+def test_game_to_sgf_basic():
+    game = Game(board=Board(19),
+                black_display='black',
+                white_display='white',
+                created_at=datetime(2016, 5, 7),
+                result='B+1.5',
+                komi=7.5)
+
+    game.board.play(coord2d(4, 4, 19))
+    game.board.play(coord2d(16, 17, 19))
+
+    sgf = game_to_sgf(game)
+    expected = '(;SO[weiqi.gs]FF[4]DT[2016-05-07]PW[white]PB[black]KM[7.5]SZ[19]RE[B+1.5];B[dd];W[pq])'
+
+    assert sgf.replace('\n', '') == expected
+
+
+def test_game_to_sgf_part_variations():
+    board = Board(19)
+    board.play(coord2d(4, 4, 19))
+    board.play(coord2d(16, 17, 19))
+    board.current_node_id = 0
+    board.play(coord2d(17, 16, 19))
+
+    sgf = sgf_part_from_node(board, 0)
+
+    assert sgf == ';B[dd](;W[pq])(;W[qp])'
+
+
+def test_game_to_sgf_part_handicap():
+    board = Board(19, 2)
+    board.play(coord2d(10, 10, 19))
+
+    sgf = sgf_part_from_node(board, 0)
+
+    assert (sgf == ';AB[dp][pd];W[jj]' or sgf == ';AB[pd][dp];W[jj]')

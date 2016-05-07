@@ -14,8 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from collections import defaultdict
 from weiqi.models import Game
-from weiqi.board import Board, coord_from_sgf, BLACK, WHITE
+from weiqi.board import Board, coord_from_sgf, coord_to_sgf, BLACK, WHITE, EMPTY, NODE_WHITE, NODE_BLACK, NODE_EDIT
 from weiqi.sgf import parse_sgf
 
 
@@ -66,3 +67,58 @@ def _prop_coords(coords, size):
     if not coords:
         return []
     return [coord_from_sgf(c, size) for c in coords]
+
+
+def game_to_sgf(game):
+    sgf = '(;SO[weiqi.gs]\nFF[4]\nDT[%(dt)s]\nPW[%(pw)s]\nPB[%(pb)s]\nKM[%(km).1f]\nSZ[%(sz)d]\n' % {
+        'dt': game.created_at.date().isoformat(),
+        'pw': game.white_display,
+        'pb': game.black_display,
+        'km': game.komi,
+        'sz': game.board.size
+    }
+
+    if game.result:
+        sgf += 'RE[%s]\n' % game.result
+
+    if len(game.board.tree) > 0:
+        sgf += sgf_part_from_node(game.board, 0)
+
+    sgf += ')'
+
+    return sgf
+
+
+def sgf_part_from_node(board, node_id):
+    part = ';'
+    node = board.tree[node_id]
+
+    if node.action == NODE_BLACK:
+        part += 'B[%s]' % coord_to_sgf(node.move, board.size)
+    elif node.action == NODE_WHITE:
+        part += 'W[%s]' % coord_to_sgf(node.move, board.size)
+    elif node.action == NODE_EDIT:
+        edits = defaultdict(list)
+        for coord, color in node.edits.items():
+            edits[color].append(coord_to_sgf(int(coord), board.size))
+
+        ab = ''.join(['[%s]' % c for c in edits[BLACK]])
+        aw = ''.join(['[%s]' % c for c in edits[WHITE]])
+        ae = ''.join(['[%s]' % c for c in edits[EMPTY]])
+
+        if ab:
+            part += 'AB%s' % ab
+        if aw:
+            part += 'AW%s' % aw
+        if ae:
+            part += 'AE%s' % ae
+
+    for child in node.children:
+        p = sgf_part_from_node(board, child)
+
+        if len(node.children) == 1:
+            part += p
+        else:
+            part += '(' + p + ')'
+
+    return part

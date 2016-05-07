@@ -16,7 +16,7 @@
 
 import pytest
 from weiqi.board import (Board, coord2d, coord_to_2d, BLACK, WHITE, NODE_BLACK, NODE_WHITE, board_from_string,
-                         IllegalMoveError, PASS, RESIGN, board_from_dict, neighbors, coord_from_sgf)
+                         IllegalMoveError, PASS, RESIGN, board_from_dict, neighbors, coord_from_sgf, coord_to_sgf)
 
 
 def test_coord_to_2d():
@@ -32,6 +32,14 @@ def test_coord_from_sgf():
     assert coord_from_sgf("dD", 19) == coord2d(4, 4, 19)
     assert coord_from_sgf("Dp", 19) == coord2d(4, 16, 19)
     assert coord_from_sgf("sS", 19) == coord2d(19, 19, 19)
+
+
+def test_coord_to_sgf():
+    assert coord_to_sgf(coord2d(1, 1, 19), 19) == 'aa'
+    assert coord_to_sgf(coord2d(3, 1, 19), 19) == 'ca'
+    assert coord_to_sgf(coord2d(4, 4, 19), 19) == 'dd'
+    assert coord_to_sgf(coord2d(4, 16, 19), 19) == 'dp'
+    assert coord_to_sgf(coord2d(19, 19, 19), 19) == 'ss'
 
 
 def test_neighbors():

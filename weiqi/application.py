@@ -43,6 +43,7 @@ class Application(tornado.web.Application):
             handler(r'/api/auth/logout', auth.LogoutHandler),
 
             handler(r'/api/users/(.*?)/avatar', index.AvatarHandler),
+            handler(r'/api/games/(.*?)/sgf', index.SgfHandler),
 
             handler(r'.*', index.IndexHandler),
         ]

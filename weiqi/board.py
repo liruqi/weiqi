@@ -56,6 +56,11 @@ def coord_from_sgf(coord, size):
     return coord2d(x, y, size)
 
 
+def coord_to_sgf(coord, size):
+    x, y = coord_to_2d(coord, size)
+    return chr(ord('a')+x-1) + chr(ord('a')+y-1)
+
+
 def neighbors(coord, size):
     x, y = coord_to_2d(coord, size)
     x -= 1
