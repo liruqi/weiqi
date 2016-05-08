@@ -102,9 +102,9 @@ def sgf_part_from_node(board, node_id):
         for coord, color in node.edits.items():
             edits[color].append(coord_to_sgf(int(coord), board.size))
 
-        ab = ''.join(['[%s]' % c for c in edits[BLACK]])
-        aw = ''.join(['[%s]' % c for c in edits[WHITE]])
-        ae = ''.join(['[%s]' % c for c in edits[EMPTY]])
+        ab = ''.join('[%s]' % c for c in edits[BLACK])
+        aw = ''.join('[%s]' % c for c in edits[WHITE])
+        ae = ''.join('[%s]' % c for c in edits[EMPTY])
 
         if ab:
             part += 'AB%s' % ab
