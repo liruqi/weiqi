@@ -34,10 +34,14 @@ class PingHandler(BaseHandler):
 
 class AvatarHandler(BaseHandler):
     def get(self, user_id):
-        avatar = self.db.query(User.avatar).filter_by(id=user_id).scalar()
+        user = self.db.query(User.avatar, User.display).filter_by(id=user_id).first()
+        if user:
+            avatar, display = user
+        else:
+            avatar, display = None, ''
 
         if not avatar:
-            avatar = generate_identicon(user_id.encode()).getvalue()
+            avatar = generate_identicon('{}-{}'.format(user_id, display).strip('-').encode()).getvalue()
 
         self.set_header('Content-Type', 'image/png')
         self.write(avatar)
