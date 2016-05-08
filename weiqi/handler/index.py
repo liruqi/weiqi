@@ -41,7 +41,8 @@ class AvatarHandler(BaseHandler):
             avatar, display = None, ''
 
         if not avatar:
-            avatar = generate_identicon('{}-{}'.format(user_id, display).strip('-').encode()).getvalue()
+            data = '{}-{}'.format(user_id, display).strip('-')
+            avatar = generate_identicon(data.encode()).getvalue()
 
         self.set_header('Content-Type', 'image/png')
         self.write(avatar)
