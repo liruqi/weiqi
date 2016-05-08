@@ -245,7 +245,7 @@ def test_timing(db, socket):
 
     svc.execute('move', {'game_id': game.id, 'move': 30})
 
-    assert round(game.timing.black_main.total_seconds()) == 16
+    assert abs(game.timing.black_main.total_seconds() - 16) < 1.0
 
 
 def test_timing_lose_on_time(db, socket):
@@ -323,3 +323,20 @@ def test_demo_set_current_node_invalid(db, socket):
         svc.execute('set_current_node', {'game_id': game.id, 'node_id': 2})
 
     assert game.board.current_node_id == 1
+
+
+def test_check_due_moves(db, socket):
+    game = GameFactory(timing__timing_updated_at=datetime.utcnow()-timedelta(seconds=11),
+                       timing__system='fischer',
+                       timing__overtime=timedelta(seconds=15),
+                       timing__black_main=timedelta(seconds=10),
+                       timing__black_overtime=timedelta())
+
+    socket.subscribe('game_finished')
+
+    svc = GameService(db, socket, None)
+    svc.check_due_moves()
+
+    assert game.result == 'W+T'
+    assert len(socket.sent_messages) == 1
+    assert socket.sent_messages[0]['method'] == 'game_finished'

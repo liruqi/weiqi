@@ -16,9 +16,12 @@
 
 from sqlalchemy.orm import undefer
 from contextlib import contextmanager
-from weiqi.db import transaction
+import random
+from datetime import datetime
+from tornado import gen
+from weiqi.db import transaction, session
 from weiqi.services import BaseService, ServiceError, UserService, RatingService, RoomService
-from weiqi.models import Game
+from weiqi.models import Game, Timing
 from weiqi.board import RESIGN, BLACK
 from weiqi.scoring import count_score
 from weiqi.timing import update_timing, update_timing_after_move
@@ -84,7 +87,9 @@ class GameService(BaseService):
             game.apply_board_change()
 
             self.db.commit()
-            self._publish_game_update(game)
+
+            if game.stage != 'finished':
+                self._publish_game_update(game)
 
     @contextmanager
     def _game_for_update(self, game_id):
@@ -239,3 +244,31 @@ class GameService(BaseService):
             'game_id': game.id,
             'node_id': game.board.current_node_id,
         })
+
+    @classmethod
+    @gen.coroutine
+    def run_time_checker(cls, pubsub):
+        """A coroutine which periodically runs `check_due_moves`."""
+        from weiqi.handler.socket import SocketMixin
+
+        # Sleep for a random duration so that different processes don't all run at the same time.
+        yield gen.sleep(random.random())
+
+        while True:
+            with session() as db:
+                socket = SocketMixin()
+                socket.initialize(pubsub)
+                svc = GameService(db, socket)
+                svc.check_due_moves()
+
+            yield gen.sleep(1)
+
+    def check_due_moves(self):
+        """Checks and updates all timings which are due for a move being played."""
+        timings = self.db.query(Timing).with_for_update().join('game').options(undefer('game.board')).filter(
+            (Game.is_demo.is_(False)) & (Game.stage == 'playing') & (Timing.next_move_at <= datetime.utcnow()))
+
+        for timing in timings:
+            if not update_timing(timing, timing.game.board.current == BLACK):
+                self._win_by_time(timing.game)
+                self._finish_game(timing.game)

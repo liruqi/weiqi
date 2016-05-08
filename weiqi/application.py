@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
 import logging
 import tornado.web
 import tornado.options
@@ -25,7 +24,7 @@ from weiqi.models import Connection, Automatch, User
 from weiqi.handler import auth, socket, index
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import Ampq
-
+from weiqi.services import GameService
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -72,7 +71,8 @@ def main():
     create_db()
     _cleanup_db()
 
-    tornado.ioloop.IOLoop.current().add_timeout(time.time() + .1, app.broker.run)
+    tornado.ioloop.IOLoop.current().spawn_callback(app.broker.run)
+    tornado.ioloop.IOLoop.current().spawn_callback(GameService.run_time_checker, app.pubsub)
     tornado.ioloop.IOLoop.current().start()
 
 
