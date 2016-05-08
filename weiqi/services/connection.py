@@ -122,7 +122,7 @@ class ConnectionService(BaseService):
             RoomService(self.db, self.socket, self.user).subscribe(room.id)
 
             if room.type == 'game':
-                GameService(self.db, self.socket, self.user).subscribe(room.games[0].id)
+                GameService(self.db, self.socket, self.user).subscribe(room.game.id)
 
     def _insert_connection(self):
         conn = Connection(id=self.socket.id,

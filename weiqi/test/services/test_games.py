@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
+from datetime import datetime, timedelta
 from weiqi.services import GameService, ServiceError
-from weiqi.services.games import InvalidPlayerError, InvalidStageError
+from weiqi.services.games import InvalidPlayerError, InvalidStageError, GameHasNotStartedError
 from weiqi.test.factories import GameFactory, DemoGameFactory, UserFactory
 from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN
 
@@ -225,7 +226,41 @@ def test_confirm_score_finished(db, socket):
 
 
 def test_start_delay(db, socket):
-    pytest.skip('not implemented')
+    game = GameFactory(timing__start_at=datetime.utcnow() + timedelta(seconds=10))
+    svc = GameService(db, socket, game.black_user)
+
+    with pytest.raises(GameHasNotStartedError):
+        svc.execute('move', {'game_id': game.id, 'move': 30})
+
+    assert game.board.at(30) == EMPTY
+
+
+def test_timing(db, socket):
+    game = GameFactory(timing__timing_updated_at=datetime.utcnow()-timedelta(seconds=9),
+                       timing__system='fischer',
+                       timing__overtime=timedelta(seconds=15),
+                       timing__black_main=timedelta(seconds=10),
+                       timing__black_overtime=timedelta())
+    svc = GameService(db, socket, game.black_user)
+
+    svc.execute('move', {'game_id': game.id, 'move': 30})
+
+    assert round(game.timing.black_main.total_seconds()) == 16
+
+
+def test_timing_lose_on_time(db, socket):
+    game = GameFactory(timing__timing_updated_at=datetime.utcnow()-timedelta(seconds=11),
+                       timing__system='fischer',
+                       timing__overtime=timedelta(seconds=15),
+                       timing__black_main=timedelta(seconds=10),
+                       timing__black_overtime=timedelta())
+    svc = GameService(db, socket, game.black_user)
+
+    svc.execute('move', {'game_id': game.id, 'move': 30})
+
+    assert game.result == 'W+T'
+    assert round(game.timing.black_main.total_seconds()) == 0
+    assert round(game.timing.black_overtime.total_seconds()) == -1
 
 
 def test_move_demo(db, socket):

@@ -238,21 +238,21 @@ const mutations = {
         }
 
         if(!game || game.is_demo || !game.board.tree || (!game.is_demo && game.stage == 'finished') ||
-            moment(game.timing.start_at).diff(moment.utc()) > 0) {
+            moment.utc(game.timing.start_at).diff(moment.utc()) > 0) {
             return;
         }
 
+        // TODO: move to separate js and implement other systems
         var node = game.board.tree[game.board.current_node_id];
-        var current = 'B';
-        var timing = game.timing.black;
+        var elapsed = Math.abs(moment.utc(game.timing.timing_updated_at).diff(moment.utc())) / 1000;
 
-        if(node && (node.action == 'B' || (!node.parent_id >= 0 && node.action == 'E'))) {
-            current = 'W';
-            timing = game.timing.white;
+        if(node && (node.action == 'B' || (node.parent_id === null && node.action == 'E'))) {
+            game.timing.white_main -= elapsed;
+        } else {
+            game.timing.black_main -= elapsed;
         }
 
-        timing.Main -= Math.abs(moment(game.timing.LastUpdateAt).diff(moment.utc())) * 1000000;
-        game.timing.LastUpdateAt = moment.utc();
+        game.timing.timing_updated_at = moment.utc();
     },
 
     OPEN_GAME(state, game_id) {

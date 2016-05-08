@@ -39,3 +39,19 @@ ROOM_MESSAGES_LIMIT = 30
 DIRECT_ROOMS_LIMIT = 10
 
 RATING_PERIOD_DURATION = timedelta(hours=1)
+GAME_START_DELAY = timedelta(seconds=10)
+
+AUTOMATCH_PRESETS = {
+    'fast': {
+        'main': timedelta(minutes=5),
+        'overtime': timedelta(seconds=10),
+    },
+    'medium': {
+        'main': timedelta(minutes=10),
+        'overtime': timedelta(seconds=20),
+    },
+    'slow': {
+        'main': timedelta(minutes=15),
+        'overtime': timedelta(seconds=30),
+    },
+}

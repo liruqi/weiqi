@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime, timedelta
+from weiqi import settings
 from weiqi.services import PlayService
 from weiqi.models import Automatch, Game
 from weiqi.test.factories import UserFactory, AutomatchFactory
@@ -88,6 +90,10 @@ def test_automatch_create_game(db, socket):
     assert game.black_rating in [user.rating, other.rating]
     assert game.white_rating in [user.rating, other.rating]
     assert game.black_rating != game.white_rating
+
+    assert (game.timing.start_at - (datetime.utcnow() + settings.GAME_START_DELAY)).total_seconds() < 1
+    assert (game.timing.start_at - game.timing.timing_updated_at).total_seconds() < 1
+    assert (game.timing.start_at - game.timing.next_move_at).total_seconds() < 1
 
     assert len(socket.sent_messages) == 3
     assert socket.sent_messages[0]['method'] == 'game_started'

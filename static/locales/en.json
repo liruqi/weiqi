@@ -136,8 +136,8 @@
     },
 
     "options": {
-      "maxHC": "Max Handicap",
-      "noHC": "No Handicap"
+      "max_hc": "Max rank difference",
+      "no_hc": "Only even games"
     }
   },
 

@@ -115,8 +115,10 @@
                 var empty = {
                     id: false,
                     timing: {
-                        black: {},
-                        white: {}
+                        black_main: 0,
+                        black_overtime: 0,
+                        white_main: 0,
+                        white_overtime: 0
                     },
                     board: {
                         tree: []
@@ -135,14 +137,14 @@
             },
 
             black_time() {
-                if(this.game.timing && this.game.timing.black) {
-                    return this.format_time(this.game.timing.black.Main);
+                if(this.game.timing) {
+                    return this.format_time(this.game.timing.black_main);
                 }
             },
 
             white_time() {
-                if(this.game.timing && this.game.timing.white) {
-                    return this.format_time(this.game.timing.white.Main);
+                if(this.game.timing) {
+                    return this.format_time(this.game.timing.white_main);
                 }
             },
 
@@ -239,9 +241,9 @@
                 }
 
                 if(this.game.timing) {
-                    this.seconds_to_start = Math.ceil(moment(this.game.timing.start_at).diff(moment.utc()) / 1000);
+                    this.seconds_to_start = Math.ceil(moment.utc(this.game.timing.start_at).diff(moment.utc()) / 1000);
 
-                    if (this.has_started) {
+                    if(this.has_started) {
                         this.update_game_time(this.game.id);
                     }
                 }
@@ -254,7 +256,7 @@
             },
 
             format_time(time) {
-                var sec = Math.ceil(time / 1000000000);
+                var sec = Math.ceil(time);
                 var min = Math.floor(sec / 60);
 
                 sec -= min * 60;

@@ -17,8 +17,8 @@
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy import FuzzyText
-from datetime import datetime
-from weiqi.models import User, Room, RoomUser, Automatch, Game
+from datetime import datetime, timedelta
+from weiqi.models import User, Room, RoomUser, Automatch, Game, Timing
 from weiqi.board import Board
 from weiqi.test import session
 from weiqi.glicko2 import Player
@@ -80,9 +80,10 @@ class GameFactory(SQLAlchemyModelFactory):
     class Meta:
         model = Game
         sqlalchemy_session = session
-        force_flush = True
 
     room = factory.SubFactory(RoomFactory)
+    timing = factory.RelatedFactory('weiqi.test.factories.TimingFactory', 'game')
+
     is_demo = False
     is_ranked = True
     stage = 'playing'
@@ -115,3 +116,22 @@ class DemoGameFactory(SQLAlchemyModelFactory):
     demo_owner_rating = factory.lazy_attribute(lambda o: o.demo_owner.rating)
     demo_control = factory.lazy_attribute(lambda o: o.demo_owner)
     demo_control_display = factory.lazy_attribute(lambda o: o.demo_control.display)
+
+
+class TimingFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = Timing
+        sqlalchemy_session = session
+        force_flush = True
+
+    game = factory.SubFactory(GameFactory)
+    system = 'fischer'
+    start_at = datetime.utcnow()
+    timing_updated_at = datetime.utcnow()
+    next_move_at = datetime.utcnow()
+    main = timedelta(minutes=1)
+    overtime = timedelta(seconds=20)
+    black_main = timedelta(minutes=1)
+    black_overtime = timedelta(seconds=20)
+    white_main = timedelta(minutes=1)
+    white_overtime = timedelta(seconds=20)

@@ -14,11 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
+from weiqi import settings
 from weiqi.services import BaseService
 from weiqi.rating import rating_range
-from weiqi.models import Automatch, Room, RoomUser, Game
-from weiqi.board import Board
+from weiqi.models import Automatch, Room, RoomUser, Game, Timing
+from weiqi.board import Board, BLACK
 from weiqi.sgf import game_from_sgf
+from weiqi.timing import update_timing
 
 
 class PlayService(BaseService):
@@ -84,10 +87,26 @@ class PlayService(BaseService):
                     white_display=other.display,
                     white_rating=other.rating)
 
+        timing_preset = settings.AUTOMATCH_PRESETS[preset]
+        start_at = datetime.utcnow() + settings.GAME_START_DELAY
+
+        timing = Timing(game=game,
+                        system='fischer',
+                        start_at=start_at,
+                        timing_updated_at=start_at,
+                        next_move_at=start_at,
+                        main=timing_preset['main'],
+                        overtime=timing_preset['overtime'],
+                        black_main=timing_preset['main'],
+                        black_overtime=timing_preset['overtime'],
+                        white_main=timing_preset['main'],
+                        white_overtime=timing_preset['overtime'])
+
         self.db.add(room)
         self.db.add(ru)
         self.db.add(ru2)
         self.db.add(game)
+        self.db.add(timing)
 
         return game
 

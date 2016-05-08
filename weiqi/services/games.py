@@ -19,8 +19,9 @@ from contextlib import contextmanager
 from weiqi.db import transaction
 from weiqi.services import BaseService, ServiceError, UserService, RatingService, RoomService
 from weiqi.models import Game
-from weiqi.board import RESIGN
+from weiqi.board import RESIGN, BLACK
 from weiqi.scoring import count_score
+from weiqi.timing import update_timing, update_timing_after_move
 
 
 class InvalidPlayerError(ServiceError):
@@ -28,6 +29,10 @@ class InvalidPlayerError(ServiceError):
 
 
 class InvalidStageError(ServiceError):
+    pass
+
+
+class GameHasNotStartedError(ServiceError):
     pass
 
 
@@ -103,9 +108,8 @@ class GameService(BaseService):
         if game.stage == 'finished':
             raise InvalidStageError()
 
-        # TODO: timing
-        # if not game.timing.has_started:
-        #   pass
+        if not game.timing.has_started:
+            raise GameHasNotStartedError()
 
         if move == RESIGN:
             self._resign(game)
@@ -117,11 +121,13 @@ class GameService(BaseService):
         if game.current_user != self.user:
             raise InvalidPlayerError()
 
-        # TODO: timing
-        # if not game.timing.move_played(game.board.current):
-        #   ... win by time ...
+        if not update_timing(game.timing, game.board.current == BLACK):
+            self._win_by_time(game)
+            return
 
         game.board.play(move)
+
+        update_timing_after_move(game.timing, game.board.current != BLACK)
 
         if game.board.both_passed:
             game.stage = 'counting'
@@ -137,6 +143,13 @@ class GameService(BaseService):
         else:
             raise InvalidPlayerError()
 
+    def _win_by_time(self, game):
+        game.stage = 'finished'
+        if game.board.current == BLACK:
+            game.result = 'W+T'
+        else:
+            game.result = 'B+T'
+
     def _update_score(self, game):
         score = count_score(game.board, game.komi)
         game.result = score.result
@@ -147,7 +160,7 @@ class GameService(BaseService):
             'game_id': game.id,
             'stage': game.stage,
             'result': game.result,
-            'timing': None,  # TODO: timing
+            'timing': game.timing.to_frontend() if game.timing else None,
             'node': game.board.current_node.to_dict() if game.board.current_node else {},
         })
 

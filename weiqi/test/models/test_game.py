@@ -14,8 +14,23 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pytest
+from weiqi.models import Game
+from weiqi.test.factories import UserFactory
 
 
 def test_winner_loser():
-    pytest.skip('not implemented')
+    black = UserFactory()
+    white = UserFactory()
+
+    tests = [
+        ['B+1.5', (black, white)],
+        ['W+1.5', (white, black)],
+        ['B+R', (black, white)],
+        ['W+R', (white, black)],
+        ['B+T', (black, white)],
+        ['W+T', (white, black)],
+    ]
+
+    for t in tests:
+        game = Game(black_user=black, white_user=white, result=t[0])
+        assert game.winner_loser == t[1]

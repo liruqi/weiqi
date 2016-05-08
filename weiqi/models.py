@@ -19,7 +19,7 @@ import re
 import bcrypt
 import json
 from sqlalchemy import (Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Enum, TypeDecorator, Text,
-                        CheckConstraint, Binary)
+                        CheckConstraint, Binary, Interval)
 from sqlalchemy.orm import validates, relationship, deferred
 from sqlalchemy.orm.attributes import flag_modified
 from weiqi.db import Base
@@ -136,7 +136,7 @@ class Room(Base):
 
     users = relationship('RoomUser', back_populates='room', lazy='dynamic')
     messages = relationship('RoomMessage', back_populates='room', lazy='dynamic')
-    games = relationship('Game', back_populates='room')
+    game = relationship('Game', back_populates='room', uselist=False)
 
     def to_frontend(self):
         return {
@@ -247,7 +247,9 @@ class Game(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     room_id = Column(ForeignKey('rooms.id'), nullable=False)
-    room = relationship('Room', back_populates='games')
+    room = relationship('Room', back_populates='game')
+
+    timing = relationship('Timing', back_populates='game', uselist=False)
 
     is_demo = Column(Boolean, nullable=False, default=False)
     is_ranked = Column(Boolean, nullable=False, default=True)
@@ -344,6 +346,7 @@ class Game(Base):
         if full:
             data.update({
                 'board': self.board.to_dict(),
+                'timing': self.timing.to_frontend() if self.timing else None,
                 'result_black_confirmed': self.result_black_confirmed,
                 'result_white_confirmed': self.result_white_confirmed,
                 'demo_control_id': self.demo_control_id,
@@ -358,6 +361,59 @@ class Game(Base):
         Needs to be called after in-place changes to the field.
         """
         flag_modified(self, 'board')
+
+
+class Timing(Base):
+    __tablename__ = 'timings'
+
+    id = Column(Integer, primary_key=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    game_id = Column(ForeignKey('games.id'), nullable=False)
+    game = relationship('Game', back_populates='timing')
+
+    start_at = Column(DateTime, nullable=False)
+    timing_updated_at = Column(DateTime)
+    next_move_at = Column(DateTime)
+
+    system = Column(Enum('fischer', 'byoyomi', name='timing_system'), nullable=False)
+    main = Column(Interval, nullable=False)
+    overtime = Column(Interval, nullable=False)
+    overtime_count = Column(Integer, nullable=False, default=0)
+
+    black_main = Column(Interval, nullable=False)
+    black_overtime = Column(Interval, nullable=False)
+
+    white_main = Column(Interval, nullable=False)
+    white_overtime = Column(Interval, nullable=False)
+
+    @property
+    def has_started(self):
+        return self.start_at < datetime.utcnow()
+
+    @property
+    def black_total(self):
+        return self.black_main + self.black_overtime
+
+    @property
+    def white_total(self):
+        return self.white_main + self.white_overtime
+
+    def to_frontend(self):
+        return {
+            'start_at': self.start_at.isoformat(),
+            'timing_updated_at': self.timing_updated_at.isoformat(),
+            'system': self.system,
+            'main': self.main.total_seconds(),
+            'overtime': self.overtime.total_seconds(),
+            'overtime_count': self.overtime_count,
+            'black_main': self.black_main.total_seconds(),
+            'black_overtime': self.black_overtime.total_seconds(),
+            'white_main': self.white_main.total_seconds(),
+            'white_overtime': self.white_overtime.total_seconds(),
+        }
 
 
 def datetime_to_frontend(date):

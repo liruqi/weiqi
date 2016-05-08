@@ -20,7 +20,7 @@ from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import DummyBroker
 from weiqi.handler.socket import SocketMixin
 from weiqi.test import session
-from weiqi.models import User, Room, RoomMessage, RoomUser, Connection, Automatch, Game
+from weiqi.models import User, Room, RoomMessage, RoomUser, Connection, Automatch, Game, Timing
 
 
 @pytest.fixture
@@ -40,6 +40,7 @@ def db():
     session.query(User).delete()
     session.query(Automatch).delete()
     session.query(Game).delete()
+    session.query(Timing).delete()
     return session
 
 
