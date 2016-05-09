@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime, timedelta
 from weiqi.models import User
 
 
@@ -24,3 +25,24 @@ def test_password():
     assert user.password != 'pw'
     assert user.check_password('pw')
     assert not user.check_password('invalid')
+
+
+def test_password_reset_token():
+    user = User()
+    user.set_password('pw')
+
+    token = user.password_reset_token()
+    assert token
+    assert user.check_password_reset_token(token)
+    assert not user.check_password_reset_token('00000-'+token.split('-')[1])
+
+
+def test_password_reset_token_expired():
+    user = User()
+    user.set_password('pw')
+
+    token = user.password_reset_token(str(datetime.timestamp(datetime.utcnow() - timedelta(days=29))))
+    assert user.check_password_reset_token(token)
+
+    token = user.password_reset_token(str(datetime.timestamp(datetime.utcnow() - timedelta(days=31))))
+    assert not user.check_password_reset_token(token)

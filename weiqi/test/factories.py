@@ -32,11 +32,16 @@ class UserFactory(SQLAlchemyModelFactory):
     id = factory.Sequence(lambda n: n)
     last_activity_at = datetime.utcnow()
     email = FuzzyText(suffix='@test.test')
-    password = factory.PostGenerationMethodCall('set_password', 'pw')
+    password = ''
     display = FuzzyText()
     is_online = True
     rating = 1000
     rating_data = factory.lazy_attribute(lambda o: Player(o.rating))
+
+    @factory.post_generation
+    def factory_password(self, *args, **kwargs):
+        self.set_password('pw')
+        session.commit()
 
 
 class RoomFactory(SQLAlchemyModelFactory):

@@ -14,14 +14,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import bcrypt
 import json
+import hashlib
+import hmac
 from sqlalchemy import (Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Enum, TypeDecorator, Text,
                         CheckConstraint, Binary, Interval)
 from sqlalchemy.orm import validates, relationship, deferred
 from sqlalchemy.orm.attributes import flag_modified
+from weiqi import settings
 from weiqi.db import Base
 from weiqi.glicko2 import player_from_dict, RatingEncoder
 from weiqi.board import board_from_dict, BLACK, WHITE
@@ -82,6 +85,23 @@ class User(Base):
         if not re.match(r'^[a-zA-Z0-9_-]{2,12}$', val):
             raise ValueError('invalid display name')
         return val
+
+    def password_reset_token(self, ts=None):
+        """Generates a unique token based on the users credentials and the current timestamp."""
+        if not ts:
+            ts = str(datetime.timestamp(datetime.utcnow()))
+        h = hmac.new(settings.SECRET)
+        h.update(self.password.encode())
+        h.update(ts.encode())
+        return '{}-{}'.format(ts, h.hexdigest())
+
+    def check_password_reset_token(self, token):
+        ts, _ = token.split('-', 1)
+
+        if datetime.utcfromtimestamp(float(ts)) < datetime.utcnow() - timedelta(days=30):
+            return False
+
+        return token == self.password_reset_token(ts)
 
     def to_frontend(self):
         return {

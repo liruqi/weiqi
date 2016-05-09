@@ -43,9 +43,6 @@ export default function configRouter() {
             name: 'game',
             component: require('./components/game/game.vue')
         },
-        '/password-reset-confirm/:status': {
-            component: require('./components/password_reset_confirm.vue')
-        }
     });
 
     return router;

@@ -21,6 +21,7 @@ from weiqi.models import User, RoomUser, Room
 from weiqi.rating import min_rating
 from weiqi.glicko2 import Player
 from weiqi.recaptcha import validate_recaptcha
+from weiqi.mailer import send_mail
 
 
 class SignUpHandler(BaseHandler):
@@ -74,3 +75,54 @@ class LogoutHandler(BaseHandler):
     def get(self):
         self.clear_all_cookies()
         self.redirect('/')
+
+
+class PasswordResetHandler(BaseHandler):
+    def post(self):
+        email = self.get_body_argument('email')
+        user = self.db.query(User).filter_by(email=email).first()
+
+        if not user:
+            return
+
+        token = user.password_reset_token()
+        url = '%s://%s/api/auth/password-reset-confirm/%d/%s' % (
+            self.request.protocol, self.request.host, user.id, token)
+
+        msg = ('You have requested a password reset.\n'
+               'To reset your password and set a new one please follow this link:\n\n%s\n\n'
+               'If you have not made such a request or made it by mistake please ignore this email.') % url
+
+        send_mail(user.email, user.display, 'Password reset', msg)
+
+
+class PasswordResetConfirmHandler(BaseHandler):
+    def get(self, user_id, token):
+        messages = []
+        user = self.db.query(User).get(user_id)
+
+        if not user or not user.check_password_reset_token(token):
+            show_form = False
+            messages.append({'type': 'danger', 'message': 'Token is invalid or user was not found.'})
+        else:
+            show_form = True
+
+        self.render("password_reset.html", messages=messages, show_form=show_form)
+
+    def post(self, user_id, token):
+        messages = []
+        show_form = True
+
+        user = self.db.query(User).filter_by(id=user_id).one()
+
+        password = self.get_body_argument('password')
+        password_confirm = self.get_body_argument('password-confirm')
+
+        if password != password_confirm:
+            messages.append({'type': 'danger', 'message': 'Passwords do not match'})
+        else:
+            user.set_password(password)
+            messages.append({'type': 'success', 'message': 'Password reset'})
+            show_form = False
+
+        self.render("password_reset.html", messages=messages, show_form=show_form)

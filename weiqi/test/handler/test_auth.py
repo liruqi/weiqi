@@ -16,7 +16,7 @@
 
 from weiqi.test.base import BaseAsyncHTTPTestCase
 from weiqi.test import session
-from weiqi.test.factories import RoomFactory
+from weiqi.test.factories import RoomFactory, UserFactory
 from weiqi.models import User
 from weiqi.rating import min_rating
 
@@ -46,3 +46,18 @@ class TestSignUp(BaseAsyncHTTPTestCase):
 
         self.assertEqual(len(user.rooms), 1)
         self.assertEqual(user.rooms[0].room_id, room.id)
+
+
+class TestPasswordReset(BaseAsyncHTTPTestCase):
+    def test_password_reset_confirm(self):
+        user = UserFactory()
+
+        res = self.post('/api/auth/password-reset-confirm/%d/%s' % (user.id, user.password_reset_token()), {
+            'password': 'newpw',
+            'password-confirm': 'newpw'
+        })
+
+        session.commit()
+
+        self.assertEqual(res.code, 200)
+        self.assertTrue(user.check_password('newpw'))

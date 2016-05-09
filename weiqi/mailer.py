@@ -19,7 +19,13 @@ from email.mime.text import MIMEText
 from weiqi import settings
 
 
-def send_mail(to, subject, body):
+def send_mail(to_mail, to_name, subject, body):
+    subject += ' - weiqi.gs'
+    body = 'Hello {}\n\n{}\n\nYour weiqi.gs team'.format(to_name, body)
+    send_mail_raw(to_mail, subject, body)
+
+
+def send_mail_raw(to, subject, body):
     backend = globals()[settings.MAILER['backend'] + '_mailer']
     backend(to, subject, body)
 
