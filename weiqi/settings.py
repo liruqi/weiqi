@@ -34,8 +34,8 @@ DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
 AMPQ_URL = 'amqp://guest:guest@127.0.0.1:5672/'
 
 RECAPTCHA = {
-    'backend': 'google',
-    'secret': '6LcuURwTAAAAAGOfleCvBfQSwRVUn29ewOp_6Yhj',
+    'backend': 'dummy',
+    'secret': '',
 }
 
 MAILER = {
