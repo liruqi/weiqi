@@ -33,9 +33,18 @@ LISTEN_PORT = 8080
 DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
 AMPQ_URL = 'amqp://guest:guest@127.0.0.1:5672/'
 
-RECAPTCHA_SECRET = '6LcuURwTAAAAAGOfleCvBfQSwRVUn29ewOp_6Yhj'
+RECAPTCHA = {
+    'backend': 'google',
+    'secret': '6LcuURwTAAAAAGOfleCvBfQSwRVUn29ewOp_6Yhj',
+}
 
-NUM_PROCESSES = 1
+MAILER = {
+    'backend': 'console',
+    'from': 'no-reply@weiqi.gs',
+    'smtp_host': '',
+    'smtp_user': '',
+    'smtp_password': '',
+}
 
 ROOM_MESSAGES_LIMIT = 30
 DIRECT_ROOMS_LIMIT = 10

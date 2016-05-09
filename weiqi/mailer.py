@@ -14,15 +14,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import smtplib
+from email.mime.text import MIMEText
 from weiqi import settings
-from weiqi.db import Session, create_db, create_schema
 
-settings.DEBUG = False
-settings.DB_URL = 'sqlite://'
-settings.RECAPTCHA['backend'] = 'dummy'
-settings.MAILER['backend'] = 'console'
 
-create_db()
-create_schema()
+def send_mail(to, subject, body):
+    backend = globals()[settings.MAILER['backend'] + '_mailer']
+    backend(to, subject, body)
 
-session = Session()
+
+def console_mailer(to, subject, body):
+    print('To: %s\nSubject: %s\nBody:\n%s' % (to, subject, body))
+
+
+def smtp_mailer(to, subject, body):
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = settings.MAILER['from']
+    msg['To'] = to
+
+    with smtplib.SMTP(settings.MAILER['smtp_host']) as smtp:
+        smtp.sendmail(settings.MAILER['from'], [to], msg.as_string())
