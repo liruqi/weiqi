@@ -14,8 +14,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.board import board_from_string, BLACK, WHITE, coord2d
-from weiqi.scoring import count_score
+from weiqi.board import board_from_string, BLACK, WHITE, EMPTY, coord2d
+from weiqi.scoring import count_score, can_reach_only
+
+
+def test_can_reach_only():
+    board = board_from_string(
+        '.....x.o.'
+        '.....x.o.'
+        '.....x.o.'
+        '.....xo..'
+        '.....xo..'
+        '....xxo..'
+        'xxxx..o..'
+        'ooooo.o..'
+        '.....o...')
+
+    assert can_reach_only(board, coord2d(1, 1), BLACK)[0]
+    assert not can_reach_only(board, coord2d(1, 1), WHITE)[0]
+
+    assert can_reach_only(board, coord2d(9, 9), WHITE)[0]
+    assert not can_reach_only(board, coord2d(9, 9), BLACK)[0]
+
+    assert not can_reach_only(board, coord2d(6, 7), BLACK)[0]
+    assert not can_reach_only(board, coord2d(6, 7), WHITE)[0]
 
 
 def test_basic():
@@ -101,3 +123,29 @@ def test_marked_dead():
     assert score.white == 38 + 7.5
     assert score.winner == WHITE
     assert score.win_by == 2.5
+
+
+def test_neutral_points():
+    board = board_from_string(
+        '.....x.o.'
+        '.....x.o.'
+        '.....x.o.'
+        '.....xo..'
+        '.....xo..'
+        '....xxo..'
+        'xxxx..o..'
+        'ooooo.o..'
+        '.....o...')
+
+    score = count_score(board, 7.5)
+
+    assert score.black == 40
+    assert score.white == 35 + 7.5
+    assert score.winner == WHITE
+    assert score.win_by == 2.5
+    assert score.points[coord2d(7, 1)] == EMPTY
+    assert score.points[coord2d(7, 2)] == EMPTY
+    assert score.points[coord2d(7, 3)] == EMPTY
+    assert score.points[coord2d(5, 7)] == EMPTY
+    assert score.points[coord2d(6, 7)] == EMPTY
+    assert score.points[coord2d(6, 8)] == EMPTY

@@ -27,40 +27,47 @@ def count_score(board, komi) -> Score:
 
 
 def _assign_points(board):
-    points = [255] * board.length
+    points = [EMPTY] * board.length
 
     for coord in range(board.length):
-        color = board.at(coord)
-
-        if color == EMPTY or board.is_marked_dead(coord):
+        if points[coord] != EMPTY:
             continue
 
-        for n in neighbors(coord, board.size):
-            _flood_assign(board, points, n, color)
+        only_black, visited = can_reach_only(board, coord, BLACK)
+        if only_black:
+            for c in visited:
+                points[c] = BLACK
+            continue
+
+        only_white, visited = can_reach_only(board, coord, WHITE)
+        if only_white:
+            for c in visited:
+                points[c] = WHITE
+            continue
 
     return points
 
 
-def _flood_assign(board, points, origin, color):
-    def flood(coord):
-        if not board.is_marked_dead(coord) and board.at(coord) == opposite(color):
-            return False
+def can_reach_only(board, coord, color, visited=None):
+    """Checks if from a given origin only stones of the given color can be reached."""
+    if not visited:
+        visited = set()
+    elif coord in visited:
+        return True, visited
 
-        if points[coord] == color:
-            return True
+    visited.add(coord)
 
-        points[coord] = color
+    if not board.is_marked_dead(coord) and board.at(coord) == color:
+        return True, visited
 
-        if board.at(coord) == color:
-            return True
+    if not board.is_marked_dead(coord) and board.at(coord) == opposite(color):
+        return False, visited
 
-        for n in neighbors(coord, board.size):
-            if not flood(n):
-                return False
+    for n in neighbors(coord, board.size):
+        if not can_reach_only(board, n, color, visited)[0]:
+            return False, visited
 
-        return True
-
-    return flood(origin)
+    return True, visited
 
 
 def _count_points(points, komi, handicap):
