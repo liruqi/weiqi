@@ -259,8 +259,8 @@ def test_timing_lose_on_time(db, socket):
     svc.execute('move', {'game_id': game.id, 'move': 30})
 
     assert game.result == 'W+T'
-    assert round(game.timing.black_main.total_seconds()) == 0
-    assert round(game.timing.black_overtime.total_seconds()) == -1
+    assert game.timing.black_main.total_seconds() == 0
+    assert game.timing.black_overtime.total_seconds() < 0
 
 
 def test_move_demo(db, socket):
