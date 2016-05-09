@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from unittest.mock import patch
 from weiqi.test.base import BaseAsyncHTTPTestCase
 from weiqi.test import session
 from weiqi.test.factories import RoomFactory
@@ -23,8 +22,7 @@ from weiqi.rating import min_rating
 
 
 class TestSignUp(BaseAsyncHTTPTestCase):
-    @patch('weiqi.handler.auth.validate_recaptcha')
-    def test_sign_up(self, validate):
+    def test_sign_up(self):
         RoomFactory(is_default=False)
         room = RoomFactory(is_default=True)
 
@@ -36,8 +34,6 @@ class TestSignUp(BaseAsyncHTTPTestCase):
             'recaptcha': 'PASS'
         })
         self.assertEqual(res.code, 200)
-
-        validate.assert_called_once_with('PASS')
 
         user = session.query(User).one()
 

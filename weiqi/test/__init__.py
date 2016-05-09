@@ -19,6 +19,7 @@ from weiqi.db import Session, create_db, create_schema
 
 settings.DEBUG = False
 settings.DB_URL = 'sqlite://'
+settings.RECAPTCHA['backend'] = 'dummy'
 
 create_db()
 create_schema()

@@ -23,8 +23,18 @@ class RecaptchaError(Exception):
 
 
 def validate_recaptcha(response):
+    backend = globals()[settings.RECAPTCHA['backend'] + '_validator']
+    backend(response)
+
+
+def dummy_validator(response):
+    if response != 'PASS':
+        raise RecaptchaError('invalid recaptcha response')
+
+
+def google_validator(response):
     res = requests.post('https://www.google.com/recaptcha/api/siteverify', {
-        'secret': settings.RECAPTCHA_SECRET,
+        'secret': settings.RECAPTCHA['secret'],
         'response': response,
     })
 
@@ -32,3 +42,5 @@ def validate_recaptcha(response):
 
     if not data['success']:
         raise RecaptchaError('reCAPTCHA verification did not return a success')
+
+
