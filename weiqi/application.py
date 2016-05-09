@@ -20,7 +20,7 @@ import tornado.options
 import tornado.httpserver
 from weiqi import settings
 from weiqi.db import create_db, session
-from weiqi.models import Connection, Automatch, User
+from weiqi.models import Connection, Automatch, User, Game
 from weiqi.handler import auth, socket, index
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import Ampq
@@ -88,3 +88,6 @@ def _cleanup_db():
         db.query(Connection).delete()
         db.query(Automatch).delete()
         db.query(User).update({'is_online': False})
+
+        if not settings.DEBUG:
+            db.query(Game).filter_by(is_demo=False, stage='playing').update({'stage': 'finished', 'result': 'aborted'})
