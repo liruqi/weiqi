@@ -21,6 +21,8 @@ BASE_DIR = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file_
 
 DEBUG = True
 
+NUM_PROCESSES = 1
+
 SECRET = b'j$\x1eM\xe2K\xda\xc0zndD\x80\x10\xc0\x8c\xba\xa1\xaeC\x01y\xe7\xe1'
 COOKIE_NAME = 'weiqi'
 
