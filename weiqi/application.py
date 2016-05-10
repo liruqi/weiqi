@@ -38,10 +38,11 @@ class Application(tornado.web.Application):
             handler(r'/api/ping', index.PingHandler),
             handler(r'/api/socket', socket.SocketHandler),
             handler(r'/api/auth/sign-up', auth.SignUpHandler),
+            handler(r'/api/auth/sign-up/confirm/(.*?)/(.*?)', auth.SignUpConfirmHandler),
             handler(r'/api/auth/sign-in', auth.SignInHandler),
             handler(r'/api/auth/logout', auth.LogoutHandler),
             handler(r'/api/auth/password-reset', auth.PasswordResetHandler),
-            handler(r'/api/auth/password-reset-confirm/(.*?)/(.*?)', auth.PasswordResetConfirmHandler),
+            handler(r'/api/auth/password-reset/confirm/(.*?)/(.*?)', auth.PasswordResetConfirmHandler),
 
             handler(r'/api/users/(.*?)/avatar', index.AvatarHandler),
             handler(r'/api/games/(.*?)/sgf', index.SgfHandler),

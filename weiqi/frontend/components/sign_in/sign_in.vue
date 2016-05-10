@@ -67,7 +67,7 @@
 
                 <div class="modal-footer">
                     <button class="btn btn-default" data-dismiss="modal">
-                        {{$t('sign_in.cancel')}}
+                        {{$t('sign_in.close')}}
                     </button>
                 </div>
             </div>

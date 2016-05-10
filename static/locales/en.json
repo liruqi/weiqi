@@ -56,7 +56,7 @@
 
   "sign_in": {
     "header": "Sign in",
-    "cancel": "Cancel",
+    "close": "Close",
     "error": "Invalid username or password",
     "email": "E-Mail address",
     "password": "Password",
@@ -102,7 +102,8 @@
       "r3d": "3d"
     },
     "recaptcha": "Verify that you are human",
-    "sign_up": "Sign up"
+    "sign_up": "Sign up",
+    "confirm_email": "Please follow the link in the email we just sent you to activate your account.",
   },
 
   "forgot_password": {

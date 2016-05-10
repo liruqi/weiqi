@@ -29,16 +29,24 @@ class SignUpHandler(BaseHandler):
         validate_recaptcha(self.get_body_argument('recaptcha'))
 
         user = User(display=self.get_body_argument('display'),
-                    email=self.get_body_argument('email'))
+                    email=self.get_body_argument('email'),
+                    is_active=False)
 
         user.set_password(self.get_body_argument('password'))
         self._sign_up_rating(user, self.get_body_argument('rank'))
         self._sign_up_rooms(user)
 
         self.db.add(user)
-
         self.db.commit()
-        self.set_secure_cookie(settings.COOKIE_NAME, str(user.id))
+
+        token = user.auth_token()
+        url = '%s://%s/api/auth/sign-up/confirm/%d/%s' % (
+            self.request.protocol, self.request.host, user.id, token)
+
+        msg = ('You signed up on weiqi.gs\n'
+               'In order to activate your account and login please follow this link:\n\n%s') % url
+
+        send_mail(user.email, user.display, 'Account activation', msg)
 
         self.write({})
 
@@ -57,6 +65,20 @@ class SignUpHandler(BaseHandler):
             self.db.add(ru)
 
 
+class SignUpConfirmHandler(BaseHandler):
+    def get(self, user_id, token):
+        user = self.db.query(User).get(user_id)
+
+        if not user or not user.check_auth_token(token):
+            raise HTTPError(404)
+
+        user.is_active = True
+        self.db.commit()
+
+        self.set_secure_cookie(settings.COOKIE_NAME, str(user.id))
+        self.redirect('/')
+
+
 class SignInHandler(BaseHandler):
     def post(self):
         email = self.get_body_argument('email')
@@ -66,6 +88,9 @@ class SignInHandler(BaseHandler):
 
         if not user.check_password(password):
             raise HTTPError(403, 'invalid username or password')
+
+        if not user.is_active:
+            raise HTTPError(403, 'account not activated')
 
         self.set_secure_cookie(settings.COOKIE_NAME, str(user.id))
         self.write({})
@@ -85,8 +110,8 @@ class PasswordResetHandler(BaseHandler):
         if not user:
             return
 
-        token = user.password_reset_token()
-        url = '%s://%s/api/auth/password-reset-confirm/%d/%s' % (
+        token = user.auth_token()
+        url = '%s://%s/api/auth/password-reset/confirm/%d/%s' % (
             self.request.protocol, self.request.host, user.id, token)
 
         msg = ('You have requested a password reset.\n'
@@ -101,7 +126,7 @@ class PasswordResetConfirmHandler(BaseHandler):
         messages = []
         user = self.db.query(User).get(user_id)
 
-        if not user or not user.check_password_reset_token(token):
+        if not user or not user.check_auth_token(token):
             show_form = False
             messages.append({'type': 'danger', 'message': 'Token is invalid or user was not found.'})
         else:

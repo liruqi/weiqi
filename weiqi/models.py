@@ -50,6 +50,8 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     last_activity_at = Column(DateTime)
 
+    is_active = Column(Boolean, nullable=False, default=True)
+
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
 
@@ -86,7 +88,7 @@ class User(Base):
             raise ValueError('invalid display name')
         return val
 
-    def password_reset_token(self, ts=None):
+    def auth_token(self, ts=None):
         """Generates a unique token based on the users credentials and the current timestamp."""
         if not ts:
             ts = str(datetime.timestamp(datetime.utcnow()))
@@ -95,13 +97,13 @@ class User(Base):
         h.update(ts.encode())
         return '{}-{}'.format(ts, h.hexdigest())
 
-    def check_password_reset_token(self, token):
+    def check_auth_token(self, token):
         ts, _ = token.split('-', 1)
 
         if datetime.utcfromtimestamp(float(ts)) < datetime.utcnow() - timedelta(days=30):
             return False
 
-        return token == self.password_reset_token(ts)
+        return token == self.auth_token(ts)
 
     def to_frontend(self):
         return {

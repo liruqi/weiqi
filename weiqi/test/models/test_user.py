@@ -27,22 +27,22 @@ def test_password():
     assert not user.check_password('invalid')
 
 
-def test_password_reset_token():
+def test_auth_token():
     user = User()
     user.set_password('pw')
 
-    token = user.password_reset_token()
+    token = user.auth_token()
     assert token
-    assert user.check_password_reset_token(token)
-    assert not user.check_password_reset_token('00000-'+token.split('-')[1])
+    assert user.check_auth_token(token)
+    assert not user.check_auth_token('00000-'+token.split('-')[1])
 
 
-def test_password_reset_token_expired():
+def test_auth_token_expired():
     user = User()
     user.set_password('pw')
 
-    token = user.password_reset_token(str(datetime.timestamp(datetime.utcnow() - timedelta(days=29))))
-    assert user.check_password_reset_token(token)
+    token = user.auth_token(str(datetime.timestamp(datetime.utcnow() - timedelta(days=29))))
+    assert user.check_auth_token(token)
 
-    token = user.password_reset_token(str(datetime.timestamp(datetime.utcnow() - timedelta(days=31))))
-    assert not user.check_password_reset_token(token)
+    token = user.auth_token(str(datetime.timestamp(datetime.utcnow() - timedelta(days=31))))
+    assert not user.check_auth_token(token)
