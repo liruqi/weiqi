@@ -28,8 +28,7 @@ def validate_recaptcha(response):
 
 
 def dummy_validator(response):
-    if response != 'PASS':
-        raise RecaptchaError('invalid recaptcha response')
+    pass
 
 
 def google_validator(response):
