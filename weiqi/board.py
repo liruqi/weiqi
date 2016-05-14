@@ -118,6 +118,30 @@ class Node:
         else:
             self.symbols[coord] = symbol
 
+    def toggle_label(self, coord):
+        self._toggle_label(coord, 26, lambda i: chr(ord('A')+i))
+
+    def toggle_number(self, coord):
+        self._toggle_label(coord, 19*19, lambda i: str(i+1))
+
+    def _toggle_label(self, coord, range_max, idx_to_lbl):
+        coord = str(coord)
+
+        if coord in self.symbols:
+            del self.symbols[coord]
+
+        if coord in self.labels:
+            del self.labels[coord]
+        else:
+            for i in range(range_max):
+                label = idx_to_lbl(i)
+                if self.label_is_unused(label):
+                    self.labels[str(coord)] = label
+                    break
+
+    def label_is_unused(self, label):
+        return label not in self.labels.values()
+
 
 class IllegalMoveError(Exception):
     pass

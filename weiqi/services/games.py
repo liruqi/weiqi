@@ -278,6 +278,18 @@ class GameService(BaseService):
         with self._demo_tool(game_id) as (game, node):
             node.toggle_symbol(coord, SYMBOL_CIRCLE)
 
+    @BaseService.authenticated
+    @BaseService.register
+    def demo_tool_label(self, game_id, coord):
+        with self._demo_tool(game_id) as (game, node):
+            node.toggle_label(coord)
+
+    @BaseService.authenticated
+    @BaseService.register
+    def demo_tool_number(self, game_id, coord):
+        with self._demo_tool(game_id) as (game, node):
+            node.toggle_number(coord)
+
     @contextmanager
     def _demo_tool(self, game_id):
         game = self.db.query(Game).options(undefer('board')).get(game_id)

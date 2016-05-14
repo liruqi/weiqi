@@ -63,6 +63,34 @@ def test_toggle_symbol():
     assert node.symbols['180'] == 'SQ'
 
 
+def test_toggle_label():
+    node = Node()
+
+    node.toggle_label(180)
+    node.toggle_label(181)
+    node.toggle_label(182)
+    assert node.labels['180'] == 'A'
+    assert node.labels['181'] == 'B'
+    assert node.labels['182'] == 'C'
+
+    node.toggle_label(180)
+    assert '180' not in node.labels
+
+
+def test_toggle_number():
+    node = Node()
+
+    node.toggle_number(180)
+    node.toggle_number(181)
+    node.toggle_number(182)
+    assert node.labels['180'] == '1'
+    assert node.labels['181'] == '2'
+    assert node.labels['182'] == '3'
+
+    node.toggle_label(180)
+    assert '180' not in node.labels
+
+
 def test_from_string():
     board = board_from_string(
         '.........'

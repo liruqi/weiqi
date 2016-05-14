@@ -9,13 +9,13 @@
                 <p v-if="game.is_demo" class="text-center">
                     <span v-if="game.title">{{game.title}}</span>
                     <select v-if="has_control" v-model="demo_tool" class="pull-right">
-                        <option value="move">{{$t('game.tool.move')}}</option>
-                        <option value="edit">{{$t('game.tool.edit')}}</option>
-                        <option value="triangle">{{$t('game.tool.triangle')}}</option>
-                        <option value="square">{{$t('game.tool.square')}}</option>
-                        <option value="circle">{{$t('game.tool.circle')}}</option>
-                        <option value="label">{{$t('game.tool.label')}}</option>
-                        <option value="number">{{$t('game.tool.number')}}</option>
+                        <option value="move">{{$t('demo.tool.move')}}</option>
+                        <option value="edit">{{$t('demo.tool.edit')}}</option>
+                        <option value="triangle">{{$t('demo.tool.triangle')}}</option>
+                        <option value="square">{{$t('demo.tool.square')}}</option>
+                        <option value="circle">{{$t('demo.tool.circle')}}</option>
+                        <option value="label">{{$t('demo.tool.label')}}</option>
+                        <option value="number">{{$t('demo.tool.number')}}</option>
                     </select>
                     <div class="clearfix"></div>
                 </p>

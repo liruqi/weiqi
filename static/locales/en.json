@@ -23,7 +23,16 @@
   },
 
   "demo": {
-    "title": "Title"
+    "title": "Title",
+    "tool": {
+      "move": "Move tool",
+      "edit": "Edit tool",
+      "triangle": "Triangle",
+      "square": "Square",
+      "circle": "Circle",
+      "label": "Label",
+      "number": "Number",
+    }
   },
 
   "user": {

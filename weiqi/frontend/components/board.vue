@@ -167,6 +167,7 @@
                 }.bind(this));
 
                 this.draw_symbols();
+                this.draw_labels();
                 this.draw_move_marker();
             },
 
@@ -186,6 +187,20 @@
                     }
 
                     this.wgo.addObject({x: xy[0], y: xy[1], type: node.symbols[coord]})
+                }.bind(this));
+            },
+
+            draw_labels() {
+                var node = this.board.tree[this.current_node_id];
+
+                if(!node || !node.labels) {
+                    return;
+                }
+
+                Object.keys(node.labels).forEach(function(coord) {
+                    var xy = this.coord_to_2d(+coord);
+                    var label = node.labels[coord];
+                    this.wgo.addObject({x: xy[0], y: xy[1], type: 'LB', text: label})
                 }.bind(this));
             },
 
