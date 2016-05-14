@@ -28,6 +28,7 @@ class ConnectionService(BaseService):
 
         self.socket.subscribe('game_started')
         self.socket.subscribe('game_finished')
+        self.socket.subscribe('user_status')
 
         if self.user:
             self.socket.subscribe('direct_message/'+str(self.user.id))
@@ -36,16 +37,21 @@ class ConnectionService(BaseService):
 
         self._join_open_rooms_and_games()
         self._insert_connection()
+        self._check_is_online()
+
         UserService(self.db, self.socket, self.user).publish_status()
+        RoomService(self.db, self.socket, self.user).publish_user_rooms()
 
     @BaseService.register
     def disconnect(self):
         self._delete_connection()
+        self._check_is_online()
 
         if self.user:
             self.db.query(Automatch).filter_by(user=self.user).delete()
 
         UserService(self.db, self.socket, self.user).publish_status()
+        RoomService(self.db, self.socket, self.user).publish_user_rooms()
 
     @BaseService.register
     def ping(self):
@@ -133,3 +139,7 @@ class ConnectionService(BaseService):
 
     def _delete_connection(self):
         self.db.query(Connection).filter_by(id=self.socket.id).delete()
+
+    def _check_is_online(self):
+        if self.user:
+            self.user.is_online = self.db.query(Connection).filter_by(user_id=self.user.id).count() > 0

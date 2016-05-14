@@ -141,3 +141,13 @@ class RoomService(BaseService):
         self.socket.unsubscribe('room_message/'+str(room_id))
         self.socket.unsubscribe('room_user/'+str(room_id))
         self.socket.unsubscribe('room_user_left/'+str(room_id))
+
+    def publish_user_rooms(self):
+        if not self.user:
+            return
+
+        for ru in self.user.rooms:
+            if self.user.is_online:
+                self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
+            else:
+                self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())

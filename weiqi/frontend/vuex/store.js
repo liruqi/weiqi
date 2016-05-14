@@ -189,6 +189,28 @@ const mutations = {
 
         mutations.UPDATE_GAME_TIME(state, data.game_id);
     },
+
+    MSG_USER_STATUS(state, user) {
+        if(user.id == state.auth.user.user_id) {
+            state.auth.user.rating = user.rating;
+            state.auth.user.wins = user.wins;
+        }
+
+        Object.keys(state.room_users).forEach(function(room_id) {
+            if(user.is_online) {
+                state.room_users[room_id].forEach(function(ru) {
+                    if(ru.user_id == user.id) {
+                        ru.user_rating = user.rating;
+                        return false;
+                    }
+                });
+            } else {
+                state.room_users[room_id] = state.room_users[room_id].filter(function(ru) {
+                    return ru.user_id != user.id;
+                });
+            }
+        });
+    },
     
     MSG_LOAD_DIRECT_ROOM(state, room) {
         Vue.set(state.direct_rooms, room.other_user_id, {
@@ -201,11 +223,6 @@ const mutations = {
         
         Vue.set(state.room_logs, room.room.id, room.room_logs);
         Vue.set(state.room_has_update, room.room.id, room.has_unread);
-    },
-    
-    MSG_RATING_UPDATE(state, data) {
-        state.auth.user.rating = data.rating;
-        state.auth.user.wins = data.wins;
     },
     
     MSG_DEMO_CURRENT_NODE_ID(state, data) {

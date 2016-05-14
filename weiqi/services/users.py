@@ -25,13 +25,12 @@ class UserService(BaseService):
         if not self.user:
             return
 
-        self.user.is_online = self.db.query(Connection).filter_by(user_id=self.user.id).count() > 0
-
-        for ru in self.user.rooms:
-            if self.user.is_online:
-                self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
-            else:
-                self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())
+        self.socket.publish('user_status', {
+            'id': self.user.id,
+            'rating': self.user.rating,
+            'is_online': self.user.is_online,
+            'wins': Game.count_wins(self.db, self.user)
+        })
 
     @BaseService.register
     def email_exists(self, email):
@@ -59,12 +58,3 @@ class UserService(BaseService):
             return []
 
         return [g.to_frontend() for g in user.games(self.db)]
-
-    def publish_rating_update(self):
-        if not self.user:
-            return
-
-        self.socket.publish('rating_update/'+str(self.user.id), {
-            'rating': self.user.rating,
-            'wins': Game.count_wins(self.db, self.user)
-        })

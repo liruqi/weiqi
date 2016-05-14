@@ -9,9 +9,9 @@ export const server_messages = {
     'game_finished': make_action('MSG_GAME_FINISHED'),
     'game_data': make_action('MSG_GAME_DATA'),
     'game_update': make_action('MSG_GAME_UPDATE'),
+    'user_status': make_action('MSG_USER_STATUS'),
     'load_direct_room': make_action('MSG_LOAD_DIRECT_ROOM'),
     'direct_message': make_action('MSG_DIRECT_MESSAGE'),
-    'rating_update': make_action('MSG_RATING_UPDATE'),
     'demo_current_node_id': make_action('MSG_DEMO_CURRENT_NODE_ID'),
 };
 
