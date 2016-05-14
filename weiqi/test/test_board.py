@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
-from weiqi.board import (Board, coord2d, coord_to_2d, BLACK, WHITE, NODE_BLACK, NODE_WHITE, board_from_string,
+from weiqi.board import (Board, Node, coord2d, coord_to_2d, BLACK, WHITE, NODE_BLACK, NODE_WHITE, board_from_string,
                          IllegalMoveError, PASS, RESIGN, board_from_dict, neighbors, coord_from_sgf, coord_to_sgf)
 
 
@@ -47,6 +47,20 @@ def test_neighbors():
     assert set(neighbors(coord2d(9, 9), 9)) == {coord2d(9, 8), coord2d(8, 9)}
     assert set(neighbors(coord2d(5, 5), 9)) == {coord2d(5, 4), coord2d(5, 6),
                                                 coord2d(4, 5), coord2d(6, 5)}
+
+
+def test_toggle_symbol():
+    node = Node()
+
+    node.toggle_symbol(180, 'TR')
+    assert node.symbols['180'] == 'TR'
+
+    node.toggle_symbol(180, 'TR')
+    assert '180' not in node.symbols
+
+    node.toggle_symbol(180, 'TR')
+    node.toggle_symbol(180, 'SQ')
+    assert node.symbols['180'] == 'SQ'
 
 
 def test_from_string():

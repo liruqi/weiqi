@@ -102,11 +102,21 @@ class Node:
         self.captures = []  # Only set for actions NODE_BLACK and NODE_WHITE
         self.marked_dead = {}
         self.score_points = []
-        self.labels = []
-        self.symbols = []
+        self.labels = {}
+        self.symbols = {}
 
     def to_dict(self):
         return self.__dict__
+
+    def toggle_symbol(self, coord, symbol):
+        coord = str(coord)
+
+        if coord not in self.symbols or not self.symbols[coord]:
+            self.symbols[coord] = symbol
+        elif self.symbols[coord] == symbol:
+            del self.symbols[coord]
+        else:
+            self.symbols[coord] = symbol
 
 
 class IllegalMoveError(Exception):

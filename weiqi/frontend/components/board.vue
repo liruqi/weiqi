@@ -136,9 +136,8 @@
                 var node = this.board.tree[this.current_node_id];
 
                 pos.forEach(function(color, coord) {
-                    var y = Math.floor(coord/this.board.size);
-                    var x = coord - y*this.board.size;
-                    var params = {x: x, y: y};
+                    var xy = this.coord_to_2d(coord);
+                    var params = {x: xy[0], y: xy[1]};
 
                     if(color == 'B') {
                         params.c = WGo.B;
@@ -167,7 +166,27 @@
                     this.wgo.addObject(params);
                 }.bind(this));
 
+                this.draw_symbols();
                 this.draw_move_marker();
+            },
+
+            draw_symbols() {
+                var node = this.board.tree[this.current_node_id];
+
+                if(!node || !node.symbols) {
+                    return;
+                }
+
+                Object.keys(node.symbols).forEach(function(coord) {
+                    var xy = this.coord_to_2d(+coord);
+                    var symbols = ['TR', 'SQ', 'CR'];
+
+                    if(symbols.indexOf(node.symbols[coord]) === -1) {
+                        return;
+                    }
+
+                    this.wgo.addObject({x: xy[0], y: xy[1], type: node.symbols[coord]})
+                }.bind(this));
             },
 
             draw_move_marker() {
@@ -175,10 +194,9 @@
 
                 if(node && (node.action == 'B' || node.action == 'W') && node.move >= 0) {
                     var coord = node.move;
-                    var y = Math.floor(coord/this.board.size);
-                    var x = coord - y*this.board.size;
+                    var xy = this.coord_to_2d(coord);
 
-                    this.wgo.addObject({x: x, "y": y, "type": "CR"})
+                    this.wgo.addObject({x: xy[0], y: xy[1], type: "CR"})
                 }
             },
 
@@ -290,6 +308,12 @@
                         pos[coord] = '.';
                     });
                 }
+            },
+
+            coord_to_2d(coord) {
+                var y = Math.floor(coord/this.board.size);
+                var x = coord - y*this.board.size;
+                return [x, y];
             },
 
             toggle_coordinates() {

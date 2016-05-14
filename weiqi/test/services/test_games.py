@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from weiqi.services import GameService, ServiceError
 from weiqi.services.games import InvalidPlayerError, InvalidStageError, GameHasNotStartedError
 from weiqi.test.factories import GameFactory, DemoGameFactory, UserFactory
-from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN
+from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN, SYMBOL_TRIANGLE
 
 
 def test_open(db, socket):
@@ -346,6 +346,15 @@ def test_demo_set_current_node_invalid(db, socket):
         svc.execute('set_current_node', {'game_id': game.id, 'node_id': 2})
 
     assert game.board.current_node_id == 1
+
+
+def test_demo_tool_triangle(db, socket):
+    game = DemoGameFactory()
+    svc = GameService(db, socket, game.demo_control)
+
+    svc.execute('demo_tool_triangle', {'game_id': game.id, 'coord': 180})
+
+    assert game.board.current_node.symbols['180'] == SYMBOL_TRIANGLE
 
 
 def test_check_due_moves(db, socket):

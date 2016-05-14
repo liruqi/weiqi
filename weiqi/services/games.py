@@ -22,7 +22,7 @@ from tornado import gen
 from weiqi.db import transaction, session
 from weiqi.services import BaseService, ServiceError, UserService, RatingService, RoomService
 from weiqi.models import Game, Timing
-from weiqi.board import RESIGN, BLACK
+from weiqi.board import RESIGN, BLACK, SYMBOL_TRIANGLE, SYMBOL_CIRCLE, SYMBOL_SQUARE
 from weiqi.scoring import count_score
 from weiqi.timing import update_timing, update_timing_after_move
 
@@ -259,6 +259,42 @@ class GameService(BaseService):
             'game_id': game.id,
             'node_id': game.board.current_node_id,
         })
+
+    @BaseService.authenticated
+    @BaseService.register
+    def demo_tool_triangle(self, game_id, coord):
+        with self._demo_tool(game_id) as (game, node):
+            node.toggle_symbol(coord, SYMBOL_TRIANGLE)
+
+    @BaseService.authenticated
+    @BaseService.register
+    def demo_tool_square(self, game_id, coord):
+        with self._demo_tool(game_id) as (game, node):
+            node.toggle_symbol(coord, SYMBOL_SQUARE)
+
+    @BaseService.authenticated
+    @BaseService.register
+    def demo_tool_circle(self, game_id, coord):
+        with self._demo_tool(game_id) as (game, node):
+            node.toggle_symbol(coord, SYMBOL_CIRCLE)
+
+    @contextmanager
+    def _demo_tool(self, game_id):
+        game = self.db.query(Game).options(undefer('board')).get(game_id)
+
+        if not game.is_demo or not game.demo_control == self.user:
+            raise InvalidPlayerError()
+
+        if not game.board.current_node:
+            game.board.add_edits([], [], [])
+
+        node = game.board.current_node
+
+        yield game, node
+
+        game.apply_board_change()
+        self._publish_game_update(game)
+
 
     @classmethod
     @gen.coroutine

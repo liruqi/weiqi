@@ -6,7 +6,19 @@
                 <h1 class="text-center">{{seconds_to_start}}</h1>
             </template>
             <template v-else>
-                <p v-if="game.is_demo && game.title" class="text-center">{{game.title}}</p>
+                <p v-if="game.is_demo" class="text-center">
+                    <span v-if="game.title">{{game.title}}</span>
+                    <select v-if="has_control" v-model="demo_tool" class="pull-right">
+                        <option value="move">{{$t('game.tool.move')}}</option>
+                        <option value="edit">{{$t('game.tool.edit')}}</option>
+                        <option value="triangle">{{$t('game.tool.triangle')}}</option>
+                        <option value="square">{{$t('game.tool.square')}}</option>
+                        <option value="circle">{{$t('game.tool.circle')}}</option>
+                        <option value="label">{{$t('game.tool.label')}}</option>
+                        <option value="number">{{$t('game.tool.number')}}</option>
+                    </select>
+                    <div class="clearfix"></div>
+                </p>
                 <qi-board v-if="game.board" :board="game.board" :force_node_id="force_node_id" :coordinates="coordinates"></qi-board>
             </template>
         </div>
@@ -206,6 +218,23 @@
                     switch(this.demo_tool) {
                         case 'move':
                             socket.send('games/move', {'game_id': this.game_id, 'move': coord});
+                            break;
+                        case 'edit':
+                            break;
+                        case 'triangle':
+                            socket.send('games/demo_tool_triangle', {'game_id': this.game_id, 'coord': coord});
+                            break;
+                        case 'square':
+                            socket.send('games/demo_tool_square', {'game_id': this.game_id, 'coord': coord});
+                            break;
+                        case 'circle':
+                            socket.send('games/demo_tool_circle', {'game_id': this.game_id, 'coord': coord});
+                            break;
+                        case 'label':
+                            socket.send('games/demo_tool_label', {'game_id': this.game_id, 'coord': coord});
+                            break;
+                        case 'number':
+                            socket.send('games/demo_tool_number', {'game_id': this.game_id, 'coord': coord});
                             break;
                     }
                 } else if(!this.game.is_demo && this.is_player) {
