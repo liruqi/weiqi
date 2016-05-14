@@ -264,38 +264,44 @@ class Board:
         if coord == self.ko:
             raise IllegalMoveError('coordinate is a ko point')
 
-        if self.is_suicide(coord):
+        if self.is_suicide(coord, self.current):
             raise IllegalMoveError('coordinate is a suicide')
 
-    def is_suicide(self, coord):
+    def is_suicide(self, coord, color=None):
         """Checks if the given move is a suicide for the current player.
         A move is not suicide if any of the following conditions holds true:
         - any neighboring point is empty
         - any neighboring point is the same color and has more than one liberty
         - any neighboring point is a different color and has only one liberty
         """
-        for n in neighbors(coord, self.size):
-            color = self.at(n)
+        if not color:
+            color = self.current
 
-            if color == EMPTY:
+        for n in neighbors(coord, self.size):
+            n_color = self.at(n)
+
+            if n_color == EMPTY:
                 return False
 
             chain = self.chain_at(n)
             libs = len(self.chain_liberties(chain))
 
-            if color == self.current and libs > 1:
+            if n_color == color and libs > 1:
                 return False
 
-            if color != self.current and libs == 1:
+            if n_color != color and libs == 1:
                 return False
 
         return True
 
-    def _find_captures(self, coord):
+    def _find_captures(self, coord, color=None):
+        if not color:
+            color = self.current
+
         caps = set()
 
         for n in neighbors(coord, self.size):
-            if self.at(n) == EMPTY or self.at(n) == self.current:
+            if self.at(n) == EMPTY or self.at(n) == color:
                 continue
 
             chain = self.chain_at(n)
@@ -451,6 +457,28 @@ class Board:
             return
 
         self.add_edits(handicap_coords(self.size, hc), [], [])
+
+    def toggle_edit(self, coord, color):
+        if color == EMPTY:
+            return
+
+        # In edit-mode we allow to play on ko points and non-empty points, but don't allow suicide.
+        if self.is_suicide(coord, color):
+            return
+
+        if not self.current_node or self.current_node.action != NODE_EDIT:
+            self.add_edits([], [], [])
+
+        node = self.current_node
+
+        if self.at(coord) == color:
+            node.edits[str(coord)] = EMPTY
+        else:
+            for c in self._find_captures(coord, color):
+                node.edits[str(c)] = EMPTY
+            node.edits[str(coord)] = color
+
+        self._rebuild_pos()
 
 
 def board_from_string(pos, size=9) -> Board:

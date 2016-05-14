@@ -107,9 +107,9 @@
                 }
             },
 
-            click_handler(x, y) {
+            click_handler(x, y, event) {
                 var coord = x + y*this.board.size;
-                this.$dispatch('board-click', coord);
+                this.$dispatch('board-click', coord, event);
             },
 
             scroll_handler(e) {
@@ -301,7 +301,7 @@
             },
 
             apply_node(pos, node) {
-                var colors = {0: 'W', 1: 'B'};
+                var colors = {'x': 'B', 'o': 'W', '.': '.'};
 
                 switch(node.action) {
                     case 'B':

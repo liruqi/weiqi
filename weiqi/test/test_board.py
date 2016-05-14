@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
-from weiqi.board import (Board, Node, coord2d, coord_to_2d, BLACK, WHITE, NODE_BLACK, NODE_WHITE, board_from_string,
-                         IllegalMoveError, PASS, RESIGN, board_from_dict, neighbors, coord_from_sgf, coord_to_sgf)
+from weiqi.board import (Board, Node, coord2d, coord_to_2d, BLACK, WHITE, EMPTY, NODE_BLACK, NODE_WHITE,
+                         board_from_string, IllegalMoveError, PASS, RESIGN, board_from_dict, neighbors, coord_from_sgf,
+                         coord_to_sgf)
 
 
 def test_coord_to_2d():
@@ -532,3 +533,26 @@ def test_place_hc():
         board.place_handicap(hc)
 
         assert str(board) == str(board_from_string(pos))
+
+
+def test_toggle_edit():
+    board = Board(9)
+
+    board.toggle_edit(10, BLACK)
+    board.toggle_edit(11, WHITE)
+    board.toggle_edit(12, WHITE)
+
+    assert board.at(10) == BLACK
+    assert board.at(11) == WHITE
+    assert board.at(12) == WHITE
+
+    board.toggle_edit(11, WHITE)
+    assert board.at(11) == EMPTY
+
+
+def test_toggle_edit_remove():
+    board = Board(9)
+    board.play(10)
+
+    board.toggle_edit(10, BLACK)
+    assert board.at(10) == EMPTY

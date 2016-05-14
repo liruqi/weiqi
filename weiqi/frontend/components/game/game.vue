@@ -213,28 +213,33 @@
         },
 
         events: {
-            'board-click': function(coord) {
+            'board-click': function(coord, event) {
                 if(this.game.is_demo && this.has_control) {
                     switch(this.demo_tool) {
                         case 'move':
-                            socket.send('games/move', {'game_id': this.game_id, 'move': coord});
+                            socket.send('games/move', {game_id: this.game_id, move: coord});
                             break;
                         case 'edit':
+                            if(event.shiftKey) {
+                                socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'o'});
+                            } else {
+                                socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'x'});
+                            }
                             break;
                         case 'triangle':
-                            socket.send('games/demo_tool_triangle', {'game_id': this.game_id, 'coord': coord});
+                            socket.send('games/demo_tool_triangle', {game_id: this.game_id, coord: coord});
                             break;
                         case 'square':
-                            socket.send('games/demo_tool_square', {'game_id': this.game_id, 'coord': coord});
+                            socket.send('games/demo_tool_square', {game_id: this.game_id, coord: coord});
                             break;
                         case 'circle':
-                            socket.send('games/demo_tool_circle', {'game_id': this.game_id, 'coord': coord});
+                            socket.send('games/demo_tool_circle', {game_id: this.game_id, coord: coord});
                             break;
                         case 'label':
-                            socket.send('games/demo_tool_label', {'game_id': this.game_id, 'coord': coord});
+                            socket.send('games/demo_tool_label', {game_id: this.game_id, coord: coord});
                             break;
                         case 'number':
-                            socket.send('games/demo_tool_number', {'game_id': this.game_id, 'coord': coord});
+                            socket.send('games/demo_tool_number', {game_id: this.game_id, coord: coord});
                             break;
                     }
                 } else if(!this.game.is_demo && this.is_player) {
