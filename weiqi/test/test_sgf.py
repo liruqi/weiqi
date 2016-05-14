@@ -168,3 +168,26 @@ def test_game_to_sgf_part_handicap():
     sgf = sgf_part_from_node(board, 0)
 
     assert (sgf == ';AB[dp][pd];W[jj]' or sgf == ';AB[pd][dp];W[jj]')
+
+
+def test_game_to_sgf_part_symbols():
+    board = Board(19)
+    board.play(coord2d(10, 10, 19))
+    board.current_node.toggle_symbol(180, 'TR')
+    board.current_node.toggle_symbol(181, 'TR')
+    board.current_node.toggle_symbol(182, 'SQ')
+
+    sgf = sgf_part_from_node(board, 0)
+
+    assert (sgf == ';B[jj]TR[jj][kj]SQ[lj]' or sgf == ';B[jj]TR[kj][jj]SQ[lj]')
+
+
+def test_game_to_sgf_part_labels():
+    board = Board(19)
+    board.play(coord2d(10, 10, 19))
+    board.current_node.toggle_label(180)
+    board.current_node.toggle_label(181)
+
+    sgf = sgf_part_from_node(board, 0)
+
+    assert (sgf == ';B[jj]LB[jj:A][kj:B]' or sgf == ';B[jj]LB[kj:B][jj:A]')

@@ -16,7 +16,8 @@
 
 from collections import defaultdict
 from weiqi.models import Game
-from weiqi.board import Board, coord_from_sgf, coord_to_sgf, BLACK, WHITE, EMPTY, NODE_WHITE, NODE_BLACK, NODE_EDIT
+from weiqi.board import (Board, coord_from_sgf, coord_to_sgf, BLACK, WHITE, EMPTY, NODE_WHITE, NODE_BLACK, NODE_EDIT,
+                         SYMBOL_TRIANGLE, SYMBOL_SQUARE, SYMBOL_CIRCLE)
 from weiqi.sgf import parse_sgf
 
 
@@ -113,6 +114,11 @@ def sgf_part_from_node(board, node_id):
         if ae:
             part += 'AE%s' % ae
 
+    part += _part_symbols(board, node, SYMBOL_TRIANGLE)
+    part += _part_symbols(board, node, SYMBOL_SQUARE)
+    part += _part_symbols(board, node, SYMBOL_CIRCLE)
+    part += _part_labels(board, node)
+
     for child in node.children:
         p = sgf_part_from_node(board, child)
 
@@ -122,3 +128,15 @@ def sgf_part_from_node(board, node_id):
             part += '(' + p + ')'
 
     return part
+
+
+def _part_symbols(board, node, symbol):
+    symbols = ['[%s]' % coord_to_sgf(int(coord), board.size)
+               for coord, sym in node.symbols.items() if sym == symbol]
+    return (symbol + ''.join(symbols)) if symbols else ''
+
+
+def _part_labels(board, node):
+    labels = ['[%s:%s]' % (coord_to_sgf(int(coord), board.size), lbl)
+               for coord, lbl in node.labels.items()]
+    return ('LB' + ''.join(labels)) if labels else ''
