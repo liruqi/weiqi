@@ -120,7 +120,7 @@ const mutations = {
 
     MSG_GAME_FINISHED(state, data) {
         var game = state.open_games.find(function(game) {
-            return game.id == data.game_id;
+            return game.id == data.id;
         });
 
         if(game) {
@@ -129,7 +129,7 @@ const mutations = {
         }
 
         state.active_games = state.active_games.filter(function(game) {
-            return game.id != data.game_id;
+            return game.id != data.id;
         });
     },
 

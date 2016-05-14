@@ -41,6 +41,7 @@ class ConnectionService(BaseService):
 
         UserService(self.db, self.socket, self.user).publish_status()
         RoomService(self.db, self.socket, self.user).publish_user_rooms()
+        GameService(self.db, self.socket, self.user).publish_demos()
 
     @BaseService.register
     def disconnect(self):
@@ -52,6 +53,7 @@ class ConnectionService(BaseService):
 
         UserService(self.db, self.socket, self.user).publish_status()
         RoomService(self.db, self.socket, self.user).publish_user_rooms()
+        GameService(self.db, self.socket, self.user).publish_demos()
 
     @BaseService.register
     def ping(self):

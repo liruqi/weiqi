@@ -53,6 +53,10 @@ class GameService(BaseService):
         self.subscribe(game.id)
         self.socket.send('game_data', game.to_frontend(full=True))
 
+        if game.is_demo and game.demo_owner == self.user:
+            self.socket.publish('game_started', game.to_frontend())
+
+
     @BaseService.register
     def close_game(self, game_id):
         game = self.db.query(Game).get(game_id)
@@ -61,6 +65,9 @@ class GameService(BaseService):
 
         self.unsubscribe(game.id)
         RoomService(self.db, self.socket, self.user).leave_room(game.room_id)
+
+        if game.is_demo and game.demo_owner == self.user:
+            self.socket.publish('game_finished', game.to_frontend())
 
     def subscribe(self, game_id):
         self.socket.subscribe('game_data/'+str(game_id))
@@ -71,6 +78,16 @@ class GameService(BaseService):
         self.socket.unsubscribe('game_data/'+str(game_id))
         self.socket.unsubscribe('game_update/'+str(game_id))
         self.socket.unsubscribe('demo_current_node_id/'+str(game_id))
+
+    def publish_demos(self):
+        if not self.user:
+            return
+
+        for demo in self.user.open_demos(self.db):
+            if self.user.is_online:
+                self.socket.publish('game_started', demo.to_frontend())
+            else:
+                self.socket.publish('game_finished', demo.to_frontend())
 
     @BaseService.authenticated
     @BaseService.register

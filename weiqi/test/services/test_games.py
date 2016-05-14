@@ -53,6 +53,30 @@ def test_close(db, socket):
     assert not socket.is_subscribed('room_user_left/'+str(game.room_id))
 
 
+def test_open_game_demo(db, socket):
+    game = DemoGameFactory()
+    socket.subscribe('game_started')
+
+    svc = GameService(db, socket, game.demo_owner)
+    svc.execute('open_game', {'game_id': game.id})
+
+    assert len(socket.sent_messages) == 3
+    assert socket.sent_messages[0]['method'] == 'room_user'
+    assert socket.sent_messages[1]['method'] == 'game_data'
+    assert socket.sent_messages[2]['method'] == 'game_started'
+
+
+def test_close_game_demo(db, socket):
+    game = DemoGameFactory()
+    socket.subscribe('game_finished')
+
+    svc = GameService(db, socket, game.demo_owner)
+    svc.execute('close_game', {'game_id': game.id})
+
+    assert len(socket.sent_messages) == 1
+    assert socket.sent_messages[0]['method'] == 'game_finished'
+
+
 def test_move(db, socket):
     game = GameFactory()
 

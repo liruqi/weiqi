@@ -118,6 +118,10 @@ class User(Base):
              ((Game.black_user == self) | (Game.white_user == self))) |
             (RoomUser.user == self))
 
+    def open_demos(self, db):
+        return db.query(Game).join(Room).join(RoomUser).filter(
+            (Game.is_demo.is_(True)) & (Game.demo_owner == self) & (RoomUser.user == self))
+
     def games(self, db):
         return db.query(Game).filter((Game.black_user == self) |
                                      (Game.white_user == self) |
