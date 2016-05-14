@@ -105,7 +105,7 @@ class GameService(BaseService):
 
             self.db.commit()
 
-            if game.stage != 'finished':
+            if game.is_demo or game.stage != 'finished':
                 self._publish_game_update(game)
 
     @contextmanager

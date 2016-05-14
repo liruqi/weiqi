@@ -288,12 +288,15 @@ def test_timing_lose_on_time(db, socket):
 
 def test_move_demo(db, socket):
     game = DemoGameFactory()
+    socket.subscribe('game_update/'+str(game.id))
 
     svc = GameService(db, socket, game.demo_control)
     svc.execute('move', {'game_id': game.id, 'move': 30})
 
     assert game.board.at(30) == BLACK
     assert game.board.current == WHITE
+    assert len(socket.sent_messages) == 1
+    assert socket.sent_messages[0]['method'] == 'game_update'
 
 
 def test_demo_control(db, socket):
