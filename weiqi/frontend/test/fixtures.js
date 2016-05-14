@@ -1,4 +1,4 @@
-export function createGame() {
+export function create_game() {
     return {
         is_demo: false,
 
@@ -6,12 +6,15 @@ export function createGame() {
             current_node_id: 0,
             
             tree: [{
-                parent_id: -1,
+                id: 0,
+                parent_id: null,
                 children: [1, 2]
             }, {
+                id: 1,
                 parent_id: 0,
                 children: []
             }, {
+                id: 2,
                 parent_id: 0,
                 children: []
             }]

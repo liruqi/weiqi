@@ -50,4 +50,4 @@ gulp.task('testjs', function(done) {
     }, done).start();
 });
 
-gulp.task('default', ['scripts', 'scripts:watch', 'sass', 'sass:watch', 'server']);
+gulp.task('default', ['scripts', 'scripts:watch', 'sass', 'sass:watch', 'server', 'testjs']);

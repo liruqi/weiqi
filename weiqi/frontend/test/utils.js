@@ -1,11 +1,13 @@
 import Vue from 'vue';
 import i18n from 'vue-i18n';
 
-export function setupTest() {
+export function setup_test() {
     Vue.use(i18n, {
         lang: 'en',
         locales: {}
     });
+    
+    window.jQuery = require('jquery');
 }
 
 export function trigger(target, event, process) {

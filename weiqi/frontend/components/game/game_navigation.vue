@@ -17,7 +17,7 @@
             <button class="btn btn-default btn-xs" @click="last_move()">&raquo;</button>
         </div>
 
-        <button v-el:back-to-game v-if="!game.is_demo || !has_control" class="btn btn-default btn-xs btn-block"
+        <button v-el:back_to_game v-if="!game.is_demo || !has_control" class="btn btn-default btn-xs btn-block"
                 @click="back_to_game()">
             {{$t('game.back_to_game')}}
         </button>

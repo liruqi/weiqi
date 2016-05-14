@@ -5,38 +5,42 @@ import * as socket from '../socket';
 
 Vue.use(Vuex);
 
-const state = {
-    loaded: false,
-    
-    route: {},
-    
-    auth: {
-        user: {
-            logged_in: false,
-            user_id: "",
-            rating: null,
-            avatar_url: "",
-            automatch: false,
-            wins: 0
-        }
-    },
-    
-    sidebar: {
-        open: true
-    },
-    
-    rooms: [],
-    room_logs: {},
-    room_users: {},
-    open_games: [],
-    active_games: [],
-    direct_rooms: {},
+export function default_state() {
+    return {
+        loaded: false,
 
-    room_has_update: {},
-    game_has_update: {}
-};
+        route: {},
 
-const mutations = {
+        auth: {
+            user: {
+                logged_in: false,
+                user_id: "",
+                rating: null,
+                avatar_url: "",
+                automatch: false,
+                wins: 0
+            }
+        },
+
+        sidebar: {
+            open: true
+        },
+
+        rooms: [],
+        room_logs: {},
+        room_users: {},
+        open_games: [],
+        active_games: [],
+        direct_rooms: {},
+
+        room_has_update: {},
+        game_has_update: {}
+    };
+}
+
+const state = default_state();
+
+export const mutations = {
     MSG_CONNECTION_DATA(state, data) {
         state.auth.user.logged_in = !!data.user_id;
         state.auth.user.user_id = data.user_id;
