@@ -26,7 +26,9 @@ class RoomService(BaseService):
     @BaseService.authenticated
     @BaseService.register
     def message(self, room_id, message):
-        ru = self.db.query(RoomUser).filter_by(user=self.user, room_id=room_id).one()
+        ru = self.db.query(RoomUser).filter_by(user=self.user, room_id=room_id).first()
+        if not ru:
+            raise ServiceError('user not in room')
 
         msg = RoomMessage(
             room=ru.room,

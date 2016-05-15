@@ -53,12 +53,7 @@ class BaseService:
         if method not in self._methods:
             raise ServiceError('invalid method "{}"'.format(method))
 
-        try:
-            return self._methods[method](self, **(data or {}))
-        except Exception as e:
-            if isinstance(e, ServiceError):
-                raise
-            raise ServiceError('method failed to execute') from e
+        return self._methods[method](self, **(data or {}))
 
     def close(self):
         if self._close_session:

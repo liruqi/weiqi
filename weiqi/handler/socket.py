@@ -18,6 +18,7 @@ from tornado.websocket import WebSocketHandler
 import zlib
 import json
 import uuid
+import logging
 from datetime import datetime
 from weiqi import settings
 from weiqi.db import session
@@ -109,4 +110,8 @@ class SocketMixin:
 
 
 class SocketHandler(SocketMixin, WebSocketHandler):
-    pass
+    def _execute_service(self, *args, **kwargs):
+        try:
+            return super()._execute_service(*args, **kwargs)
+        except:
+            logging.exception('service failed to execute')
