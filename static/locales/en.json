@@ -19,7 +19,10 @@
     "confirm_pass": "Are you sure you want to pass?<br>Note that you must fill all neutral points (Chinese Ruleset).",
     "confirm_score": "Confirm Score",
     "will_start_in": "Game will start in ...",
-    "back_to_game": "Back to game"
+    "back_to_game": "Back to game",
+    "open": "Open",
+    "download_sgf": "Download SGF",
+    "create_demo": "Create Demo",
   },
 
   "demo": {

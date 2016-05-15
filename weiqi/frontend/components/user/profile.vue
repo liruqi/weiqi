@@ -76,10 +76,31 @@
                         </template>
                         <td>{{game.result || '-'}}</td>
                         <td>{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</td>
-                        <td>
-                            <a v-link="{name:'game', params:{game_id:game.id}}"><i class="fa fa-file"></i></a>
-                            &nbsp;&nbsp;&nbsp;
-                            <a :href="'/api/games/'+game.id+'/sgf'" target="_blank"><i class="fa fa-download"></i></a>
+                        <td class="text-right">
+                            <div class="btn-group">
+                                <a v-link="{name:'game', params:{game_id:game.id}}" class="btn btn-default btn-xs">
+                                    <i class="fa fa-fw fa-file"></i>
+                                    {{$t('game.open')}}
+                                </a>
+
+                                <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li v-if="!is_self || !game.is_demo">
+                                        <a href="javascript:void(0)" @click="create_demo(game.id)">
+                                            <i class="fa fa-fw fa-desktop"></i>
+                                            {{$t('game.create_demo')}}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a :href="'/api/games/'+game.id+'/sgf'" target="_blank">
+                                            <i class="fa fa-fw fa-download"></i>
+                                            {{$t('game.download_sgf')}}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -99,6 +120,14 @@
             return {
                 user: {},
                 games: []
+            }
+        },
+
+        vuex: {
+            getters: {
+                auth_user: function (state) {
+                    return state.auth.user
+                }
             }
         },
 
@@ -123,11 +152,21 @@
 
             user_id() {
                 return this.$route.params.user_id;
+            },
+
+            is_self() {
+                return this.user_id == this.auth_user.user_id;
             }
         },
 
         methods: {
-            'moment': moment.utc
+            'moment': moment.utc,
+
+            create_demo(game_id) {
+                socket.send('play/create_demo_from_game', {'game_id': game_id}, function(demo_id) {
+                    this.$route.router.go({name: 'game', params: {game_id: demo_id}});
+                }.bind(this));
+            }
         }
     }
 </script>

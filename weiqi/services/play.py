@@ -16,12 +16,11 @@
 
 from datetime import datetime
 from weiqi import settings
-from weiqi.services import BaseService
+from weiqi.services import BaseService, ServiceError
 from weiqi.rating import rating_range
 from weiqi.models import Automatch, Room, RoomUser, Game, Timing
-from weiqi.board import Board, BLACK
+from weiqi.board import Board
 from weiqi.sgf import game_from_sgf
-from weiqi.timing import update_timing
 
 
 class PlayService(BaseService):
@@ -168,6 +167,35 @@ class PlayService(BaseService):
         self.db.commit()
 
         return game.id
+
+    @BaseService.authenticated
+    @BaseService.register
+    def create_demo_from_game(self, game_id):
+        game = self.db.query(Game).get(game_id)
+        if not game:
+            raise ServiceError('game not found')
+
+        room = Room(type='game')
+        self.db.add(room)
+
+        demo = Game(is_demo=True,
+                    is_ranked=False,
+                    room=room,
+                    board=game.board,
+                    komi=game.komi,
+                    stage='finished',
+                    black_display=game.black_display,
+                    white_display=game.white_display,
+                    demo_owner=self.user,
+                    demo_owner_display=self.user.display,
+                    demo_owner_rating=self.user.rating,
+                    demo_control=self.user,
+                    demo_control_display=self.user.display)
+
+        self.db.add(demo)
+        self.db.commit()
+
+        return demo.id
 
     @BaseService.authenticated
     @BaseService.register

@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from weiqi import settings
 from weiqi.services import PlayService
 from weiqi.models import Automatch, Game
-from weiqi.test.factories import UserFactory, AutomatchFactory
+from weiqi.test.factories import UserFactory, AutomatchFactory, GameFactory
 
 
 def test_automatch_inserting(db, socket):
@@ -137,3 +137,24 @@ def test_create_demo(db, socket):
     assert game.demo_owner_display == user.display
     assert game.demo_control == user
     assert game.demo_control_display == user.display
+
+
+def test_create_demo_from_game(db, socket):
+    user = UserFactory()
+    game = GameFactory()
+    svc = PlayService(db, socket, user)
+
+    demo_id = svc.execute('create_demo_from_game', {'game_id': game.id})
+    demo = db.query(Game).get(demo_id)
+
+    assert demo is not None
+    assert demo.room is not None
+    assert demo.is_demo
+    assert demo.board.to_dict() == game.board.to_dict()
+    assert demo.black_display == game.black_display
+    assert demo.white_display == game.white_display
+    assert demo.demo_owner == user
+    assert demo.demo_owner_rating == user.rating
+    assert demo.demo_owner_display == user.display
+    assert demo.demo_control == user
+    assert demo.demo_control_display == user.display
