@@ -66,3 +66,6 @@ AUTOMATCH_PRESETS = {
         'overtime': timedelta(seconds=30),
     },
 }
+
+DASHBOARD_POPULAR_GAMES = 5
+DASHBOARD_POPULAR_GAMES_MAX_AGE = timedelta(days=7)

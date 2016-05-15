@@ -266,5 +266,15 @@
     "body": "Somehow we got disconnected from the server.<br>You can refresh the page and retry, or wait here until the server is available again.",
     "refresh": "Refresh",
     "trying_connect": "Trying to reconnect ..."
+  },
+
+  "dashboard": {
+    "popular_games": "Popular games",
+    "stats": {
+      "heading": "Stats",
+      "users": "Users",
+      "online": "Online",
+      "games": "Games"
+    }
   }
 }

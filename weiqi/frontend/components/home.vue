@@ -1,15 +1,103 @@
 <template>
-    <h1>{{msg}}</h1>
+    <h1>weiqi.gs</h1>
+
+    <div class="row">
+        <div class="col-sm-4 col-sm-push-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{$t('dashboard.stats.heading')}}</div>
+                <table class="table">
+                    <tr>
+                        <td>{{$t('dashboard.stats.users')}}</td>
+                        <td>{{stats.users}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{$t('dashboard.stats.online')}}</td>
+                        <td>{{stats.online}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{$t('dashboard.stats.games')}}</td>
+                        <td>{{stats.games}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="col-sm-8 col-sm-pull-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{$t('dashboard.popular_games')}}</div>
+                <div class="panel-body">
+                    <div v-for="game in popular_games">
+                        <div class="row">
+                            <template v-if="game.is_demo">
+                                <div class="col-xs-4 text-center">
+                                    <img :src="'/api/users/'+game.demo_owner_id+'/avatar'" class="avatar">
+                                    <h4>
+                                        <qi-username-rank :display="game.demo_owner_display" :rating="game.demo_owner_rating"></qi-username-rank>
+                                    </h4>
+                                </div>
+                                <div class="col-xs-8">
+                                    <p class="small">{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</p>
+                                    <p class="lead">
+                                        <span v-if="game.title">{{game.title}}</span>
+                                        <span else>{{$t('game.demo')}}</span>
+                                    </p>
+                                    <a :href="'/games/'+game.id" class="btn btn-default">{{$t('game.open')}}</a>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <div class="col-xs-4 text-center">
+                                    <img :src="'/api/users/'+game.black_user_id+'/avatar'" class="avatar">
+                                    <h4>
+                                        <qi-username-rank :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
+                                    </h4>
+                                </div>
+                                <div class="col-xs-4 text-center">
+                                    <p class="small">{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</p>
+                                    <p class="lead"><br>VS</p>
+                                    <br>
+                                    <a :href="'/games/'+game.id" class="btn btn-default btn-block">{{$t('game.open')}}</a>
+                                </div>
+                                <div class="col-xs-4 text-center">
+                                    <img :src="'/api/users/'+game.white_user_id+'/avatar'" class="avatar">
+                                    <h4>
+                                        <qi-username-rank :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
+                                    </h4>
+                                </div>
+                            </template>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
+    import moment from 'moment';
+    import * as socket from '../socket';
+
     export default {
         mixins: [require('./../mixins/title.vue')],
 
         data () {
             return {
-                msg: 'Home'
+                popular_games: [],
+                stats: {}
             }
+        },
+
+        ready() {
+            socket.send('dashboard/popular_games', {}, function(games) {
+                this.popular_games = games;
+            }.bind(this));
+
+            socket.send('dashboard/stats', {}, function(stats) {
+                this.stats = stats;
+            }.bind(this));
+        },
+
+        methods: {
+            'moment': moment.utc
         }
     }
 </script>
