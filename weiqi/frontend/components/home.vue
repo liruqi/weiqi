@@ -40,7 +40,9 @@
                                         <span v-if="game.title">{{game.title}}</span>
                                         <span else>{{$t('game.demo')}}</span>
                                     </p>
-                                    <a :href="'/games/'+game.id" class="btn btn-default">{{$t('game.open')}}</a>
+                                    <a v-link="{name: 'game', params:{game_id: game.id}}" class="btn btn-default">
+                                        {{$t('game.open')}}
+                                    </a>
                                 </div>
                             </template>
                             <template v-else>
@@ -54,7 +56,9 @@
                                     <p class="small">{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</p>
                                     <p class="lead"><br>VS</p>
                                     <br>
-                                    <a :href="'/games/'+game.id" class="btn btn-default btn-block">{{$t('game.open')}}</a>
+                                    <a v-link="{name: 'game', params:{game_id: game.id}}" class="btn btn-default">
+                                        {{$t('game.open')}}
+                                    </a>
                                 </div>
                                 <div class="col-xs-4 text-center">
                                     <img :src="'/api/users/'+game.white_user_id+'/avatar'" class="avatar">
