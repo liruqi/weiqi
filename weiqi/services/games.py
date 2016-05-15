@@ -313,7 +313,6 @@ class GameService(BaseService):
         game.apply_board_change()
         self._publish_game_update(game)
 
-
     @classmethod
     @gen.coroutine
     def run_time_checker(cls, pubsub):

@@ -111,6 +111,12 @@ class Node:
     def toggle_symbol(self, coord, symbol):
         coord = str(coord)
 
+        if not self.symbols:
+            self.symbols = {}
+
+        if coord in self.labels:
+            del self.labels[coord]
+
         if coord not in self.symbols or not self.symbols[coord]:
             self.symbols[coord] = symbol
         elif self.symbols[coord] == symbol:
@@ -126,6 +132,9 @@ class Node:
 
     def _toggle_label(self, coord, range_max, idx_to_lbl):
         coord = str(coord)
+
+        if not self.labels:
+            self.labels = {}
 
         if coord in self.symbols:
             del self.symbols[coord]
