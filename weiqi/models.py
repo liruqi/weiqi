@@ -18,7 +18,6 @@ from datetime import datetime, timedelta
 import re
 import bcrypt
 import json
-import hashlib
 import hmac
 from sqlalchemy import (Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Enum, TypeDecorator, Text,
                         CheckConstraint, Binary, Interval)
