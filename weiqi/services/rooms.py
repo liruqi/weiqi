@@ -74,9 +74,7 @@ class RoomService(BaseService):
         ru = self.db.query(RoomUser).filter_by(room=room, user=self.user).first()
         self.db.commit()
 
-        self.socket.subscribe('room_message/'+str(room.id))
-        self.socket.subscribe('room_user/'+str(room.id))
-        self.socket.subscribe('room_user_left/'+str(room.id))
+        self._subscribe(room.id)
 
         return {
             'other_user_id': other.id,
@@ -116,7 +114,7 @@ class RoomService(BaseService):
         ru.has_unread = False
 
     def join_room(self, room_id):
-        self.subscribe(room_id)
+        self._subscribe(room_id)
 
         if self.user:
             if self.db.query(RoomUser).filter_by(room_id=room_id, user=self.user).count() == 0:
@@ -124,8 +122,10 @@ class RoomService(BaseService):
                 self.db.add(ru)
                 self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
 
+        self._update_users_max(room_id)
+
     def leave_room(self, room_id):
-        self.unsubscribe(room_id)
+        self._unsubscribe(room_id)
 
         if self.user:
             ru = self.db.query(RoomUser).filter_by(user=self.user, room_id=room_id).first()
@@ -134,15 +134,20 @@ class RoomService(BaseService):
                 self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())
                 self.db.delete(ru)
 
-    def subscribe(self, room_id):
+    def _subscribe(self, room_id):
         self.socket.subscribe('room_message/'+str(room_id))
         self.socket.subscribe('room_user/'+str(room_id))
         self.socket.subscribe('room_user_left/'+str(room_id))
 
-    def unsubscribe(self, room_id):
+    def _unsubscribe(self, room_id):
         self.socket.unsubscribe('room_message/'+str(room_id))
         self.socket.unsubscribe('room_user/'+str(room_id))
         self.socket.unsubscribe('room_user_left/'+str(room_id))
+
+    def _update_users_max(self, room_id):
+        room = self.db.query(Room).filter_by(id=room_id).one()
+        count = self.db.query(RoomUser).join(User).filter((RoomUser.room == room) & (User.is_online.is_(True))).count()
+        room.users_max = max(room.users_max, count)
 
     def publish_user_rooms(self):
         if not self.user:

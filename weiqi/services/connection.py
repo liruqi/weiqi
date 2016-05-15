@@ -127,7 +127,7 @@ class ConnectionService(BaseService):
 
     def _join_open_rooms_and_games(self):
         for room in Room.open_rooms(self.db, self.user):
-            RoomService(self.db, self.socket, self.user).subscribe(room.id)
+            RoomService(self.db, self.socket, self.user).join_room(room.id)
 
             if room.type == 'game':
                 GameService(self.db, self.socket, self.user).subscribe(room.game.id)

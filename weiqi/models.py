@@ -165,6 +165,8 @@ class Room(Base):
     type = Column(Enum('main', 'direct', 'game', name='room_type'), nullable=False)
     is_default = Column(Boolean, nullable=False, default=False)
 
+    users_max = Column(Integer, nullable=False, default=0)
+
     users = relationship('RoomUser', back_populates='room', lazy='dynamic')
     messages = relationship('RoomMessage', back_populates='room', lazy='dynamic')
     game = relationship('Game', back_populates='room', uselist=False)

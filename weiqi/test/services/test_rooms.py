@@ -142,3 +142,22 @@ def test_leave_room(db, socket):
     svc.leave_room(room.id)
 
     assert db.query(RoomUser).count() == 0
+
+
+def test_users_max(db, socket):
+    room = RoomFactory()
+
+    svc = RoomService(db, socket, UserFactory())
+    svc.join_room(room.id)
+    assert room.users_max == 1
+
+    svc = RoomService(db, socket, UserFactory())
+    svc.join_room(room.id)
+    assert room.users_max == 2
+
+    svc.leave_room(room.id)
+    assert room.users_max == 2
+
+    svc = RoomService(db, socket, UserFactory(is_online=False))
+    svc.join_room(room.id)
+    assert room.users_max == 2
