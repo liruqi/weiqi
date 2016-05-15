@@ -113,19 +113,25 @@ class User(Base):
         }
 
     def open_games(self, db):
-        return db.query(Game).join(Room).join(RoomUser).filter(
-            ((Game.is_demo.isnot(True)) & (Game.stage != 'finished') &
-             ((Game.black_user == self) | (Game.white_user == self))) |
-            (RoomUser.user == self))
+        return (db.query(Game).join(Room).join(RoomUser)
+                .filter(((Game.is_demo.isnot(True)) &
+                         (Game.stage != 'finished') &
+                         ((Game.black_user == self) | (Game.white_user == self))) |
+                        (RoomUser.user == self))
+                .order_by(Game.created_at.desc()))
 
     def open_demos(self, db):
-        return db.query(Game).join(Room).join(RoomUser).filter(
-            (Game.is_demo.is_(True)) & (Game.demo_owner == self) & (RoomUser.user == self))
+        return (db.query(Game).join(Room).join(RoomUser)
+                .filter((Game.is_demo.is_(True)) &
+                        (Game.demo_owner == self) &
+                        (RoomUser.user == self))
+                .order_by(Game.created_at.desc()))
 
     def games(self, db):
-        return db.query(Game).filter((Game.black_user == self) |
-                                     (Game.white_user == self) |
-                                     (Game.demo_owner == self))
+        return (db.query(Game).filter((Game.black_user == self) |
+                                      (Game.white_user == self) |
+                                      (Game.demo_owner == self))
+                .order_by(Game.created_at.desc()))
 
     def apply_rating_data_change(self):
         """Notifies sqlalchemy about a change in the `rating_data` field.
