@@ -34,10 +34,12 @@
                                 <li class="divider"></li>
                             </template>
 
+                            <!-- TODO: not implemented yet
                             <li><a href="#"><i class="fa fa-users fa-fw"></i> Rooms</a></li>
                             <li><a href="#"><i class="fa fa-user-plus fa-fw"></i> Friends</a></li>
 
                             <li class="divider"></li>
+                            -->
 
                             <li>
                                 <a v-link="'/faq'">
