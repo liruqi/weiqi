@@ -33,10 +33,11 @@
 
   * {
     @include user-select(none);
+    white-space: nowrap;
   }
 
   .game-move-tree {
-    margin-left: 20px;
+    margin-left: 10px;
 
     .game-nav-node-label {
       cursor: pointer;
