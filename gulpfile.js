@@ -50,4 +50,9 @@ gulp.task('testjs', function(done) {
     }, done).start();
 });
 
-gulp.task('default', ['scripts', 'scripts:watch', 'sass', 'sass:watch', 'server', 'testjs']);
+gulp.task('fonts', function() {
+  return gulp.src('node_modules/font-awesome/fonts/*')
+    .pipe(gulp.dest('./static/dist/fonts'))
+});
+
+gulp.task('default', ['scripts', 'scripts:watch', 'sass', 'sass:watch', 'server', 'testjs', 'fonts']);

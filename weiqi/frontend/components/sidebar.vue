@@ -129,7 +129,7 @@
 
         <ul class="list-inline list-unstyled text-center">
             <li>
-                <a href="https://gitlab.com/mibitzi/weiqi.gs" target="_blank"><i class="fa fa-github"></i></a>
+                <a href="https://gitlab.com/mibitzi/weiqi.gs" target="_blank"><i class="fa fa-gitlab"></i></a>
             </li>
             <li>
                 <a href="https://www.facebook.com/weiqi.gs" target="_blank"><i class="fa fa-facebook"></i></a>
