@@ -1,4 +1,3 @@
-import pako from 'pako';
 import store from './vuex/store';
 import { server_messages } from './vuex/actions';
 
@@ -14,7 +13,7 @@ export default function configWebsocket() {
     };
 
     socket.onmessage = function(e) {
-        var data = pako.inflate(e.data, {to: 'string'});
+        var data = e.data;
         var msg = JSON.parse(data);
         var handler;
 
@@ -54,6 +53,5 @@ export function send(method, data, success) {
     }
 
     msg = JSON.stringify(msg);
-    msg = pako.deflate(msg);
     socket.send(msg);
 }

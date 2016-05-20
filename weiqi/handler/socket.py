@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.websocket import WebSocketHandler
-import zlib
 import json
 import uuid
 import logging
@@ -34,17 +33,15 @@ class SocketMixin:
         self._subs = set()
         self._services = [ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService,
                           DashboardService]
-        self._compress = True
+
+    def get_compression_options(self):
+        return {}
 
     def open(self):
         self._execute_service('connection', 'connect')
 
     def on_message(self, data):
-        if self._compress:
-            msg = json.loads(zlib.decompress(data).decode())
-        else:
-            msg = json.loads(data)
-
+        msg = json.loads(data)
         service, method = msg.get('method').split('/', 1)
 
         res = self._execute_service(service, method, msg.get('data'))
@@ -78,13 +75,7 @@ class SocketMixin:
         self._send_data({'method': topic, 'data': data})
 
     def _send_data(self, data):
-        message = data
-
-        if self._compress:
-            message = json.dumps(data)
-            message = zlib.compress(message.encode())
-
-        self.write_message(message, binary=self._compress)
+        self.write_message(data)
 
     def _on_pubsub(self, topic, data):
         topic = topic.split('/')[0]
