@@ -7,7 +7,6 @@ var request_handler = {};
 
 export default function configWebsocket() {
     socket = new WebSocket('ws://' + window.location.host + '/api/socket');
-    socket.binaryType = 'arraybuffer';
 
     socket.onopen = function() {
     };
