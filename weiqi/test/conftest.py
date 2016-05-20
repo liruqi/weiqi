@@ -32,6 +32,7 @@ def socket():
 
 @pytest.fixture
 def db():
+    session.rollback()
     session.query(User).delete()
     session.query(RoomUser).delete()
     session.query(RoomMessage).delete()

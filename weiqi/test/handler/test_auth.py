@@ -90,7 +90,6 @@ class TestPasswordReset(BaseAsyncHTTPTestCase):
             'password': 'newpw',
             'password-confirm': 'newpw'
         })
-
         session.commit()
 
         self.assertEqual(res.code, 200)
