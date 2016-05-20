@@ -449,5 +449,41 @@ class Timing(Base):
         }
 
 
+class Challenge(Base):
+    __tablename__ = 'challenges'
+
+    id = Column(Integer, primary_key=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    owner_id = Column(ForeignKey('users.id'), nullable=False)
+    owner = relationship('User', foreign_keys=[owner_id])
+
+    challengee_id = Column(ForeignKey('users.id'), nullable=False)
+    challengee = relationship('User', foreign_keys=[challengee_id])
+
+    size = Column(Integer, nullable=False, default=19)
+    handicap = Column(Integer, nullable=False, default=0)
+    owner_is_black = Column(Boolean, nullable=True)
+
+    timing_system = Column(Enum('fischer', 'byoyomi', name='timing_system'), nullable=False)
+    maintime = Column(Interval, nullable=False)
+    overtime = Column(Interval, nullable=False)
+    overtime_count = Column(Integer, nullable=False, default=0)
+
+    __table_args__ = (
+        CheckConstraint('owner_id != challengee_id'),
+    )
+
+    @validates('size')
+    def validate_size(self, key, val):
+        return val in [9, 13, 19]
+
+    @validates('handicap')
+    def validate_size(self, key, val):
+        return 0 <= val <= 9
+
+
 def datetime_to_frontend(date):
     return date.isoformat()
