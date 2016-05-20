@@ -52,6 +52,10 @@ DIRECT_ROOMS_LIMIT = 10
 RATING_PERIOD_DURATION = timedelta(hours=1)
 GAME_START_DELAY = timedelta(seconds=10)
 
+DEFAULT_KOMI = 7.5
+HANDICAP_KOMI = 0.5
+
+AUTOMATCH_SIZE = 19
 AUTOMATCH_PRESETS = {
     'fast': {
         'main': timedelta(minutes=5),

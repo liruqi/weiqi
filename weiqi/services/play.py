@@ -15,10 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
+import random
 from weiqi import settings
 from weiqi.services import BaseService, ServiceError
-from weiqi.rating import rating_range
-from weiqi.models import Automatch, Room, RoomUser, Game, Timing
+from weiqi.rating import rating_range, rank_diff
+from weiqi.models import Automatch, Room, RoomUser, Game, Timing, User
 from weiqi.board import Board
 from weiqi.sgf import game_from_sgf
 
@@ -44,7 +45,7 @@ class PlayService(BaseService):
             other = query.first()
 
             if other:
-                game = self._create_game(self.user, other.user, preset, True)
+                game = self._create_automatch_game(self.user, other.user, preset)
                 self.db.delete(other)
             else:
                 item = Automatch(preset=preset,
@@ -66,25 +67,27 @@ class PlayService(BaseService):
         else:
             self._publish_automatch(self.user, True)
 
-    def _create_game(self, user, other, preset, ranked):
-        room = Room(type='game')
-        ru = RoomUser(room=room, user=user)
-        ru2 = RoomUser(room=room, user=other)
+    def _create_automatch_game(self, user, other, preset):
+        black, white, handicap = self.game_players_handicap(user, other)
+        board = Board(settings.AUTOMATCH_SIZE, handicap)
+        komi = settings.DEFAULT_KOMI if handicap == 0 else settings.HANDICAP_KOMI
 
-        board = Board(9)
+        room = Room(type='game')
+        ru = RoomUser(room=room, user=black)
+        ru2 = RoomUser(room=room, user=white)
 
         game = Game(room=room,
                     is_demo=False,
-                    is_ranked=ranked,
+                    is_ranked=True,
                     board=board,
                     stage='playing',
-                    komi=7.5,
-                    black_user=user,
-                    black_display=user.display,
-                    black_rating=user.rating,
-                    white_user=other,
-                    white_display=other.display,
-                    white_rating=other.rating)
+                    komi=komi,
+                    black_user=black,
+                    black_display=black.display,
+                    black_rating=black.rating,
+                    white_user=white,
+                    white_display=white.display,
+                    white_rating=white.rating)
 
         timing_preset = settings.AUTOMATCH_PRESETS[preset]
         start_at = datetime.utcnow() + settings.GAME_START_DELAY
@@ -108,6 +111,21 @@ class PlayService(BaseService):
         self.db.add(timing)
 
         return game
+
+    def game_players_handicap(self, user: User, other: User):
+        handicap = rank_diff(user.rating, other.rating)
+
+        if handicap == 0:
+            if random.choice([0, 1]) == 0:
+                black, white = user, other
+            else:
+                black, white = other, user
+        elif user.rating > other.rating:
+            black, white = other, user
+        else:
+            black, white = user, other
+
+        return black, white, handicap
 
     def _publish_game_started(self, game):
         self.socket.publish('game_started', game.to_frontend())

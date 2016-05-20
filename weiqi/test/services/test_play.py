@@ -74,8 +74,9 @@ def test_automatch_create_game(db, socket):
     assert not game.is_demo
     assert game.is_ranked
     assert game.board is not None
-    assert game.board.size == 9
-    assert game.komi == 7.5
+    assert game.board.size == settings.AUTOMATCH_SIZE
+    assert game.board.handicap == 0
+    assert game.komi == 0.5
     assert game.stage == 'playing'
     assert len(game.room.users.all()) == 2
 
@@ -102,6 +103,40 @@ def test_automatch_create_game(db, socket):
     assert not socket.sent_messages[1]['data']['in_queue']
     assert socket.sent_messages[2]['method'] == 'automatch_status'
     assert not socket.sent_messages[2]['data']['in_queue']
+
+
+def test_game_players_handicap():
+    svc = PlayService()
+
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+    assert svc.game_players_handicap(other, user)[2] == 0
+
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1600)
+    assert svc.game_players_handicap(other, user) == (user, other, 1)
+
+    user = UserFactory(rating=1800)
+    other = UserFactory(rating=1600)
+    assert svc.game_players_handicap(other, user) == (other, user, 2)
+
+
+def test_game_players_random():
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+    svc = PlayService()
+
+    has_user_black = False
+    has_user_white = False
+
+    for i in range(20):
+        if svc.game_players_handicap(other, user)[0] == user:
+            has_user_black = True
+        else:
+            has_user_white = True
+
+    assert has_user_black
+    assert has_user_white
 
 
 def test_upload_sgf(db, socket):
