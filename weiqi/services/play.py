@@ -197,7 +197,7 @@ class PlayService(BaseService):
         if self.user == other:
             raise ServiceError('cannot challenge oneself')
 
-        if handicap is not None and owner_is_black is None:
+        if (handicap is not None and handicap != 0) and owner_is_black is None:
             raise ServiceError('handicap defined but not black/white')
 
         if size not in [9, 13, 19]:
@@ -212,6 +212,9 @@ class PlayService(BaseService):
         if handicap is None:
             black, white, handicap = self.game_players_handicap(self.user, other)
             owner_is_black = (black == self.user)
+
+        if owner_is_black is None:
+            owner_is_black = (random.choice([0, 1]) == 0)
 
         self.db.query(Challenge).filter_by(owner=self.user, challengee=other).delete()
 
