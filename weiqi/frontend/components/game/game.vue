@@ -19,7 +19,10 @@
                     </select>
                     <div class="clearfix"></div>
                 </p>
-                <qi-board v-if="game.board" :board="game.board" :force_node_id="force_node_id" :coordinates="coordinates"></qi-board>
+                <qi-board v-if="game.board"
+                          :board="game.board"
+                          :force_node_id="force_node_id"
+                          :coordinates="coordinates"></qi-board>
             </template>
         </div>
 

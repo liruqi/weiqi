@@ -1,5 +1,8 @@
 <template>
-    <div class="qi-board"></div>
+    <div v-el:board class="qi-board"></div>
+    <div v-if="confirm_coord != null" class="board-confirm-click text-right">
+        <button type="button" @click="confirm_click">Confirm</button>
+    </div>
 </template>
 
 <script>
@@ -21,12 +24,14 @@
         data() {
             return {
                 wgo: null,
-                resize_interval: null
+                resize_interval: null,
+                confirm_coord: null,
+                click_event: null
             }
         },
 
         ready() {
-            this.wgo = new WGo.Board(this.$el, {
+            this.wgo = new WGo.Board(this.$els.board, {
                 width:      500,
                 background: "/static/images/board/board.jpg",
                 size:       this.board.size
@@ -36,11 +41,12 @@
             this.draw_coordinates();
             this.draw();
 
+            this.wgo.addEventListener("touchstart", this.click_handler);
             this.wgo.addEventListener("click", this.click_handler);
-            jQuery(this.$el).on('DOMMouseScroll mousewheel', this.scroll_handler);
+            jQuery(this.$els.board).on('DOMMouseScroll mousewheel', this.scroll_handler);
 
 
-            var el = jQuery(this.$el).parent();
+            var el = jQuery(this.$els.board).parent();
             var last_width = el.width();
             var last_height = el.height();
 
@@ -58,8 +64,9 @@
 
         destroyed() {
             this.wgo.removeEventListener("click", this.click_handler);
-            jQuery(this.$el).off('mousewheel');
-            jQuery(this.$el).off('DOMMouseScroll');
+            this.wgo.removeEventListener("touchstart", this.click_handler);
+            jQuery(this.$els.board).off('mousewheel');
+            jQuery(this.$els.board).off('DOMMouseScroll');
 
             clearInterval(this.resize_interval);
         },
@@ -91,15 +98,15 @@
 
         methods: {
             set_size() {
-                var parent_height = jQuery(this.$el).parent().height();
+                var parent_height = jQuery(this.$els.board).parent().height();
                 var siblings_height = 0;
 
-                jQuery(this.$el).siblings().each(function() {
+                jQuery(this.$els.board).siblings().each(function() {
                     siblings_height += jQuery(this).height();
                 });
 
                 var height = parent_height - siblings_height;
-                var width = jQuery(this.$el).width();
+                var width = jQuery(this.$els.board).width();
                 var min = Math.min(height, width);
 
                 if(this.wgo.width != min) {
@@ -108,8 +115,53 @@
             },
 
             click_handler(x, y, event) {
-                var coord = x + y*this.board.size;
-                this.$dispatch('board-click', coord, event);
+                // Stopping the event is required because we are listening to both touchstart and click.
+                event.stopPropagation();
+                event.preventDefault();
+
+                var mouse, coord;
+
+                this.confirm_coord = null;
+                this.click_event = null;
+
+                if(event.type == 'touchstart') {
+                    mouse = this.get_mouse_coord(event.touches[0]);
+                    coord = mouse.x + mouse.y*this.board.size;
+                    this.confirm_coord = coord;
+                    this.click_event = event;
+                    this.draw();
+                } else {
+                    mouse = this.get_mouse_coord(event);
+                    coord = mouse.x + mouse.y*this.board.size;
+                    this.$dispatch('board-click', coord, event);
+                }
+            },
+
+            confirm_click() {
+                this.$dispatch('board-click', this.confirm_coord, this.click_event);
+                this.confirm_coord = null;
+                this.click_event = null;
+            },
+
+            // The WGo implementation of this function does not handle touch events correctly.
+            get_mouse_coord(e) {
+                var x, y;
+                var offset = jQuery(this.$els.board).offset();
+
+                x = (e.clientX - offset.left) * this.wgo.pixelRatio;
+                x -= this.wgo.left;
+                x /= this.wgo.fieldWidth;
+                x = Math.round(x);
+
+                y = (e.clientY - offset.top) * this.wgo.pixelRatio;
+                y -= this.wgo.top;
+                y /= this.wgo.fieldHeight;
+                y = Math.round(y);
+
+                return {
+                    x: x >= this.wgo.size ? -1 : x,
+                    y: y >= this.wgo.size ? -1 : y
+                };
             },
 
             scroll_handler(e) {
@@ -166,9 +218,19 @@
                     this.wgo.addObject(params);
                 }.bind(this));
 
+                this.draw_touch_shadow();
+
                 this.draw_symbols();
                 this.draw_labels();
                 this.draw_move_marker();
+            },
+
+            draw_touch_shadow() {
+                if(this.confirm_coord !== null) {
+                    console.log(this.confirm_coord);
+                    var xy = this.coord_to_2d(this.confirm_coord);
+                    this.wgo.addObject({x: xy[0], y: xy[1], c: WGo.B, type: 'outline'});
+                }
             },
 
             draw_symbols() {
@@ -334,7 +396,7 @@
             toggle_coordinates() {
                 this.coordinates = !this.coordinates;
                 this.draw();
-            }
+            },
         }
     }
 </script>
