@@ -197,6 +197,36 @@ def test_create_demo_from_game(db, socket):
     assert demo.demo_control_display == user.display
 
 
+def test_challenge_suggestion(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1550)
+
+    svc = PlayService(db, socket, user)
+    data = svc.execute('challenge_setup_suggestion', {'user_id': other.id})
+
+    assert data['other_user_id'] == other.id
+    assert data['other_display'] == other.display
+    assert data['other_rating'] == other.rating
+    assert data['handicap'] == 0
+    assert data['owner_is_black'] is None
+    assert data['komi'] == settings.DEFAULT_KOMI
+
+
+def test_challenge_suggestion_handicap(db, socket):
+    user = UserFactory(rating=1750)
+    other = UserFactory(rating=1500)
+
+    svc = PlayService(db, socket, user)
+    data = svc.execute('challenge_setup_suggestion', {'user_id': other.id})
+
+    assert data['other_user_id'] == other.id
+    assert data['other_display'] == other.display
+    assert data['other_rating'] == other.rating
+    assert data['handicap'] == 2
+    assert data['owner_is_black'] is False
+    assert data['komi'] == settings.HANDICAP_KOMI
+
+
 def test_challenge(db, socket):
     user = UserFactory(rating=1500)
     other = UserFactory(rating=1500)

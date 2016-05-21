@@ -174,7 +174,6 @@ class PlayService(BaseService):
         black, white, handicap = self.game_players_handicap(self.user, other)
 
         if handicap == 0:
-            handicap = None
             owner_is_black = None
             komi = settings.DEFAULT_KOMI
         else:
