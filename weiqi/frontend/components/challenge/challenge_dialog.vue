@@ -1,0 +1,290 @@
+<template>
+    <div id="qi-challenge" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">{{$t('challenge.dialog.header')}}</h3>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="challenge-user">{{$t('challenge.dialog.user')}}</label>
+                        <select class="form-control" id="challenge-user"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="challenge-board-size">{{$t('challenge.board_size')}}</label>
+                        <select class="form-control" id="challenge-board-size" v-model="size">
+                            <option :value="19">19x19</option>
+                            <option :value="13">13x13</option>
+                            <option :value="9">9x9</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="challenge-handicap">{{$t('challenge.handicap')}}</label>
+                        <select class="form-control" id="challenge-handicap" v-model="handicap">
+                            <option value="auto">{{$t('challenge.dialog.handicap.auto')}}</option>
+                            <option value="0">{{$t('challenge.dialog.handicap.none')}}</option>
+                            <option value="1">{{$t('challenge.dialog.handicap.no_komi')}}</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="challenge-black-white">{{$t('challenge.dialog.black_white')}}</label>
+
+                        <div class="radio">
+                            <label :class="{'text-muted': !can_auto_black_white}">
+                                <input type="radio" name="black_white" v-model="black_white" value="auto"
+                                       :disabled="!can_auto_black_white">
+                                {{$t('challenge.dialog.bw.auto')}}
+                            </label>
+
+                            &nbsp;&nbsp;&nbsp;
+
+                            <label>
+                                <input type="radio" name="black_white" v-model="black_white" value="black">
+                                {{$t('challenge.dialog.bw.black')}}
+                            </label>
+
+                            &nbsp;&nbsp;&nbsp;
+
+                            <label>
+                                <input type="radio" name="black_white" v-model="black_white" value="white">
+                                {{$t('challenge.dialog.bw.white')}}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="challenge-komi">{{$t('challenge.komi')}}</label>
+                        <input type="number" step="0.5" class="form-control" id="challenge-komi" v-model="komi"
+                               :disabled="black_white == 'auto'">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="challenge-timing-system">{{$t('challenge.timing')}}</label>
+                        <select class="form-control" id="challenge-timing-system" v-model="timing">
+                            <option value="fischer">Fischer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="challenge-maintime">{{$t('challenge.maintime')}}</label>
+                        <select class="form-control" id="challenge-maintime" v-model="maintime">
+                            <option v-for="opt in maintime_options" :value="opt[0]">
+                                {{opt[1]}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="challenge-overtime">{{$t('challenge.overtime')}}</label>
+                        <select class="form-control" id="challenge-overtime" v-model="overtime">
+                            <option v-for="opt in fischer_options" :value="opt[0]">
+                                {{opt[1]}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @click="submit">
+                        {{$t('challenge.dialog.submit')}}
+                    </button>
+
+                    <button class="btn btn-default" data-dismiss="modal">{{$t('challenge.dialog.cancel')}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import * as socket from '../../socket';
+    import { rating_to_rank } from '../../rating';
+
+    export default {
+        data() {
+            return {
+                size: 19,
+                timing: 'fischer',
+                handicap: 'auto',
+                komi: 7.5,
+                black_white: 'auto',
+                maintime: 10,
+                overtime: 20,
+
+                maintime_options: [
+                    [1, "1min"],
+                    [5, "5min"],
+                    [10, "10min"],
+                    [15, "15min"],
+                    [20, "20min"],
+                    [30, "30min"],
+                    [40, "40min"],
+                    [50, "50min"],
+                    [60, "60min"]
+                ],
+
+                fischer_options: [
+                    [10, "10sec"],
+                    [15, "15sec"],
+                    [20, "20sec"],
+                    [30, "30sec"],
+                    [40, "40sec"],
+                    [50, "50sec"],
+                    [60, "60sec"]
+                ]
+            }
+        },
+
+        vuex: {
+            getters: {
+                auth_user: function (state) {
+                    return state.auth.user
+                }
+            }
+        },
+
+        ready() {
+            var select = jQuery('#challenge-user');
+
+            select.select2({
+                theme: 'bootstrap',
+                minimumInputLength: 2,
+
+                ajax: {
+                    dataType: 'json',
+
+                    transport: function(params, success, failure) {
+                        socket.send('users/autocomplete', {query: params.data.q}, function(users) {
+                            success(users);
+                        });
+                    },
+
+                    processResults: function(data, params) {
+                        data.forEach(function(user) {
+                            user.text = this.option_text(user.id, user.display, user.rating);
+                        });
+
+                        if(this.auth_user.logged_in) {
+                            data = data.filter(function (user) {
+                                return user.id != this.auth_user.user_id;
+                            }.bind(this));
+                        }
+
+                        return {
+                            results: data
+                        }
+                    }.bind(this)
+                }
+            });
+
+            select.on('qi:set_user', function(ev, user_id) {
+                socket.send('play/challenge_setup_suggestion', {user_id: user_id}, function(data) {
+                    select.empty().append(
+                            '<option value="'+data.other_user_id+'">' +
+                            this.option_text(data.other_user_id, data.other_display, data.other_rating) +
+                            '</option>');
+
+                    select.val(data.other_user_id);
+                    select.select2('data')[0].rating = data.other_rating;
+                    select.trigger('change');
+
+                    if(data.handicap === null) {
+                        this.handicap = 'auto';
+                    } else {
+                        this.handicap = ''+data.handicap;
+                    }
+
+                    if(data.owner_is_black === null) {
+                        this.black_white = 'auto';
+                    } else if(data.owner_is_black) {
+                        this.black_white = 'black';
+                    } else {
+                        this.black_white = 'white';
+                    }
+
+                    this.komi = data.komi;
+                }.bind(this));
+            }.bind(this));
+        },
+
+        computed: {
+            can_auto_black_white() {
+                return this.handicap == 'auto' || this.handicap == '0';
+            }
+        },
+
+        watch: {
+            'can_auto_black_white': function(val) {
+                if(!val && this.black_white == 'auto') {
+                    var selected = this.selected_user();
+
+                    if(selected && selected.rating > this.auth_user.rating) {
+                        this.black_white = 'white';
+                    } else {
+                        this.black_white = 'black';
+                    }
+                }
+            },
+
+            'handicap': function(val) {
+                if(val != 'auto' && val != '0') {
+                    this.komi = 0.5;
+                } else {
+                    this.komi = 7.5;
+                }
+            }
+        },
+
+        methods: {
+            selected_user() {
+                var data = jQuery('#challenge-user').select2('data');
+                if(data) {
+                    return data[0];
+                }
+                return null;
+            },
+
+            option_text(id, display, rating) {
+                return '#' + id + ' - ' + display + ' (' + rating_to_rank(rating) + ')';
+            },
+
+            submit() {
+                var data = {
+                    user_id: +jQuery('#challenge-user').val(),
+                    size: this.size,
+                    handicap: null,
+                    komi: +this.komi,
+                    owner_is_black: null,
+                    timing: this.timing,
+                    maintime: this.maintime,
+                    overtime: this.overtime,
+                    overtime_count: 1
+                };
+
+                if(this.handicap != 'auto') {
+                    data.handicap = +this.handicap;
+                }
+
+                if(this.black_white != 'auto') {
+                    data.owner_is_black = (this.black_white == 'black');
+                }
+
+                socket.send('play/challenge', data, function() {
+                    jQuery('#qi-challenge').modal('hide');
+                });
+            }
+        }
+    }
+</script>

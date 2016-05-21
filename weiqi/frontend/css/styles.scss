@@ -2,9 +2,10 @@
 @import "../../../node_modules/font-awesome/scss/font-awesome";
 @import "../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 @import "../../../node_modules/cropper/dist/cropper";
+@import "../../../node_modules/select2/dist/css/select2.min";
+@import "../../../node_modules/select2-bootstrap-theme/src/select2-bootstrap";
 
 @import "layout";
-
 @import "components/page_load_spinner";
 @import "components/scrollbars";
 @import "components/sidebar";
@@ -20,3 +21,4 @@
 @import "components/header_anchor";
 @import "components/gamelist";
 @import "components/profile";
+@import "components/select2";

@@ -18,7 +18,7 @@ import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy import FuzzyText
 from datetime import datetime, timedelta
-from weiqi.models import User, Room, RoomUser, Automatch, Game, Timing
+from weiqi.models import User, Room, RoomUser, Automatch, Game, Timing, Challenge
 from weiqi.board import Board
 from weiqi.test import session
 from weiqi.glicko2 import Player
@@ -140,3 +140,21 @@ class TimingFactory(SQLAlchemyModelFactory):
     black_overtime = timedelta(seconds=20)
     white_main = timedelta(minutes=1)
     white_overtime = timedelta(seconds=20)
+
+
+class ChallengeFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = Challenge
+        sqlalchemy_session = session
+        force_flush = True
+
+    expire_at = datetime.utcnow() + timedelta(minutes=1)
+    owner = factory.SubFactory(UserFactory)
+    challengee = factory.SubFactory(UserFactory)
+    board_size = 19
+    handicap = 0
+    komi = 7.5
+    owner_is_black = True
+    timing_system = 'fischer'
+    maintime = timedelta(minutes=1)
+    overtime = timedelta(seconds=20)

@@ -14,6 +14,7 @@
         <qi-play-dialog></qi-play-dialog>
         <qi-create-demo></qi-create-demo>
         <qi-upload-sgf></qi-upload-sgf>
+        <qi-challenge></qi-challenge>
         <qi-disconnected></qi-disconnected>
     </template>
 

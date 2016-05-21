@@ -13,6 +13,8 @@
     "observers": "Observers",
     "started": "Started",
     "demo": "Demo",
+    "ranked": "Ranked",
+    "free": "Free",
     "resign": "Resign",
     "confirm_resign": "Really resign?",
     "pass": "Pass",
@@ -40,7 +42,8 @@
 
   "user": {
     "view_profile": "View profile",
-    "send_message": "Send message"
+    "send_message": "Send message",
+    "challenge": "Challenge"
   },
 
   "header": {
@@ -57,7 +60,9 @@
     "sign_in": "Sign in",
     "create_demo": "Create Demo",
     "upload_sgf": "Upload SGF",
+    "challenge": "Challenge user",
 
+    "challenges": "Challenges",
     "games": "Games",
     "no_games": "You have no open games",
     "active_games": "Active Games",
@@ -275,6 +280,47 @@
       "users": "Users",
       "online": "Online",
       "games": "Games"
+    }
+  },
+
+  "challenge": {
+    "opponent": "Opponent",
+    "board_size": "Board size",
+    "handicap": "Handicap",
+    "komi": "Komi",
+    "timing": "Timing system",
+    "maintime": "Main time",
+    "overtime": "Overtime",
+
+    "dialog": {
+      "header": "Challenge",
+      "user": "User",
+
+      "handicap": {
+        "auto": "Automatic",
+        "none": "No handicap",
+        "no_komi": "1 (No komi)"
+      },
+
+      "black_white": "Black / White",
+
+      "bw": {
+        "auto": "Automatic",
+        "black": "I play black",
+        "white": "I play white"
+      },
+
+      "submit": "Challenge",
+      "cancel": "Cancel"
+    },
+
+    "view": {
+      "heading": "Challenge",
+      "not_found": "Challenge does not exist or has expired",
+      "expires_in": "Expires in",
+      "cancel": "Cancel challenge",
+      "accept": "Accept",
+      "decline": "Decline"
     }
   }
 }

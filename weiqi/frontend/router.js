@@ -43,6 +43,10 @@ export default function configRouter() {
             name: 'game',
             component: require('./components/game/game.vue')
         },
+        '/challenges/:challenge_id': {
+            name: 'challenge',
+            component: require('./components/challenge/view_challenge.vue')
+        }
     });
 
     return router;

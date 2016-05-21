@@ -20,7 +20,7 @@ import bcrypt
 import json
 import hmac
 from sqlalchemy import (Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Enum, TypeDecorator, Text,
-                        CheckConstraint, Binary, Interval)
+                        CheckConstraint, Binary, Interval, UniqueConstraint)
 from sqlalchemy.orm import validates, relationship, deferred
 from sqlalchemy.orm.attributes import flag_modified
 from weiqi import settings
@@ -396,6 +396,9 @@ class Game(Base):
         flag_modified(self, 'board')
 
 
+TimingSystem = Enum('fischer', 'byoyomi', name='timing_system')
+
+
 class Timing(Base):
     __tablename__ = 'timings'
 
@@ -411,7 +414,7 @@ class Timing(Base):
     timing_updated_at = Column(DateTime)
     next_move_at = Column(DateTime)
 
-    system = Column(Enum('fischer', 'byoyomi', name='timing_system'), nullable=False)
+    system = Column(TimingSystem, nullable=False)
     main = Column(Interval, nullable=False)
     overtime = Column(Interval, nullable=False)
     overtime_count = Column(Integer, nullable=False, default=0)
@@ -457,32 +460,65 @@ class Challenge(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    expire_at = Column(DateTime, nullable=False)
+
     owner_id = Column(ForeignKey('users.id'), nullable=False)
     owner = relationship('User', foreign_keys=[owner_id])
 
     challengee_id = Column(ForeignKey('users.id'), nullable=False)
     challengee = relationship('User', foreign_keys=[challengee_id])
 
-    size = Column(Integer, nullable=False, default=19)
-    handicap = Column(Integer, nullable=False, default=0)
-    owner_is_black = Column(Boolean, nullable=True)
+    board_size = Column(Integer, nullable=False, default=19)
+    komi = Column(Float, nullable=False)
+    handicap = Column(Integer, nullable=False)
+    owner_is_black = Column(Boolean, nullable=False)
 
-    timing_system = Column(Enum('fischer', 'byoyomi', name='timing_system'), nullable=False)
+    timing_system = Column(TimingSystem, nullable=False)
     maintime = Column(Interval, nullable=False)
     overtime = Column(Interval, nullable=False)
     overtime_count = Column(Integer, nullable=False, default=0)
 
     __table_args__ = (
         CheckConstraint('owner_id != challengee_id'),
+        UniqueConstraint('owner_id', 'challengee_id'),
     )
 
-    @validates('size')
-    def validate_size(self, key, val):
-        return val in [9, 13, 19]
+    @validates('board_size')
+    def validate_board_size(self, key, val):
+        if val not in [9, 13, 19]:
+            raise ValueError('invalid board size')
+        return val
 
     @validates('handicap')
-    def validate_size(self, key, val):
-        return 0 <= val <= 9
+    def validate_handicap(self, key, val):
+        if not 0 <= val <= 9:
+            raise ValueError('invalid handicap')
+        return val
+
+    @staticmethod
+    def open_challenges(db, user):
+        return db.query(Challenge).filter((Challenge.owner == user) | (Challenge.challengee == user))
+
+    def to_frontend(self):
+        return {
+            'id': self.id,
+            'created_at': datetime_to_frontend(self.created_at),
+            'expire_at': datetime_to_frontend(self.expire_at),
+            'owner_id': self.owner_id,
+            'owner_display': self.owner.display,
+            'owner_rating': self.owner.rating,
+            'challengee_id': self.challengee_id,
+            'challengee_display': self.challengee.display,
+            'challengee_rating': self.challengee.rating,
+            'board_size': self.board_size,
+            'handicap': self.handicap,
+            'komi': self.komi,
+            'owner_is_black': self.owner_is_black,
+            'timing_system': self.timing_system,
+            'maintime': self.maintime.total_seconds(),
+            'overtime': self.overtime.total_seconds(),
+            'overtime_count': self.overtime_count,
+        }
 
 
 def datetime_to_frontend(date):

@@ -10,7 +10,7 @@
             <div class="col-sm-8">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h1 class="panel-title">{{user.display}}</h1>
+                        <h1 class="panel-title">#{{user.id}} &mdash; {{user.display}}</h1>
                     </div>
 
                     <div class="panel-body">
@@ -56,6 +56,7 @@
                         <th>{{$t('game.white')}}</th>
                         <th>{{$t('game.black')}}</th>
                         <th>{{$t('game.result')}}</th>
+                        <th>{{$t('game.ranked')}}</th>
                         <th>{{$t('game.date')}}</th>
                         <th>&nbsp;</th>
                     </tr>
@@ -68,13 +69,23 @@
                         </template>
                         <template v-else>
                             <td :class="{winner: game.result.startsWith('W+')}">
-                                <qi-user-context :user_id="game.white_user_id" :display="game.white_display" :rating="game.rating_white"></qi-user-context>
+                                <qi-user-context :user_id="game.white_user_id" :display="game.white_display" :rating="game.white_rating"></qi-user-context>
                             </td>
                             <td :class="{winner: game.result.startsWith('B+')}">
-                                <qi-user-context :user_id="game.black_user_id" :display="game.black_display" :rating="game.rating_black"></qi-user-context>
+                                <qi-user-context :user_id="game.black_user_id" :display="game.black_display" :rating="game.black_rating"></qi-user-context>
                             </td>
                         </template>
                         <td>{{game.result || '-'}}</td>
+                        <td>
+                            <template v-if="!game.is_demo">
+                                <span v-if="game.is_ranked">
+                                    {{$t('game.ranked')}}
+                                </span>
+                                <span v-else>
+                                    {{$t('game.free')}}
+                                </span>
+                            </template>
+                        </td>
                         <td>{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</td>
                         <td class="text-right">
                             <div class="btn-group">

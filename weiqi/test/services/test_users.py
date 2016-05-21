@@ -29,3 +29,15 @@ def test_profile(db, socket):
     assert profile.get('is_online') == user.is_online
     assert profile.get('rating') == user.rating
     assert profile.get('display') == user.display
+
+
+def test_autocomplete(db, socket):
+    UserFactory(display='t_one_t')
+    UserFactory(display='name')
+    UserFactory(display='some_one')
+
+    svc = UserService(db, socket)
+
+    users = svc.execute('autocomplete', {'query': 'one'})
+
+    assert len(users) == 2

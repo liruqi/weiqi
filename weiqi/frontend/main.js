@@ -9,6 +9,7 @@ import configValidator from './validator';
 // TODO: move to gulpfile
 window.jQuery = require('jquery');
 require('bootstrap-sass');
+require('select2');
 
 const App = Vue.extend(require('./app.vue'));
 
@@ -41,5 +42,6 @@ Vue.component('qi-page-load-spinner', require('./components/page_load_spinner.vu
 Vue.component('qi-recaptcha', require('./components/recaptcha.vue'));
 Vue.component('qi-create-demo', require('./components/create_demo.vue'));
 Vue.component('qi-upload-sgf', require('./components/upload_sgf.vue'));
+Vue.component('qi-challenge', require('./components/challenge/challenge_dialog.vue'));
 
 router.start(App, 'body > app');

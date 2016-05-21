@@ -29,7 +29,7 @@ def test_connect_subs(db, socket):
     assert socket.is_subscribed('game_finished')
     assert socket.is_subscribed('direct_message/'+str(user.id))
     assert socket.is_subscribed('automatch_status/'+str(user.id))
-    assert socket.is_subscribed('rating_update/'+str(user.id))
+    assert socket.is_subscribed('challenges/'+str(user.id))
 
 
 def test_disconnect_automatch(db, socket):

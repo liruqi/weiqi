@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi.services import BaseService, UserService, GameService, RoomService
-from weiqi.models import Game, Room, RoomUser, Connection, Automatch
+from weiqi.models import Game, Room, RoomUser, Connection, Automatch, Challenge
 from weiqi import settings
 
 
@@ -33,7 +33,7 @@ class ConnectionService(BaseService):
         if self.user:
             self.socket.subscribe('direct_message/'+str(self.user.id))
             self.socket.subscribe('automatch_status/'+str(self.user.id))
-            self.socket.subscribe('rating_update/'+str(self.user.id))
+            self.socket.subscribe('challenges/'+str(self.user.id))
 
         self._join_open_rooms_and_games()
         self._insert_connection()
@@ -74,6 +74,7 @@ class ConnectionService(BaseService):
         data.update(self._connection_data_games())
         data.update(self._connection_data_direct_rooms())
         data.update(self._connection_data_active_games())
+        data.update(self._connection_data_challenges())
 
         return data
 
@@ -123,6 +124,14 @@ class ConnectionService(BaseService):
     def _connection_data_active_games(self):
         return {
             'active_games': [g.to_frontend() for g in Game.active_games(self.db)]
+        }
+
+    def _connection_data_challenges(self):
+        if not self.user:
+            return {}
+
+        return {
+            'challenges': [c.to_frontend() for c in Challenge.open_challenges(self.db, self.user)]
         }
 
     def _join_open_rooms_and_games(self):

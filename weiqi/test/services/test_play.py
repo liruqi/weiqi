@@ -14,11 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
+from datetime import datetime, timedelta
+import pytest
 from weiqi import settings
 from weiqi.services import PlayService
-from weiqi.models import Automatch, Game
-from weiqi.test.factories import UserFactory, AutomatchFactory, GameFactory
+from weiqi.services.play import ChallengeExpiredError
+from weiqi.models import Automatch, Game, Challenge
+from weiqi.test.factories import UserFactory, AutomatchFactory, GameFactory, ChallengeFactory
 
 
 def test_automatch_inserting(db, socket):
@@ -193,3 +195,122 @@ def test_create_demo_from_game(db, socket):
     assert demo.demo_owner_display == user.display
     assert demo.demo_control == user
     assert demo.demo_control_display == user.display
+
+
+def test_challenge(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+
+    svc = PlayService(db, socket, user)
+    socket.subscribe('challenges/'+str(user.id))
+    socket.subscribe('challenges/'+str(other.id))
+
+    svc.execute('challenge', {
+        'user_id': other.id,
+        'size': 19,
+        'handicap': 0,
+        'komi': 7.5,
+        'owner_is_black': True,
+        'timing': 'fischer',
+        'maintime': 10,
+        'overtime': 20,
+        'overtime_count': 1,
+    })
+
+    assert db.query(Challenge).count() == 1
+    challenge = db.query(Challenge).first()
+
+    assert challenge.owner == user
+    assert challenge.challengee == other
+    assert challenge.board_size == 19
+    assert challenge.handicap == 0
+    assert challenge.owner_is_black
+    assert challenge.timing_system == 'fischer'
+    assert challenge.maintime == timedelta(minutes=10)
+    assert challenge.overtime == timedelta(seconds=20)
+
+    assert len(socket.sent_messages) == 2
+    assert socket.sent_messages[0]['method'] == 'challenges'
+    assert socket.sent_messages[1]['method'] == 'challenges'
+
+
+def test_challange_again_replaces(db, socket):
+    challenge = ChallengeFactory()
+    other = ChallengeFactory(owner=challenge.owner, challengee=UserFactory())
+
+    svc = PlayService(db, socket, challenge.owner)
+    svc.execute('challenge', {
+        'user_id': challenge.challengee_id,
+        'size': 19,
+        'handicap': 0,
+        'komi': 7.5,
+        'owner_is_black': True,
+        'timing': 'fischer',
+        'maintime': 10,
+        'overtime': 20,
+        'overtime_count': 1,
+    })
+
+    assert db.query(Challenge).count() == 2
+    assert db.query(Challenge).first() == other
+
+
+def test_decline_challenge(db, socket):
+    challenge = ChallengeFactory()
+    svc = PlayService(db, socket, challenge.challengee)
+    socket.subscribe('challenges/'+str(challenge.owner_id))
+    socket.subscribe('challenges/'+str(challenge.challengee_id))
+
+    svc.execute('decline_challenge', {'challenge_id': challenge.id})
+
+    assert db.query(Challenge).count() == 0
+    assert len(socket.sent_messages) == 2
+    assert socket.sent_messages[0]['method'] == 'challenges'
+    assert socket.sent_messages[1]['method'] == 'challenges'
+
+
+def test_cancel_challenge(db, socket):
+    challenge = ChallengeFactory()
+    svc = PlayService(db, socket, challenge.owner)
+    socket.subscribe('challenges/'+str(challenge.owner_id))
+    socket.subscribe('challenges/'+str(challenge.challengee_id))
+
+    svc.execute('cancel_challenge', {'challenge_id': challenge.id})
+
+    assert db.query(Challenge).count() == 0
+    assert len(socket.sent_messages) == 2
+    assert socket.sent_messages[0]['method'] == 'challenges'
+    assert socket.sent_messages[1]['method'] == 'challenges'
+
+
+def test_accept_challenge(db, socket):
+    challenge = ChallengeFactory()
+    svc = PlayService(db, socket, challenge.challengee)
+    socket.subscribe('game_started')
+    socket.subscribe('challenges/'+str(challenge.owner_id))
+    socket.subscribe('challenges/'+str(challenge.challengee_id))
+
+    svc.execute('accept_challenge', {'challenge_id': challenge.id})
+
+    assert db.query(Challenge).count() == 0
+    assert len(socket.sent_messages) == 3
+    assert socket.sent_messages[0]['method'] == 'game_started'
+    assert socket.sent_messages[1]['method'] == 'challenges'
+    assert socket.sent_messages[2]['method'] == 'challenges'
+
+
+def test_accept_expired_challenge(db, socket):
+    challenge = ChallengeFactory(expire_at=datetime.utcnow() - timedelta(seconds=1))
+    svc = PlayService(db, socket, challenge.challengee)
+
+    with pytest.raises(ChallengeExpiredError):
+        svc.execute('accept_challenge', {'challenge_id': challenge.id})
+
+
+def test_cleanup_challenges(db, socket):
+    ChallengeFactory()
+    ChallengeFactory(expire_at=datetime.utcnow() - timedelta(seconds=1))
+    svc = PlayService(db, socket)
+    svc.cleanup_challenges()
+
+    assert db.query(Challenge).count() == 1

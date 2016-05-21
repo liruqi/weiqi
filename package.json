@@ -37,6 +37,8 @@
     "karma-phantomjs-launcher": "^1.0.0",
     "moment": "^2.12.0",
     "phantomjs-prebuilt": "^2.1.7",
+    "select2": "^4.0.2",
+    "select2-bootstrap-theme": "0.1.0-beta.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "vue": "^1.0.18",

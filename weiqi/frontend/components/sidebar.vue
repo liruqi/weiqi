@@ -56,7 +56,11 @@
                                 {{$t('sidebar.upload_sgf')}}
                             </a>
                         </li>
-                        <li><a href="#">Challenge</a></li>
+                        <li>
+                            <a href="#" data-toggle="modal" data-target="#qi-challenge">
+                                {{$t('sidebar.challenge')}}
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -69,6 +73,25 @@
                     {{$t('sidebar.active_games')}}
                 </a>
             </li>
+        </ul>
+
+        <ul class="sidebar-menu" v-if="challenges.length > 0">
+            <li class="header">{{$t('sidebar.challenges')}}</li>
+
+            <template v-for="challenge in challenges">
+                <li v-link-active>
+                    <a v-link="{name: 'challenge', params: {'challenge_id': challenge.id}}">
+                        <i class="fa fa-trophy"></i>
+
+                        <span v-if="challenge.owner_id == user.user_id">{{challenge.challengee_display}}</span>
+                        <span v-else>{{challenge.owner_display}}</span>
+
+                        <span class="sidebar-item-action pull-right" @click.prevent="close_challenge(challenge.id)">
+                            <i class="fa fa-times-circle"></i>
+                        </span>
+                    </a>
+                </li>
+            </template>
         </ul>
 
         <ul class="sidebar-menu">
@@ -155,8 +178,10 @@
                 direct_rooms: function(state) { return state.direct_rooms; },
                 open_games: function(state) { return state.open_games; },
                 room_has_update: function(state) { return state.room_has_update; },
-                game_has_update: function(state) { return state.game_has_update; }
+                game_has_update: function(state) { return state.game_has_update; },
+                challenges: function(state) { return state.challenges; }
             },
+
             actions: {
                 close_game
             }

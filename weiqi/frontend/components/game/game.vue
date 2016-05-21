@@ -76,6 +76,7 @@
     import moment from 'moment';
     import { open_game, update_game_time, clear_game_update } from './../../vuex/actions';
     import * as socket from '../../socket';
+    import { format_duration } from '../../format';
 
     export default {
         mixins: [require('./../../mixins/title.vue')],
@@ -150,13 +151,13 @@
 
             black_time() {
                 if(this.game.timing) {
-                    return this.format_time(this.game.timing.black_main);
+                    return this.format_duration(this.game.timing.black_main);
                 }
             },
 
             white_time() {
                 if(this.game.timing) {
-                    return this.format_time(this.game.timing.white_main);
+                    return this.format_duration(this.game.timing.white_main);
                 }
             },
 
@@ -265,6 +266,8 @@
         },
 
         methods: {
+            format_duration: format_duration,
+
             clear_update() {
                 this.clear_game_update(this.game_id);
             },
@@ -283,19 +286,6 @@
                 }
 
                 this.timer_started = true;
-            },
-
-            pad(n) {
-                return (n < 10) ? ("0" + n) : n;
-            },
-
-            format_time(time) {
-                var sec = Math.ceil(time);
-                var min = Math.floor(sec / 60);
-
-                sec -= min * 60;
-
-                return this.pad(Math.round(min)) + ":" + this.pad(Math.round(sec));
             },
 
             pass() {

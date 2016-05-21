@@ -24,7 +24,8 @@ from weiqi.models import Connection, Automatch, User, Game
 from weiqi.handler import auth, socket, index
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import Ampq
-from weiqi.services import GameService
+from weiqi.services import GameService, PlayService
+
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -76,6 +77,7 @@ def main():
 
     tornado.ioloop.IOLoop.current().spawn_callback(app.broker.run)
     tornado.ioloop.IOLoop.current().spawn_callback(GameService.run_time_checker, app.pubsub)
+    tornado.ioloop.IOLoop.current().spawn_callback(PlayService.run_challenge_cleaner, app.pubsub)
     tornado.ioloop.IOLoop.current().start()
 
 

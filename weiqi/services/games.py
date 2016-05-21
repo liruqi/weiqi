@@ -56,7 +56,6 @@ class GameService(BaseService):
         if game.is_demo and game.demo_owner == self.user:
             self.socket.publish('game_started', game.to_frontend())
 
-
     @BaseService.register
     def close_game(self, game_id):
         game = self.db.query(Game).get(game_id)

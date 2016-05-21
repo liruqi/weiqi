@@ -34,7 +34,9 @@ export function default_state() {
         direct_rooms: {},
 
         room_has_update: {},
-        game_has_update: {}
+        game_has_update: {},
+        
+        challenges: []
     };
 }
 
@@ -54,6 +56,7 @@ export const mutations = {
         Vue.set(state, 'room_logs', data.room_logs);
         Vue.set(state, 'open_games', data.open_games || []);
         Vue.set(state, 'active_games', data.active_games || []);
+        Vue.set(state, 'challenges', data.challenges || []);
 
         (data.direct_rooms || []).forEach(function(direct) {
             mutations.MSG_LOAD_DIRECT_ROOM(state, direct);
@@ -239,6 +242,10 @@ export const mutations = {
         }
         
         game.board.current_node_id = data.node_id;
+    },
+    
+    MSG_CHALLENGES(state, data) {
+        Vue.set(state, 'challenges', data);
     },
     
     UPDATE_ROUTE(state, route) {

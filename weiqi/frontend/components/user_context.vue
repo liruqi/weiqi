@@ -4,7 +4,7 @@
             <qi-username-rank :display="display" :rating="rating"></qi-username-rank>
         </a>
 
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu dropdown-menu-right">
             <li>
                 <a tabindex="-1" v-link="{name: 'user', params: {user_id: user_id}}">
                     {{$t('user.view_profile')}}
@@ -13,6 +13,9 @@
                 <template v-if="auth_user.logged_in && !is_self">
                     <a tabindex="-1" v-link="{name: 'user_message', params: {user_id: user_id}}">
                         {{$t('user.send_message')}}
+                    </a>
+                    <a tabindex="-1" href="javascript:void(0)" @click="challenge_user">
+                        {{$t('user.challenge')}}
                     </a>
                 </template>
             </li>
@@ -33,6 +36,13 @@
         computed: {
             is_self() {
                 return this.user_id == this.auth_user.user_id;
+            }
+        },
+
+        methods: {
+            challenge_user() {
+                jQuery('#challenge-user').trigger('qi:set_user', this.user_id);
+                jQuery("#qi-challenge").modal("show");
             }
         }
     }

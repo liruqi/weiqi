@@ -58,3 +58,8 @@ class UserService(BaseService):
             return []
 
         return [g.to_frontend() for g in user.games(self.db)]
+
+    @BaseService.register
+    def autocomplete(self, query):
+        users = self.db.query(User).filter(User.display.ilike('%%{}%%'.format(query)))
+        return [u.to_frontend() for u in users]
