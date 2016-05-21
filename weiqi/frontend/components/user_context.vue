@@ -4,7 +4,7 @@
             <qi-username-rank :display="display" :rating="rating"></qi-username-rank>
         </a>
 
-        <ul class="dropdown-menu dropdown-menu-right">
+        <ul class="dropdown-menu" :class="{'dropdown-menu-right': align=='right'}">
             <li>
                 <a tabindex="-1" v-link="{name: 'user', params: {user_id: user_id}}">
                     {{$t('user.view_profile')}}
@@ -25,7 +25,7 @@
 
 <script>
     export default {
-        props: ['user_id', 'display', 'rating'],
+        props: ['user_id', 'display', 'rating', 'align'],
 
         vuex: {
             getters: {
