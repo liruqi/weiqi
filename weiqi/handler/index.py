@@ -16,6 +16,7 @@
 
 from tornado.web import HTTPError
 from sqlalchemy.orm import undefer
+from weiqi import settings
 from weiqi.handler.base import BaseHandler
 from weiqi.models import User, Game
 from weiqi.identicon import generate_identicon
@@ -24,7 +25,13 @@ from weiqi.sgf import game_to_sgf
 
 class IndexHandler(BaseHandler):
     def get(self):
-        self.render("index.html")
+        conf = {
+            'RECAPTCHA_PUBLIC_KEY': settings.RECAPTCHA['public'],
+            'DEFAULT_KOMI': settings.DEFAULT_KOMI,
+            'HANDICAP_KOMI': settings.HANDICAP_KOMI,
+        }
+
+        self.render("index.html", settings=conf)
 
 
 class PingHandler(BaseHandler):

@@ -6,7 +6,7 @@
     export default {
         ready() {
             grecaptcha.render(this.$els.container, {
-                sitekey: '6Lekdh8TAAAAADpkqbGYDr04MQGcBJ7b42TLnR4V',
+                sitekey: SETTINGS.RECAPTCHA_PUBLIC_KEY,
                 callback: this.recaptchaCallback
             });
         },

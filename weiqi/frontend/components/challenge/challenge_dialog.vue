@@ -118,7 +118,7 @@
                 size: 19,
                 timing: 'fischer',
                 handicap: 'auto',
-                komi: 7.5,
+                komi: SETTINGS.DEFAULT_KOMI,
                 black_white: 'auto',
                 maintime: 10,
                 overtime: 20,
@@ -240,9 +240,9 @@
 
             'handicap': function(val) {
                 if(val != 'auto' && val != '0') {
-                    this.komi = 0.5;
+                    this.komi = SETTINGS.HANDICAP_KOMI;
                 } else {
-                    this.komi = 7.5;
+                    this.komi = SETTINGS.DEFAULT_KOMI;
                 }
             }
         },

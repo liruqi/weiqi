@@ -36,6 +36,7 @@ AMPQ_URL = 'amqp://guest:guest@127.0.0.1:5672/'
 RECAPTCHA = {
     'backend': 'dummy',
     'secret': '',
+    'public': '',
 }
 
 MAILER = {
