@@ -27,6 +27,18 @@ body {
       line-height: 40px;
     }
 
+    .navbar-dropdown {
+      .dropdown {
+        &.open {
+          background: $navbar-default-link-active-bg;
+        }
+      }
+      .dropdown-toggle {
+        color: $navbar-default-color;
+        background: inherit;
+      }
+    }
+
     .sidebar-toggle {
       margin: 0 9px;
 
@@ -54,9 +66,8 @@ body {
     }
 
     .navbar-text {
-      display: inline-block;
-      margin-left: 5px;
-      margin-right: 5px;
+      margin-left: 10px;
+      margin-right: 10px;
     }
 
     span.divider {

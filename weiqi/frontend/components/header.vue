@@ -12,12 +12,12 @@
                     </a>
                 </div>
 
-                <ul class="nav navbar-nav navbar-right pull-right">
+                <ul class="nav navbar-dropdown navbar-right pull-right">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <i class="fa fa-cog fa-fw"></i>
                         </a>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu dropdown-menu-right">
                             <template v-if="user.logged_in">
                                 <li>
                                     <a v-link="{name:'user', params:{user_id:user.user_id}}">

@@ -1,5 +1,5 @@
 <template>
-    <i class="fa fa-signal" :class="{
+    <i class="fa fa-fw fa-signal" :class="{
         'text-danger': connection==0,
         'text-warning': connection==1,
         'text-success': connection==2}" :title="ms+'ms'"></i>
