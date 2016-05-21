@@ -11,12 +11,14 @@
   > .room-users {
     flex: 0 0 auto;
     height: 120px;
+    min-height: 120px;
     overflow: auto;
     resize: vertical;
   }
 
   > .room-logs {
     flex: 1 1 auto;
+    min-height: 200px;
     margin-bottom: 0;
   }
 }
