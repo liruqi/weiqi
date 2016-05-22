@@ -188,6 +188,10 @@
                     return;
                 }
 
+                if(this.force_node_id !== false) {
+                    return;
+                }
+
                 this.expand_node_path(node);
 
                 this.$nextTick(function() {
