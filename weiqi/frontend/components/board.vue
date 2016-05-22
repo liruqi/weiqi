@@ -146,7 +146,7 @@
             // The WGo implementation of this function does not handle touch events correctly.
             get_mouse_coord(e) {
                 var x, y;
-                var offset = jQuery(this.$els.board).offset();
+                var offset = jQuery(this.$els.board).find('.wgo-board').offset();
 
                 x = (e.clientX - offset.left) * this.wgo.pixelRatio;
                 x -= this.wgo.left;
