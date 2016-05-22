@@ -19,7 +19,7 @@
                           :class="{active: active_node.id==move.node_id}">
                         <i v-if="color(move.node_id)=='white'" class="fa fa-circle-thin"></i>
                         <i v-else class="fa fa-circle"></i>
-                        {{move_index + move_nr_start}}
+                        {{move.move}}
                     </span>
                 </div>
             </template>
@@ -27,7 +27,6 @@
                 <template v-for="var in move.vars">
                     <qi-game-tree :game="game"
                                   :move_tree="var"
-                                  :move_nr_start="move_index + move_nr_start"
                                   :active_node="active_node"
                                   :expanded.sync="expanded"
                                   :parent_id="move.parent_id">
@@ -41,7 +40,7 @@
 <script>
     export default{
         name: 'qi-game-tree',
-        props: ['game', 'move_tree', 'move_nr_start', 'active_node', 'expanded', 'parent_id'],
+        props: ['game', 'move_tree', 'active_node', 'expanded', 'parent_id'],
 
         methods: {
             color(node_id) {

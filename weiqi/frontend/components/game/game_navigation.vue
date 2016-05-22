@@ -3,7 +3,6 @@
         <div class="game-navigation">
             <qi-game-tree :game="game"
                           :move_tree="move_tree"
-                          :move_nr_start="1"
                           :active_node="current_node"
                           :expanded.sync="expanded"
                           :parent_id="false">
@@ -102,6 +101,23 @@
 
                 return tree;
             },
+
+            mainline() {
+                var main = [];
+                var node = this.game.board.tree[0];
+
+                while(node) {
+                    main.push(node.id);
+
+                    if(node.children.length > 0) {
+                        node = this.game.board.tree[node.children[0]];
+                    } else {
+                        break;
+                    }
+                }
+
+                return main;
+            }
         },
 
         methods: {
@@ -181,8 +197,12 @@
 
             expand_node_path(node) {
                 while(node.parent_id !== null) {
-                    this.$set('expanded.n' + node.parent_id, true);
                     node = this.game.board.tree[node.parent_id];
+                    this.$set('expanded.n' + node.id, true);
+
+                    if(this.is_mainline(node.id)) {
+                        break;
+                    }
                 }
             },
 
@@ -197,38 +217,67 @@
                 });
             },
 
-            is_single(node_id) {
+            is_mainline(node_id) {
+                return this.mainline.indexOf(node_id) !== -1;
+            },
+
+            is_single(node_id, level) {
                 var node = this.game.board.tree[node_id];
 
                 if(node.parent_id === null) {
                     return true;
                 }
 
-                return this.game.board.tree[node.parent_id].children.length < 2;
+                var siblings = this.game.board.tree[node.parent_id].children.length - 1;
+
+                // Subtract one if this is one below the main variation because the main variation is displayed
+                // separately as a straight line.
+                if(level == 1) {
+                    siblings -= 1;
+                }
+
+                return siblings < 2;
             },
 
-            can_collapse(node_id) {
+            can_collapse(node_id, level) {
                 var node = this.game.board.tree[node_id];
-                return node.children.length>1 || (!this.is_single(node_id) && node.children.length>=1);
+
+                if(level == 0) {
+                    return node.children.length > 1;
+                } else {
+                    return node.children.length > 1 || (!this.is_single(node_id, level) && node.children.length >= 1);
+                }
             },
 
-            add_moves_to_tree(tree, node) {
-                var can_collapse = this.can_collapse(node.id);
+            add_moves_to_tree(tree, node, level, move) {
+                level = level || 0;
+                move = move || 1;
+                var can_collapse = this.can_collapse(node.id, level);
+                var is_main = (level == 0);
 
-                tree.push({type: 'node', node_id: node.id, can_collapse: can_collapse});
+                tree.push({type: 'node', node_id: node.id, can_collapse: can_collapse, move: move});
+                move += 1;
 
                 if(can_collapse) {
                     var vars = [];
 
-                    node.children.forEach(function(child) {
+                    node.children.forEach(function(child, idx) {
+                        if(is_main && idx == 0) {
+                            return;
+                        }
+
                         var subtree = [];
-                        this.add_moves_to_tree(subtree, this.game.board.tree[child]);
+                        this.add_moves_to_tree(subtree, this.game.board.tree[child], level+1, move);
                         vars.push(subtree);
                     }.bind(this));
 
-                    tree.push({type: 'variations', vars: vars, parent_id: node.id});
+                    tree.push({type: 'variations', vars: vars, parent_id: node.id, move: move});
+
+                    if(is_main) {
+                        this.add_moves_to_tree(tree, this.game.board.tree[node.children[0]], level, move);
+                    }
                 } else if(node.children.length == 1) {
-                    this.add_moves_to_tree(tree, this.game.board.tree[node.children[0]]);
+                    this.add_moves_to_tree(tree, this.game.board.tree[node.children[0]], level, move);
                 }
             }
         }
