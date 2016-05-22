@@ -40,5 +40,8 @@ def smtp_mailer(to, subject, body):
     msg['From'] = settings.MAILER['from']
     msg['To'] = to
 
-    with smtplib.SMTP(settings.MAILER['smtp_host']) as smtp:
+    with smtplib.SMTP(settings.MAILER['smtp_host'], settings.MAILER['smtp_port']) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.login(settings.MAILER['smtp_user'], settings.MAILER['smtp_password'])
         smtp.sendmail(settings.MAILER['from'], [to], msg.as_string())

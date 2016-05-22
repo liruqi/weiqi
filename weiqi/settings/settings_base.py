@@ -43,6 +43,7 @@ MAILER = {
     'backend': 'console',
     'from': 'no-reply@weiqi.gs',
     'smtp_host': '',
+    'smtp_port': 587,
     'smtp_user': '',
     'smtp_password': '',
 }
