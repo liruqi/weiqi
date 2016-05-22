@@ -172,7 +172,8 @@
   },
 
   "gamelist": {
-    "header": "Active Games"
+    "header": "Active Games",
+    "no_games": "No active games"
   },
 
   "faq": {

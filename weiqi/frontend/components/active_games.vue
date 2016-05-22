@@ -33,6 +33,11 @@
                     </template>
                     <td>{{started[game.id]}}</td>
                 </tr>
+                <tr v-if="sorted_games.length == 0">
+                    <td colspan="3" class="text-center">
+                        <em>{{$t('gamelist.no_games')}}</em>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
