@@ -34,7 +34,7 @@
                             <label class="col-sm-4 control-label">{{$t('play.options.max_hc')}}</label>
                             <div class="col-sm-8">
                                 <select class="form-control" v-model="max_hc">
-                                    <option :value="0">{{$t('play.options.noHC')}}</option>
+                                    <option :value="0">{{$t('play.options.no_hc')}}</option>
                                     <option :value="1">1</option>
                                     <option :value="2">2</option>
                                     <option :value="3">3</option>
