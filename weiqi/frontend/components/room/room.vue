@@ -23,6 +23,10 @@
             }
         },
 
+        route: {
+            canReuse: false
+        },
+
         computed: {
             window_title() {
                 return this.room.name;

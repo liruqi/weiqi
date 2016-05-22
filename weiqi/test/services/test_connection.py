@@ -16,7 +16,7 @@
 
 from weiqi.services import ConnectionService
 from weiqi.models import Automatch
-from weiqi.test.factories import UserFactory, AutomatchFactory
+from weiqi.test.factories import UserFactory, AutomatchFactory, RoomFactory, RoomUserFactory
 
 
 def test_connect_subs(db, socket):
@@ -30,6 +30,20 @@ def test_connect_subs(db, socket):
     assert socket.is_subscribed('direct_message/'+str(user.id))
     assert socket.is_subscribed('automatch_status/'+str(user.id))
     assert socket.is_subscribed('challenges/'+str(user.id))
+
+
+def test_connection_data_rooms(db, socket):
+    room = RoomFactory(type='main')
+    ru = RoomUserFactory(room=room)
+    socket.subscribe('connection_data')
+
+    svc = ConnectionService(db, socket, ru.user)
+    svc.execute('connect')
+
+    data = socket.sent_messages[0]['data']
+
+    assert 'rooms' in data
+    assert len(data['rooms']) == 1
 
 
 def test_disconnect_automatch(db, socket):
