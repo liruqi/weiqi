@@ -11,13 +11,19 @@ Development environment
 - [vagrant](https://www.vagrantup.com/) to run postgresql and rabbitmq
 
 Besides the dependencies in `requirements.txt` and `package.json` you may also need to install some additional libraries first:
-```
+```bash
 $ sudo apt-get install python3-dev libpq-dev libffi-dev libjpeg-dev
 ```
 
 To run the development server:
-```
+```bash
 $ ./gulp.sh
+```
+
+Tests
+-----
+```bash
+$ py.test weiqi
 ```
 
 License
