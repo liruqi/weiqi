@@ -36,6 +36,14 @@
             </li>
 
             <li class="list-group-item">
+                <h4 id="ruleset">
+                    {{$t('faq.ruleset.header')}}
+                    <a href="#ruleset" class="header-anchor"></a>
+                </h4>
+                <p>{{{$t('faq.ruleset.text.p1')}}}</p>
+            </li>
+
+            <li class="list-group-item">
                 <h4 id="ranked-free">
                     {{$t('faq.ranked_free.header')}}
                     <a href="#ranked-free" class="header-anchor"></a>

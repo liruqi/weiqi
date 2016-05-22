@@ -200,6 +200,12 @@
         "p2": "Please also check if there is already an existing issue covering this problem before opening a new one."
       }
     },
+    "ruleset": {
+      "header": "What rules are used?",
+      "text": {
+        "p1": "All games are played with chinese rules. This means you should fill all dame (neutral) points at the end of the game."
+      }
+    },
     "ranked_free": {
       "header": "Which games are ranked/free?",
       "text": {
