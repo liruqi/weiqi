@@ -211,7 +211,27 @@
             },
 
             can_close_game(game_id) {
-                return !(this.$route.name == "game" && this.$route.params.game_id == game_id);
+                var game = this.open_games.find(function(game) {
+                    return game.id == game_id;
+                });
+
+                if(!game) {
+                    return true;
+                }
+
+                if(game.is_demo) {
+                    return true;
+                }
+
+                return !this.is_player(game) || game.stage == 'finished';
+            },
+
+            is_player(game) {
+                if(!this.user.logged_in) {
+                    return false;
+                }
+
+                return (this.user.user_id == game.black_user_id || this.user.user_id == game.white_user_id);
             }
         }
     }

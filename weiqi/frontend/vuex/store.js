@@ -301,6 +301,10 @@ export const mutations = {
         state.open_games = state.open_games.filter(function(game) {
             return game.id != game_id;
         });
+
+        if(state.route.name == "game" && state.route.params.game_id == game_id) {
+            state.route.router.go({name: 'root'});
+        }
     },
     
     LOAD_ROOM_USERS(state, room_id) {
