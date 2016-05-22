@@ -131,6 +131,9 @@ def test_join_room(db, socket):
 
     assert len(socket.sent_messages) == 1
     assert socket.sent_messages[0]['method'] == 'room_user'
+    assert socket.sent_messages[0]['data']['user_id'] == user.id
+    assert socket.sent_messages[0]['data']['user_display'] == user.display
+    assert socket.sent_messages[0]['data']['user_rating'] == user.rating
 
 
 def test_leave_room(db, socket):

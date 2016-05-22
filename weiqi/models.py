@@ -202,7 +202,7 @@ class RoomUser(Base):
     def to_frontend(self):
         return {
             'room_id': self.room_id,
-            'user_id': self.user_id,
+            'user_id': self.user.id,
             'user_display': self.user.display,
             'user_rating': self.user.rating,
         }
