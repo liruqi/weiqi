@@ -47,9 +47,9 @@
                             </template>
                             <template v-else>
                                 <div class="col-xs-4 text-center">
-                                    <img :src="'/api/users/'+game.black_user_id+'/avatar'" class="avatar">
+                                    <img :src="'/api/users/'+game.white_user_id+'/avatar'" class="avatar">
                                     <h4>
-                                        <qi-username-rank :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
+                                        <qi-username-rank :display="game.white_display" :rating="game.white_rating"></qi-username-rank>
                                     </h4>
                                 </div>
                                 <div class="col-xs-4 text-center">
@@ -61,7 +61,7 @@
                                     </a>
                                 </div>
                                 <div class="col-xs-4 text-center">
-                                    <img :src="'/api/users/'+game.white_user_id+'/avatar'" class="avatar">
+                                    <img :src="'/api/users/'+game.black_user_id+'/avatar'" class="avatar">
                                     <h4>
                                         <qi-username-rank :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
                                     </h4>
