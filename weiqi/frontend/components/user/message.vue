@@ -1,6 +1,6 @@
 <template>
     <div class="room-page">
-        <div class="flex-column">
+        <div class="flex-column" v-if="room">
             <template v-if="room">
                 <qi-room-logs :room_id="room.room_id" :title="room.other_display"></qi-room-logs>
             </template>
