@@ -16,8 +16,10 @@
 
 import pytest
 from datetime import datetime, timedelta
+from weiqi import settings
 from weiqi.services import GameService, ServiceError
 from weiqi.services.games import InvalidPlayerError, InvalidStageError, GameHasNotStartedError
+from weiqi.models import Timing
 from weiqi.test.factories import GameFactory, DemoGameFactory, UserFactory
 from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN, SYMBOL_TRIANGLE
 
@@ -375,3 +377,25 @@ def test_check_due_moves(db, socket):
     assert game.result == 'W+T'
     assert len(socket.sent_messages) == 1
     assert socket.sent_messages[0]['method'] == 'game_finished'
+
+
+def test_resume_all_games_fischer(db):
+    GameFactory(stage='playing',
+                timing__timing_updated_at=datetime.utcnow()-timedelta(seconds=10),
+                timing__system='fischer',
+                timing__overtime=timedelta(seconds=30),
+                timing__overtime_count=1,
+                timing__black_main=timedelta(seconds=10),
+                timing__white_main=timedelta(seconds=20),
+                timing__black_overtime=timedelta(),
+                timing__white_overtime=timedelta())
+
+    svc = GameService(db)
+    svc.resume_all_games()
+
+    timing = db.query(Timing).first()
+    assert abs(datetime.utcnow() - timing.timing_updated_at).total_seconds() < 2
+    assert timing.black_main == (timedelta(seconds=10) + settings.RESUME_TIMING_ADD_TIME)
+    assert timing.white_main == (timedelta(seconds=20) + settings.RESUME_TIMING_ADD_TIME)
+    assert timing.black_overtime == timedelta()
+    assert timing.white_overtime == timedelta()

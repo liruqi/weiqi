@@ -77,3 +77,6 @@ DASHBOARD_POPULAR_GAMES = 5
 DASHBOARD_POPULAR_GAMES_MAX_AGE = timedelta(days=7)
 
 CHALLENGE_EXPIRATION = timedelta(minutes=5)
+
+# Maintime to add to each player's clock after server downtime.
+RESUME_TIMING_ADD_TIME = timedelta(minutes=1)

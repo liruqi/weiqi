@@ -91,6 +91,4 @@ def _cleanup_db():
         db.query(Connection).delete()
         db.query(Automatch).delete()
         db.query(User).update({'is_online': False})
-
-        if not settings.DEBUG:
-            db.query(Game).filter_by(is_demo=False, stage='playing').update({'stage': 'finished', 'result': 'aborted'})
+        GameService(db).resume_all_games()

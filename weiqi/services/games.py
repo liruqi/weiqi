@@ -19,6 +19,7 @@ from contextlib import contextmanager
 import random
 from datetime import datetime
 from tornado import gen
+from weiqi import settings
 from weiqi.db import transaction, session
 from weiqi.services import BaseService, ServiceError, UserService, RatingService, RoomService
 from weiqi.models import Game, Timing
@@ -339,3 +340,20 @@ class GameService(BaseService):
             if not update_timing(timing, timing.game.board.current == BLACK):
                 self._win_by_time(timing.game)
                 self._finish_game(timing.game)
+
+    def resume_all_games(self):
+        """Gracefully resumes all games on startup.
+
+        Resets the timings so that no time is lost after a server downtime.
+        In addition to that the overtime for each player is reset and a pre-defined amount of time is added to the
+        player's maintime.
+        """
+
+        for timing in self.db.query(Timing).join(Game).filter(Game.stage == 'playing'):
+            timing.timing_updated_at = datetime.utcnow()
+            timing.black_main += settings.RESUME_TIMING_ADD_TIME
+            timing.white_main += settings.RESUME_TIMING_ADD_TIME
+
+            if timing.system != 'fischer':
+                timing.black_overtime = timing.overtime * timing.overtime_count
+                timing.white_overtime = timing.overtime * timing.overtime_count
