@@ -225,7 +225,7 @@
                 return this.mainline.indexOf(node_id) !== -1;
             },
 
-            is_single(node_id, level) {
+            is_single(node_id) {
                 var node = this.game.board.tree[node_id];
 
                 if(node.parent_id === null) {
@@ -233,13 +233,6 @@
                 }
 
                 var siblings = this.game.board.tree[node.parent_id].children.length - 1;
-
-                // Subtract one if this is one below the main variation because the main variation is displayed
-                // separately as a straight line.
-                if(level == 1) {
-                    siblings -= 1;
-                }
-
                 return siblings < 2;
             },
 
@@ -249,7 +242,7 @@
                 if(level == 0) {
                     return node.children.length > 1;
                 } else {
-                    return node.children.length > 1 || (!this.is_single(node_id, level) && node.children.length >= 1);
+                    return node.children.length > 1 || (!this.is_single(node_id) && node.children.length >= 1);
                 }
             },
 
