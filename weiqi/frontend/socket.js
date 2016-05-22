@@ -6,7 +6,9 @@ var message_counter = 0;
 var request_handler = {};
 
 export default function configWebsocket() {
-    socket = new WebSocket('ws://' + window.location.host + '/api/socket');
+    var proto = (window.location.protocol == 'https:' ? 'wss' : 'ws');
+    
+    socket = new WebSocket(proto + '://' + window.location.host + '/api/socket');
 
     socket.onopen = function() {
     };
