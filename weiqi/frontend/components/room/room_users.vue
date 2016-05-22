@@ -35,7 +35,10 @@
 
         computed: {
             users() {
-                return this.room_users[this.room_id] || [];
+                var users = this.room_users[this.room_id] || [];
+                return users.sort(function(a, b) {
+                    return b.user_rating - a.user_rating;
+                });
             }
         },
 
