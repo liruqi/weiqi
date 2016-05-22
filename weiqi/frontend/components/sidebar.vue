@@ -86,9 +86,9 @@
                         <span v-if="challenge.owner_id == user.user_id">{{challenge.challengee_display}}</span>
                         <span v-else>{{challenge.owner_display}}</span>
 
-                        <span class="sidebar-item-action pull-right" @click.prevent="close_challenge(challenge.id)">
+                        <!--<span class="sidebar-item-action pull-right" @click.prevent="close_challenge(challenge.id)">
                             <i class="fa fa-times-circle"></i>
-                        </span>
+                        </span>-->
                     </a>
                 </li>
             </template>

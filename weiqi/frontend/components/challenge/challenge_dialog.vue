@@ -174,7 +174,7 @@
                     processResults: function(data, params) {
                         data.forEach(function(user) {
                             user.text = this.option_text(user.id, user.display, user.rating);
-                        });
+                        }.bind(this));
 
                         if(this.auth_user.logged_in) {
                             data = data.filter(function (user) {
