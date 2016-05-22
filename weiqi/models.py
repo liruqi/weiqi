@@ -348,9 +348,9 @@ class Game(Base):
 
     @staticmethod
     def active_games(db):
-        return db.query(Game).join(Game.demo_owner).filter(
+        return db.query(Game).distinct(Game.id).join(Room).outerjoin(RoomUser).outerjoin(Game.demo_owner).filter(
             ((Game.is_demo.is_(False)) & (Game.stage != 'finished')) |
-            ((Game.is_demo.is_(True)) & (User.is_online.is_(True))))
+            ((Game.is_demo.is_(True)) & (RoomUser.user_id == Game.demo_owner_id) & (User.is_online.is_(True))))
 
     def to_frontend(self, full=False):
         """Returns a dictionary with the game information.
