@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi.models import Game
-from weiqi.test.factories import UserFactory
+from weiqi.test.factories import UserFactory, DemoGameFactory
 
 
 def test_winner_loser():
@@ -34,3 +34,13 @@ def test_winner_loser():
     for t in tests:
         game = Game(black_user=black, white_user=white, result=t[0])
         assert game.winner_loser == t[1]
+
+
+def test_active_games_demo(db):
+    DemoGameFactory(demo_owner__is_online=True)
+    assert Game.active_games(db).count() == 1
+
+
+def test_active_games_demo_offline(db):
+    DemoGameFactory(demo_owner__is_online=False)
+    assert Game.active_games(db).count() == 0
