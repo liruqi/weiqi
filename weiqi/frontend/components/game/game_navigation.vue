@@ -197,12 +197,12 @@
 
             expand_node_path(node) {
                 while(node.parent_id !== null) {
-                    node = this.game.board.tree[node.parent_id];
-                    this.$set('expanded.n' + node.id, true);
-
                     if(this.is_mainline(node.id)) {
                         break;
                     }
+
+                    node = this.game.board.tree[node.parent_id];
+                    this.$set('expanded.n' + node.id, true);
                 }
             },
 
