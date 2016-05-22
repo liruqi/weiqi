@@ -36,12 +36,12 @@
             </li>
 
             <li class="list-group-item">
-                <h4 id="feature-x">
-                    {{$t('faq.featureX.header')}}
-                    <a href="#feature-x" class="header-anchor"></a>
+                <h4 id="ranked-free">
+                    {{$t('faq.ranked_free.header')}}
+                    <a href="#ranked-free" class="header-anchor"></a>
                 </h4>
-                <p>{{{$t('faq.featureX.text.p1')}}}</p>
-                <p>{{{$t('faq.featureX.text.p2')}}}</p>
+                <p>{{{$t('faq.ranked_free.text.p1')}}}</p>
+                <p>{{{$t('faq.ranked_free.text.p2')}}}</p>
             </li>
 
             <li class="list-group-item">

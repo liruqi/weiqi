@@ -190,21 +190,21 @@
       "header": "How can I contribute?",
       "text": {
         "p1": "weiqi.gs is fully open source, which means anyone who wishes to contribute has the chance to do so.",
-        "p2": "Even if you are not a programmer, there are many ways to contribute. If you are interested please check our <a href=\"http://gitlab.com/mibitzi/weiqi.gs#contribute\" target=\"_blank\">GitHub repository</a> for more information."
+        "p2": "Even if you are not a programmer, there are many ways to contribute. If you are interested please check our <a href=\"http://gitlab.com/mibitzi/weiqi.gs#contribute\" target=\"_blank\">GitLab repository</a> for more information."
       }
     },
     "bug": {
       "header": "I found a bug",
       "text": {
-        "p1": "Please report all bugs on our <a href=\"http://gitlab.com/mibitzi/weiqi.gs/issues\" target=\"_blank\">issue tracker</a> on GitHub.",
+        "p1": "Please report all bugs on our <a href=\"http://gitlab.com/mibitzi/weiqi.gs/issues\" target=\"_blank\">issue tracker</a> on GitLab.",
         "p2": "Please also check if there is already an existing issue covering this problem before opening a new one."
       }
     },
-    "featureX": {
-      "header": "Please add feature X!",
+    "ranked_free": {
+      "header": "Which games are ranked/free?",
       "text": {
-        "p1": "If you have an idea for improvements or new features you can create an issue on our <a href=\"http://gitlab.com/mibitzi/weiqi.gs/issues\" target=\"_blank\">issue tracker</a> on GitHub.",
-        "p2": "Please check if there is already an existing issue for your idea before opening a new one."
+        "p1": "Automatch games are always ranked.",
+        "p2": "Direct-Challenge games are always free."
       }
     },
     "avatar": {
