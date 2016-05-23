@@ -5,7 +5,6 @@ import { clear_room_update } from '../vuex/actions';
 export default {
     vuex: {
         getters: {
-            rooms: function(state) { return state.rooms },
             room_has_update: function(state) { return state.room_has_update; }
         },
         actions: {
@@ -22,7 +21,7 @@ export default {
             this.clear_current_room_updates();
         },
 
-        '$route.params.room_id': function() {
+        '$route.params.user_id': function() {
             this.clear_current_room_updates();
         }
     },
@@ -30,15 +29,7 @@ export default {
     computed: {
         has_room_updates() {
             var room = Object.keys(this.room_has_update).find(function(room_id) {
-                if(!this.room_has_update[room_id]) {
-                    return false;
-                }
-
-                var room = this.rooms.find(function(room) {
-                    return room.id == room_id;
-                });
-
-                return !room || room.type != 'game';
+                return this.room_has_update[room_id];
             }.bind(this));
 
             return !!room;
@@ -55,6 +46,10 @@ export default {
         clear_current_room_updates() {
             if(this.$route.name == 'room' && is_tab_visible()) {
                 this.clear_room_update(this.$route.params.room_id);
+            }
+
+            if(this.$route.name == 'user_message' && is_tab_visible()) {
+                this.clear_room_update(this.$route.params.user_id);
             }
         }
     }

@@ -4,6 +4,7 @@
     export default {
         vuex: {
             getters: {
+                rooms: function(state) { return state.rooms },
                 room_has_update: function(state) { return state.room_has_update; }
             }
         },
@@ -30,7 +31,15 @@
         computed: {
             has_updates() {
                 var room = Object.keys(this.room_has_update).find(function(room_id) {
-                    return this.room_has_update[room_id];
+                    if(!this.room_has_update[room_id]) {
+                        return false;
+                    }
+
+                    var room = this.rooms.find(function(room) {
+                        return room.id == room_id;
+                    });
+
+                    return !room || room.type != 'game';
                 }.bind(this));
 
                 return !!room;
