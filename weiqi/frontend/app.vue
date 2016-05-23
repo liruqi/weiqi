@@ -29,6 +29,7 @@
 
     export default {
         store: store,
+        mixins: [require('./mixins/update_handler.vue')],
 
         vuex: {
             getters: {
