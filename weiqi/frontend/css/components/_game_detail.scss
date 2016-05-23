@@ -23,6 +23,24 @@
   }
 }
 
+.game-player-low-time {
+  font-weight: bold;
+  color: $orange;
+  animation: game-time-blinker 1s linear infinite;
+}
+
+.game-player-very-low-time {
+  font-weight: bold;
+  color: $red !important;
+  background: #000;
+  padding: 2px 5px;
+  animation: game-time-blinker 1s linear infinite;
+}
+
+@keyframes game-time-blinker {
+  50% { opacity: 0.5; }
+}
+
 .game-navigation {
   height: 100px;
   min-height: 50px;

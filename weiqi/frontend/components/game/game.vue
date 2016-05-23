@@ -33,12 +33,12 @@
                         <div class="col-xs-6">
                             <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'white'"
                                             :display="game.white_display" :user_id="game.white_user_id"
-                                            :rating="game.white_rating" :points="0" :time="white_time"></qi-game-player>
+                                            :rating="game.white_rating" :points="0" :main_time="white_time"></qi-game-player>
                         </div>
                         <div class="col-xs-6">
                             <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'black'"
                                             :display="game.black_display" :user_id="game.black_user_id"
-                                            :rating="game.black_rating" :points="0" :time="black_time"></qi-game-player>
+                                            :rating="game.black_rating" :points="0" :main_time="black_time"></qi-game-player>
                         </div>
                     </div>
 
@@ -79,7 +79,6 @@
     import moment from 'moment';
     import { open_game, update_game_time, clear_game_update } from './../../vuex/actions';
     import * as socket from '../../socket';
-    import { format_duration } from '../../format';
 
     export default {
         mixins: [require('./../../mixins/title.vue')],
@@ -154,13 +153,13 @@
 
             black_time() {
                 if(this.game.timing) {
-                    return this.format_duration(this.game.timing.black_main);
+                    return this.game.timing.black_main;
                 }
             },
 
             white_time() {
                 if(this.game.timing) {
-                    return this.format_duration(this.game.timing.white_main);
+                    return this.game.timing.white_main;
                 }
             },
 
@@ -269,8 +268,6 @@
         },
 
         methods: {
-            format_duration: format_duration,
-
             clear_update() {
                 this.clear_game_update(this.game_id);
             },
