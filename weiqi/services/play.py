@@ -80,7 +80,7 @@ class PlayService(BaseService):
         timing_preset = settings.AUTOMATCH_PRESETS[preset]
 
         return self._create_game(True, black, white, handicap, komi, settings.AUTOMATCH_SIZE,
-                                 'fischer', timing_preset['main'], timing_preset['overtime'], 1)
+                                 'fischer', timing_preset['main'], timing_preset['overtime'], 0)
 
     @BaseService.authenticated
     @BaseService.register
@@ -313,6 +313,9 @@ class PlayService(BaseService):
                     white_rating=white.rating)
 
         start_at = datetime.utcnow() + settings.GAME_START_DELAY
+
+        if timing_system == 'fischer':
+            overtime_count = 0
 
         timing = Timing(game=game,
                         system=timing_system,
