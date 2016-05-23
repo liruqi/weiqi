@@ -6,7 +6,8 @@ export default {
     vuex: {
         getters: {
             room_has_update: function(state) { return state.room_has_update; },
-            direct_rooms: function(state) { return state.direct_rooms; }
+            direct_rooms: function(state) { return state.direct_rooms; },
+            open_games: function(state) { return state.open_games }
         },
         actions: {
             clear_room_update
@@ -55,6 +56,15 @@ export default {
 
             if(this.$route.name == 'user_message' && is_tab_visible()) {
                 this.clear_room_update(this.direct_rooms[this.$route.params.user_id].room_id);
+            }
+
+            if(this.$route.name == 'game' && is_tab_visible()) {
+                var game_id = this.$route.params.game_id;
+                var game = this.open_games.find(function(game) { return game.id == game_id; }) || {};
+
+                if(game.room_id) {
+                    this.clear_room_update(game.room_id);
+                }
             }
         }
     }
