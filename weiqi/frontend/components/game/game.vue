@@ -108,7 +108,7 @@
         data() {
             return {
                 force_node_id: false,
-                seconds_to_start: 0,
+                seconds_to_start: null,
                 timer_started: false,
                 demo_tool: 'move'
             }
@@ -164,7 +164,7 @@
             },
 
             has_started() {
-                return this.seconds_to_start <= 0;
+                return !this.seconds_to_start || this.seconds_to_start <= 0;
             },
 
             room_logs_show_only() {
@@ -278,10 +278,17 @@
                 }
 
                 if(this.game.timing) {
+                    var starting = (this.seconds_to_start === null);
                     this.seconds_to_start = Math.ceil(moment.utc(this.game.timing.start_at).diff(moment.utc()) / 1000);
 
                     if(this.has_started) {
                         this.update_game_time(this.game.id);
+                    } else if(starting) {
+                        for(var i=0; i<this.seconds_to_start; i++) {
+                            setTimeout(function () {
+                                new Howl({src: ['/static/sounds/beep.wav']}).play()
+                            }, 1000 * i);
+                        }
                     }
                 }
 
