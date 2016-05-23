@@ -7,12 +7,8 @@
                 </div>
                 <div class="modal-body">
                     <p>{{{$t('disconnected.body')}}}</p>
+                    <br>
                     <p><i class="fa fa-spinner fa-spin fa-fw"></i> {{$t('disconnected.trying_connect')}}</p>
-                </div>
-                <div class="modal-footer">
-                    <a class="btn btn-default" href="javascript:document.location.reload()">
-                        {{$t('disconnected.refresh')}}
-                    </a>
                 </div>
             </div>
         </div>
