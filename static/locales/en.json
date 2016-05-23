@@ -132,6 +132,7 @@
 
   "play": {
     "header": "Play",
+    "subheader": "ranked game",
     "play": "Play",
     "cancel": "Cancel",
 
@@ -275,8 +276,7 @@
 
   "disconnected": {
     "header": "Oops, looks like we lost connection ...",
-    "body": "Somehow we got disconnected from the server.<br>You can refresh the page and retry, or wait here until the server is available again.",
-    "refresh": "Refresh",
+    "body": "Somehow we got disconnected from the server.<br><br>This can happen if the server is currently updating. In that case please wait for a few moments until the server is back up.",
     "trying_connect": "Trying to reconnect ..."
   },
 
@@ -301,6 +301,7 @@
 
     "dialog": {
       "header": "Challenge",
+      "subheader": "to a free game",
       "user": "User",
 
       "handicap": {
@@ -324,6 +325,7 @@
     "view": {
       "heading": "Challenge",
       "not_found": "Challenge does not exist or has expired",
+      "free_game": "Free game - will not affect rating",
       "expires_in": "Expires in",
       "cancel": "Cancel challenge",
       "accept": "Accept",

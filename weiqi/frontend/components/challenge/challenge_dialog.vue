@@ -3,7 +3,10 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title">{{$t('challenge.dialog.header')}}</h3>
+                    <h3 class="modal-title">
+                        {{$t('challenge.dialog.header')}}
+                        <small>{{$t('challenge.dialog.subheader')}}</small>
+                    </h3>
                 </div>
 
                 <div class="modal-body">

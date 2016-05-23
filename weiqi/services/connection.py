@@ -84,7 +84,7 @@ class ConnectionService(BaseService):
 
         for room in Room.open_rooms(self.db, self.user):
             rooms.append(room.to_frontend())
-            logs[room.id] = [m.to_frontend() for m in room.messages]
+            logs[room.id] = [m.to_frontend() for m in room.recent_messages(self.db)]
 
         return {'rooms': rooms, 'room_logs': logs}
 
@@ -116,7 +116,7 @@ class ConnectionService(BaseService):
                 'is_active': True,
                 'has_unread': ru.has_unread,
                 'room': ru.room.to_frontend(),
-                'room_logs': [m.to_frontend() for m in ru.room.messages.limit(settings.ROOM_MESSAGES_LIMIT)]
+                'room_logs': [m.to_frontend() for m in ru.room.recent_messages(self.db)]
             })
 
         return {'direct_rooms': direct}

@@ -65,7 +65,6 @@ class User(Base):
     avatar = deferred(Column(Binary))
 
     rooms = relationship('RoomUser', back_populates='user')
-    messages = relationship('RoomMessage', back_populates='user', lazy='dynamic')
     connections = relationship('Connection', back_populates='user')
     automatch = relationship('Automatch', back_populates='user')
 
@@ -168,7 +167,6 @@ class Room(Base):
     users_max = Column(Integer, nullable=False, default=0)
 
     users = relationship('RoomUser', back_populates='room', lazy='dynamic')
-    messages = relationship('RoomMessage', back_populates='room', lazy='dynamic')
     game = relationship('Game', back_populates='room', uselist=False)
 
     def to_frontend(self):
@@ -183,6 +181,13 @@ class Room(Base):
         if not user:
             return db.query(Room).filter_by(type='main')
         return db.query(Room).join('users').filter_by(user_id=user.id)
+
+    def recent_messages(self, db, limit=None):
+        if not limit:
+            limit = settings.ROOM_MESSAGES_LIMIT
+        return reversed(db.query(RoomMessage)
+                        .filter(RoomMessage.room_id == self.id)
+                        .order_by(RoomMessage.created_at.desc())[:limit])
 
 
 class RoomUser(Base):
@@ -215,10 +220,10 @@ class RoomMessage(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     room_id = Column(ForeignKey('rooms.id'), nullable=False)
-    room = relationship('Room', back_populates='messages')
+    room = relationship('Room')
 
     user_id = Column(ForeignKey('users.id'), nullable=False)
-    user = relationship('User', back_populates='messages')
+    user = relationship('User')
 
     user_display = Column(String, nullable=False)
     user_rating = Column(Float, nullable=False)

@@ -54,7 +54,6 @@
 
 <script>
     import moment from 'moment';
-    import { clear_room_update } from '../../vuex/actions';
     import * as socket from '../../socket';
 
     export default {
@@ -73,9 +72,6 @@
                 all_logs: function(state) { return state.room_logs; },
                 room_has_update: function(state) { return state.room_has_update; }
             },
-            actions: {
-                clear_room_update
-            }
         },
 
         computed: {
@@ -99,18 +95,15 @@
         watch: {
             'room_logs': function() {
                 this.scroll_bottom();
-                this.clear_room_update(this.room_id);
             },
 
             'room_id': function() {
                 this.scroll_bottom(true);
-                this.clear_room_update(this.room_id);
             }
         },
 
         ready() {
             this.scroll_bottom(true);
-            this.clear_room_update(this.room_id);
         },
 
         methods: {

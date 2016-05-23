@@ -69,8 +69,8 @@ def test_message_not_in_room(db, socket):
     with pytest.raises(ServiceError):
         svc.execute('message', {'room_id': room.id, 'message': 'test'})
 
-    assert len(ru.room.messages.all()) == 0
-    assert len(room.messages.all()) == 0
+    assert len(list(ru.room.recent_messages(db))) == 0
+    assert len(list(room.recent_messages(db))) == 0
 
 
 def test_open_direct(db, socket):

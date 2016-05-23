@@ -83,7 +83,7 @@ class RoomService(BaseService):
             'is_active': True,
             'has_unread': ru.has_unread,
             'room': room.to_frontend(),
-            'room_logs': [m.to_frontend() for m in room.messages.limit(settings.ROOM_MESSAGES_LIMIT)]
+            'room_logs': [m.to_frontend() for m in room.recent_messages(self.db)]
         }
 
     def _direct_room(self, user, other):

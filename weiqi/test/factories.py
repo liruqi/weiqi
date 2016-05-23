@@ -18,7 +18,7 @@ import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy import FuzzyText
 from datetime import datetime, timedelta
-from weiqi.models import User, Room, RoomUser, Automatch, Game, Timing, Challenge
+from weiqi.models import User, Room, RoomUser, RoomMessage, Automatch, Game, Timing, Challenge
 from weiqi.board import Board
 from weiqi.test import session
 from weiqi.glicko2 import Player
@@ -66,6 +66,21 @@ class RoomUserFactory(SQLAlchemyModelFactory):
     user = factory.SubFactory(UserFactory)
 
     has_unread = False
+
+
+class RoomMessageFactory(SQLAlchemyModelFactory):
+    class Meta:
+        model = RoomMessage
+        sqlalchemy_session = session
+        force_flush = True
+
+    room = factory.SubFactory(RoomFactory)
+    user = factory.SubFactory(UserFactory)
+
+    user_display = factory.lazy_attribute(lambda o: o.user.display)
+    user_rating = factory.lazy_attribute(lambda o: o.user.rating)
+
+    message = 'test'
 
 
 class AutomatchFactory(SQLAlchemyModelFactory):
@@ -148,7 +163,7 @@ class ChallengeFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = session
         force_flush = True
 
-    expire_at = datetime.utcnow() + timedelta(minutes=1)
+    expire_at = datetime.utcnow() + timedelta(minutes=10)
     owner = factory.SubFactory(UserFactory)
     challengee = factory.SubFactory(UserFactory)
     board_size = 19
