@@ -163,7 +163,7 @@ class ChallengeFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = session
         force_flush = True
 
-    expire_at = datetime.utcnow() + timedelta(minutes=1)
+    expire_at = datetime.utcnow() + timedelta(minutes=10)
     owner = factory.SubFactory(UserFactory)
     challengee = factory.SubFactory(UserFactory)
     board_size = 19
