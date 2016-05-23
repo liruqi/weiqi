@@ -132,6 +132,7 @@
 
   "play": {
     "header": "Play",
+    "subheader": "ranked game",
     "play": "Play",
     "cancel": "Cancel",
 
@@ -300,6 +301,7 @@
 
     "dialog": {
       "header": "Challenge",
+      "subheader": "to a free game",
       "user": "User",
 
       "handicap": {
@@ -323,6 +325,7 @@
     "view": {
       "heading": "Challenge",
       "not_found": "Challenge does not exist or has expired",
+      "free_game": "Free game - will not affect rating",
       "expires_in": "Expires in",
       "cancel": "Cancel challenge",
       "accept": "Accept",

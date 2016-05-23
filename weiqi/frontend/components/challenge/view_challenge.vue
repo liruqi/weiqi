@@ -38,6 +38,11 @@
                 </td>
             </tr>
             <tr>
+                <td colspan="2" class="text-center">
+                    <em>{{$t('challenge.view.free_game')}}</em>
+                </td>
+            </tr>
+            <tr>
                 <th>{{$t('challenge.board_size')}}</th>
                 <td>{{challenge.board_size}}x{{challenge.board_size}}</td>
             </tr>
