@@ -22,7 +22,7 @@ export default {
             this.clear_current_room_updates();
         },
 
-        '$route.params.user_id': function() {
+        'route_data': function() {
             this.clear_current_room_updates();
         }
     },
@@ -34,6 +34,10 @@ export default {
             }.bind(this));
 
             return !!room;
+        },
+
+        route_data() {
+            return JSON.stringify(this.$route);
         }
     },
 
