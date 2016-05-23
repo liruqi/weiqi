@@ -33,9 +33,24 @@
 
 <script>
     import { format_duration } from '../../format';
+    import { play_sound } from '../../sounds';
 
     export default {
         props: ["demo", "stage", "color", "display", "user_id", "rating", "main_time", "points"],
+
+        watch: {
+            'is_low_time': function(val) {
+                if(val) {
+                    play_sound('beep');
+                }
+            },
+
+            'Math.round(total_seconds)': function() {
+                if(this.is_very_low_time) {
+                    play_sound('beep');
+                }
+            }
+        },
 
         computed: {
             total_seconds() {
