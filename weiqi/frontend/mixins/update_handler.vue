@@ -5,7 +5,8 @@ import { clear_room_update } from '../vuex/actions';
 export default {
     vuex: {
         getters: {
-            room_has_update: function(state) { return state.room_has_update; }
+            room_has_update: function(state) { return state.room_has_update; },
+            direct_rooms: function(state) { return state.direct_rooms; }
         },
         actions: {
             clear_room_update
@@ -49,7 +50,7 @@ export default {
             }
 
             if(this.$route.name == 'user_message' && is_tab_visible()) {
-                this.clear_room_update(this.$route.params.user_id);
+                this.clear_room_update(this.direct_rooms[this.$route.params.user_id].room_id);
             }
         }
     }
