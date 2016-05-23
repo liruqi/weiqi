@@ -187,12 +187,9 @@
 
                 var node = this.game.board.tree[node_id];
 
-                // No sound for pass/resign
                 if(node.move < 0) {
-                    return;
-                }
-
-                if(node.action == 'B') {
+                    play_sound('beep');
+                } else if(node.action == 'B') {
                     play_sound('black_stone');
                 } else if(node.action == 'W') {
                     play_sound('white_stone');
@@ -277,7 +274,7 @@
                     return;
                 }
 
-                if(this.game.timing) {
+                if(this.game.timing && this.game.stage == 'playing') {
                     var starting = (this.seconds_to_start === null);
                     this.seconds_to_start = Math.ceil(moment.utc(this.game.timing.start_at).diff(moment.utc()) / 1000);
 
