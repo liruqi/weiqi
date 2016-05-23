@@ -75,10 +75,10 @@
 
 <script>
     import bootbox from 'bootbox';
-    import { Howl } from 'howler';
     import moment from 'moment';
     import { open_game, update_game_time, clear_game_update } from './../../vuex/actions';
     import * as socket from '../../socket';
+    import { play_sound } from '../../sounds';
 
     export default {
         mixins: [require('./../../mixins/title.vue')],
@@ -193,9 +193,9 @@
                 }
 
                 if(node.action == 'B') {
-                    new Howl({src: ['/static/sounds/black.mp3', '/static/sounds/black.ogg']}).play()
+                    play_sound('black_stone');
                 } else if(node.action == 'W') {
-                    new Howl({src: ['/static/sounds/white.mp3', '/static/sounds/white.ogg']}).play()
+                    play_sound('white_stone');
                 }
             },
 
@@ -286,7 +286,7 @@
                     } else if(starting) {
                         for(var i=0; i<this.seconds_to_start; i++) {
                             setTimeout(function () {
-                                new Howl({src: ['/static/sounds/beep.wav']}).play()
+                                play_sound('beep');
                             }, 1000 * i);
                         }
                     }
