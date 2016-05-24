@@ -68,7 +68,7 @@ def main():
     app = create_app()
 
     logging.info("Listening on :{}".format(settings.LISTEN_PORT))
-    server = tornado.httpserver.HTTPServer(app)
+    server = tornado.httpserver.HTTPServer(app, xheaders=True)
     server.bind(settings.LISTEN_PORT)
     server.start(settings.NUM_PROCESSES)
 
