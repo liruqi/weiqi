@@ -97,6 +97,9 @@ def test_automatch_create_game(db, socket):
     assert (game.timing.start_at - (datetime.utcnow() + settings.GAME_START_DELAY)).total_seconds() < 1
     assert (game.timing.start_at - game.timing.timing_updated_at).total_seconds() < 1
     assert (game.timing.start_at - game.timing.next_move_at).total_seconds() < 1
+    assert game.timing.system == 'fischer'
+    assert game.timing.black_overtime == timedelta()
+    assert game.timing.white_overtime == timedelta()
 
     assert len(socket.sent_messages) == 3
     assert socket.sent_messages[0]['method'] == 'game_started'

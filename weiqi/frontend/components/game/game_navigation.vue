@@ -1,5 +1,5 @@
 <template>
-    <div v-show="is_visible">
+    <div v-if="is_visible">
         <div class="game-navigation">
             <qi-game-tree :game="game"
                           :move_tree="move_tree"
@@ -212,6 +212,10 @@
 
             scroll_to_node(node) {
                 var nav = jQuery('.game-navigation');
+                if(nav.length == 0) {
+                    return;
+                }
+
                 var el = jQuery('#game-nav-node-' + node.id);
                 var labelH = el.find('.game-nav-node-label').first().height();
 

@@ -33,12 +33,12 @@
                         <div class="col-xs-6">
                             <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'white'"
                                             :display="game.white_display" :user_id="game.white_user_id"
-                                            :rating="game.white_rating" :points="0" :time="white_time"></qi-game-player>
+                                            :rating="game.white_rating" :points="0" :main_time="white_time"></qi-game-player>
                         </div>
                         <div class="col-xs-6">
                             <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'black'"
                                             :display="game.black_display" :user_id="game.black_user_id"
-                                            :rating="game.black_rating" :points="0" :time="black_time"></qi-game-player>
+                                            :rating="game.black_rating" :points="0" :main_time="black_time"></qi-game-player>
                         </div>
                     </div>
 
@@ -75,11 +75,10 @@
 
 <script>
     import bootbox from 'bootbox';
-    import { Howl } from 'howler';
     import moment from 'moment';
     import { open_game, update_game_time, clear_game_update } from './../../vuex/actions';
     import * as socket from '../../socket';
-    import { format_duration } from '../../format';
+    import { play_sound } from '../../sounds';
 
     export default {
         mixins: [require('./../../mixins/title.vue')],
@@ -109,7 +108,7 @@
         data() {
             return {
                 force_node_id: false,
-                seconds_to_start: 0,
+                seconds_to_start: null,
                 timer_started: false,
                 demo_tool: 'move'
             }
@@ -154,18 +153,18 @@
 
             black_time() {
                 if(this.game.timing) {
-                    return this.format_duration(this.game.timing.black_main);
+                    return this.game.timing.black_main;
                 }
             },
 
             white_time() {
                 if(this.game.timing) {
-                    return this.format_duration(this.game.timing.white_main);
+                    return this.game.timing.white_main;
                 }
             },
 
             has_started() {
-                return this.seconds_to_start <= 0;
+                return !this.seconds_to_start || this.seconds_to_start <= 0;
             },
 
             room_logs_show_only() {
@@ -188,15 +187,12 @@
 
                 var node = this.game.board.tree[node_id];
 
-                // No sound for pass/resign
                 if(node.move < 0) {
-                    return;
-                }
-
-                if(node.action == 'B') {
-                    new Howl({src: ['/static/sounds/black.mp3', '/static/sounds/black.ogg']}).play()
+                    play_sound('beep');
+                } else if(node.action == 'B') {
+                    play_sound('black_stone');
                 } else if(node.action == 'W') {
-                    new Howl({src: ['/static/sounds/white.mp3', '/static/sounds/white.ogg']}).play()
+                    play_sound('white_stone');
                 }
             },
 
@@ -269,8 +265,6 @@
         },
 
         methods: {
-            format_duration: format_duration,
-
             clear_update() {
                 this.clear_game_update(this.game_id);
             },
@@ -280,11 +274,18 @@
                     return;
                 }
 
-                if(this.game.timing) {
+                if(this.game.timing && this.game.stage == 'playing') {
+                    var starting = (this.seconds_to_start === null);
                     this.seconds_to_start = Math.ceil(moment.utc(this.game.timing.start_at).diff(moment.utc()) / 1000);
 
                     if(this.has_started) {
                         this.update_game_time(this.game.id);
+                    } else if(starting) {
+                        for(var i=0; i<this.seconds_to_start; i++) {
+                            setTimeout(function () {
+                                play_sound('beep');
+                            }, 1000 * i);
+                        }
                     }
                 }
 

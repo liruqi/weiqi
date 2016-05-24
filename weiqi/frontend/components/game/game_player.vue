@@ -20,7 +20,9 @@
                 <qi-user-context :user_id="user_id" :display="display" :rating="rating"></qi-user-context>
             </p>
             <p class="text-center" v-if="stage=='playing'">
-                {{time}}
+                <span :class="{'game-player-low-time': is_low_time, 'game-player-very-low-time': is_very_low_time}">
+                    {{formatted_time}}
+                </span>
             </p>
             <p class="text-center" data-bind="visible: game().stage!='playing'">
                 <span data-bind="text: whitePoints()"></span>
@@ -30,7 +32,42 @@
 </template>
 
 <script>
+    import { format_duration } from '../../format';
+    import { play_sound } from '../../sounds';
+
     export default {
-        props: ["demo", "stage", "color", "display", "user_id", "rating", "time", "points"]
+        props: ["demo", "stage", "color", "display", "user_id", "rating", "main_time", "points"],
+
+        watch: {
+            'is_low_time': function(val) {
+                if(val) {
+                    play_sound('beep');
+                }
+            },
+
+            'Math.round(total_seconds)': function() {
+                if(this.is_very_low_time) {
+                    play_sound('beep');
+                }
+            }
+        },
+
+        computed: {
+            total_seconds() {
+                return this.main_time;
+            },
+
+            is_low_time() {
+                return this.total_seconds <= 60;
+            },
+
+            is_very_low_time() {
+                return this.total_seconds <= 10;
+            },
+
+            formatted_time() {
+                return format_duration(this.main_time);
+            }
+        }
     }
 </script>
