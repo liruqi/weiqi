@@ -19,7 +19,7 @@ export default {
     },
 
     watch: {
-        'has_room_updates': function() {
+        'room_updates': function() {
             this.clear_current_room_updates();
         },
 
@@ -29,12 +29,8 @@ export default {
     },
 
     computed: {
-        has_room_updates() {
-            var room = Object.keys(this.room_has_update).find(function(room_id) {
-                return this.room_has_update[room_id];
-            }.bind(this));
-
-            return !!room;
+        room_updates() {
+            return JSON.stringify(this.room_has_update);
         },
 
         route_data() {
