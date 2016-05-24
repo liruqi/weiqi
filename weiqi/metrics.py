@@ -14,13 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .base import BaseService, ServiceError
-from .rating import RatingService
-from .rooms import RoomService
-from .users import UserService
-from .games import GameService
-from .connection import ConnectionService
-from .play import PlayService
-from .settings import SettingsService
-from .dashboard import DashboardService
-from .metrics import MetricsService
+from prometheus_client import Summary, Gauge
+
+
+REQUEST_TIME = Summary('request_processing_seconds', 'Time spent processing requests', ['method'])
+SENT_MESSAGES = Summary('sent_message_bytes', 'Size of outgoing messages', ['method'])
+CONNECTED_SOCKETS = Gauge('connected_sockets', 'Number of connected websockets')

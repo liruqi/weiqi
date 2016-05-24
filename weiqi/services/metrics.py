@@ -14,13 +14,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .base import BaseService, ServiceError
-from .rating import RatingService
-from .rooms import RoomService
-from .users import UserService
-from .games import GameService
-from .connection import ConnectionService
-from .play import PlayService
-from .settings import SettingsService
-from .dashboard import DashboardService
-from .metrics import MetricsService
+from weiqi.services import BaseService
+
+
+class MetricsService(BaseService):
+    def collect(self):
+        pass

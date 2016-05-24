@@ -19,7 +19,7 @@ import json
 import uuid
 import logging
 from datetime import datetime
-from weiqi import settings
+from weiqi import settings, metrics
 from weiqi.db import session
 from weiqi.services import (ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService,
                             DashboardService)
@@ -39,21 +39,25 @@ class SocketMixin:
 
     def open(self):
         self._execute_service('connection', 'connect')
+        metrics.CONNECTED_SOCKETS.inc()
 
     def on_message(self, data):
         msg = json.loads(data)
         service, method = msg.get('method').split('/', 1)
 
-        res = self._execute_service(service, method, msg.get('data'))
+        with metrics.REQUEST_TIME.labels(msg.get('method')).time():
+            res = self._execute_service(service, method, msg.get('data'))
 
         if msg.get('id') is not None:
-            self._send_data({'method': 'response', 'id': msg.get('id'), 'data': res})
+            self._send_data({'method': 'response', 'id': msg.get('id'), 'data': res},
+                            response_to=msg.get('method'))
 
     def on_close(self):
         for topic in self._subs:
             self.pubsub.unsubscribe(topic, self._on_pubsub)
 
         self._execute_service('connection', 'disconnect')
+        metrics.CONNECTED_SOCKETS.dec()
 
     def subscribe(self, topic):
         if topic not in self._subs:
@@ -74,7 +78,12 @@ class SocketMixin:
     def send(self, topic, data):
         self._send_data({'method': topic, 'data': data})
 
-    def _send_data(self, data):
+    def _send_data(self, data, response_to=''):
+        method = data.get('method') if not response_to else 'response/' + response_to
+        data = json.dumps(data)
+
+        metrics.SENT_MESSAGES.labels(method).observe(len(data))
+
         self.write_message(data)
 
     def _on_pubsub(self, topic, data):

@@ -14,13 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .base import BaseService, ServiceError
-from .rating import RatingService
-from .rooms import RoomService
-from .users import UserService
-from .games import GameService
-from .connection import ConnectionService
-from .play import PlayService
-from .settings import SettingsService
-from .dashboard import DashboardService
-from .metrics import MetricsService
+from prometheus_client.exposition import CONTENT_TYPE_LATEST, generate_latest
+from weiqi.handler.base import BaseHandler
+
+
+class MetricsHandler(BaseHandler):
+    def get(self):
+        self.set_header('Content-Type', CONTENT_TYPE_LATEST)
+        self.write(generate_latest())

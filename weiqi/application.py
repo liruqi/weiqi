@@ -20,8 +20,8 @@ import tornado.options
 import tornado.httpserver
 from weiqi import settings
 from weiqi.db import create_db, session
-from weiqi.models import Connection, Automatch, User, Game
-from weiqi.handler import auth, socket, index
+from weiqi.models import Connection, Automatch, User
+from weiqi.handler import auth, socket, index, metrics
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import Ampq
 from weiqi.services import GameService, PlayService
@@ -47,6 +47,8 @@ class Application(tornado.web.Application):
 
             handler(r'/api/users/(.*?)/avatar', index.AvatarHandler),
             handler(r'/api/games/(.*?)/sgf', index.SgfHandler),
+
+            handler(r'/api/metrics', metrics.MetricsHandler),
 
             handler(r'.*', index.IndexHandler),
         ]
