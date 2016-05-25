@@ -315,6 +315,8 @@ export const mutations = {
             });
         }
 
+        Vue.delete(state.game_has_update, game_id);
+
         if(state.route.name == "game" && state.route.params.game_id == game_id) {
             state.route.router.go({name: 'root'});
         }
