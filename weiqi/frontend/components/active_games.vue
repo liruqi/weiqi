@@ -33,11 +33,7 @@
                         </td>
                     </template>
                     <td>
-                        <template v-if="game.is_demo">{{$t('game.demo')}}</template>
-                        <template v-else>
-                            <template v-if="game.is_ranked">{{$t('game.ranked')}}</template>
-                            <template v-else>{{$t('game.free')}}</template>
-                        </template>
+                        <qi-game-type :game="game"></qi-game-type>
                     </td>
                     <td>{{started[game.id]}}</td>
                 </tr>
