@@ -302,9 +302,18 @@ export const mutations = {
     CLOSE_GAME(state, game_id) {
         socket.send('games/close_game', {'game_id': game_id});
 
-        state.open_games = state.open_games.filter(function(game) {
-            return game.id != game_id;
+        var game = state.open_games.find(function(game) {
+            return game.id == game_id;
         });
+
+        if(game) {
+            Vue.delete(state.room_logs, game.room_id);
+            Vue.delete(state.room_has_update, game.room_id);
+
+            state.open_games = state.open_games.filter(function (game) {
+                return game.id != game_id;
+            });
+        }
 
         if(state.route.name == "game" && state.route.params.game_id == game_id) {
             state.route.router.go({name: 'root'});
