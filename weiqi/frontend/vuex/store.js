@@ -75,6 +75,10 @@ export const mutations = {
         Vue.set(state.room_has_update, data.room_id, true);
     },
 
+    MSG_ROOM_LOGS(state, data) {
+        Vue.set(state.room_logs, data.room_id, data.logs);
+    },
+
     MSG_ROOM_USER(state, data) {
         if(state.direct_rooms[data.user_id]) {
             state.direct_rooms[data.user_id].is_online = true;

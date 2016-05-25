@@ -49,7 +49,7 @@ class GameService(BaseService):
         if not game:
             return
 
-        RoomService(self.db, self.socket, self.user).join_room(game.room_id)
+        RoomService(self.db, self.socket, self.user).join_room(game.room_id, True)
 
         self.subscribe(game.id)
         self.socket.send('game_data', game.to_frontend(full=True))

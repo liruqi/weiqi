@@ -2,6 +2,7 @@ export const server_messages = {
     'connection_data': make_action('MSG_CONNECTION_DATA'),
     'pong': make_action('MSG_PONG'),
     'room_message': make_action('MSG_ROOM_MESSAGE'),
+    'room_logs': make_action('MSG_ROOM_LOGS'),
     'room_user': make_action('MSG_ROOM_USER'),
     'room_user_left': make_action('MSG_ROOM_USER_LEFT'),
     'automatch_status': make_action('MSG_AUTOMATCH_STATUS'),

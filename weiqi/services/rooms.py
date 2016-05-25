@@ -122,7 +122,7 @@ class RoomService(BaseService):
         else:
             direct.user_two_has_unread = False
 
-    def join_room(self, room_id):
+    def join_room(self, room_id, send_logs=False):
         self._subscribe(room_id)
 
         if self.user:
@@ -130,6 +130,13 @@ class RoomService(BaseService):
                 ru = RoomUser(room_id=room_id, user=self.user)
                 self.db.add(ru)
                 self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
+
+            if send_logs:
+                room = self.db.query(Room).get(room_id)
+                self.socket.send('room_logs', {
+                    'room_id': room_id,
+                    'logs': [m.to_frontend() for m in room.recent_messages(self.db)],
+                })
 
         self._update_users_max(room_id)
 
