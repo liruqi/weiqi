@@ -71,6 +71,8 @@
                 <a v-link="{name:'active_games', exact: true}">
                     <i class="fa fa-globe"></i>
                     {{$t('sidebar.active_games')}}
+                    <span class="sidebar-item-extra pull-right">({{active_games.length}})</span>
+                    <div class="clearfix"></div>
                 </a>
             </li>
         </ul>
@@ -178,6 +180,7 @@
         vuex: {
             getters: {
                 user: function(state) { return state.auth.user; },
+                active_games: function(state) { return state.active_games; },
                 rooms: function(state) { return state.rooms; },
                 direct_rooms: function(state) { return state.direct_rooms; },
                 open_games: function(state) { return state.open_games; },
