@@ -176,7 +176,7 @@
 
                     processResults: function(data, params) {
                         data.forEach(function(user) {
-                            user.text = this.option_text(user.id, user.display, user.rating);
+                            user.text = this.option_text(user.display, user.rating);
                         }.bind(this));
 
                         if(this.auth_user.logged_in) {
@@ -196,7 +196,7 @@
                 socket.send('play/challenge_setup_suggestion', {user_id: user_id}, function(data) {
                     select.empty().append(
                             '<option value="'+data.other_user_id+'">' +
-                            this.option_text(data.other_user_id, data.other_display, data.other_rating) +
+                            this.option_text(data.other_display, data.other_rating) +
                             '</option>');
 
                     select.val(data.other_user_id);
@@ -259,8 +259,8 @@
                 return null;
             },
 
-            option_text(id, display, rating) {
-                return '#' + id + ' - ' + display + ' (' + rating_to_rank(rating) + ')';
+            option_text(display, rating) {
+                return display + ' (' + rating_to_rank(rating) + ')';
             },
 
             submit() {
