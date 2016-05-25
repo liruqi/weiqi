@@ -270,7 +270,8 @@ def test_timing(db, socket):
 
     svc.execute('move', {'game_id': game.id, 'move': 30})
 
-    assert abs(game.timing.black_main.total_seconds() - 16) < 2
+    # Because of slow CI runners this test cannot be exact.
+    assert abs(game.timing.black_main.total_seconds() - 16) < 3
 
 
 def test_timing_lose_on_time(db, socket):
