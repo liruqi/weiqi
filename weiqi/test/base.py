@@ -19,7 +19,7 @@ from tornado.testing import AsyncHTTPTestCase
 import urllib.parse
 from weiqi.db import session
 from weiqi.application import create_app
-from weiqi.models import User, RoomMessage, RoomUser, Room, Connection, Automatch, Game, Timing, Challenge
+from weiqi.models import User, RoomMessage, RoomUser, Room, DirectRoom, Connection, Automatch, Game, Timing, Challenge
 
 
 class BaseTestCase(TestCase):
@@ -32,6 +32,7 @@ class BaseTestCase(TestCase):
             db.query(RoomMessage).delete()
             db.query(Connection).delete()
             db.query(Room).delete()
+            db.query(DirectRoom).delete()
             db.query(User).delete()
             db.query(Automatch).delete()
             db.query(Game).delete()
