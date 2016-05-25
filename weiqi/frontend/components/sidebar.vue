@@ -214,7 +214,8 @@
                     if(d1.is_online != d2.is_online) {
                         return d2.is_online;
                     }
-                    return d1.other_user_id > d2.other_user_id;
+
+                    return (''+d1.other_user_display).localeCompare(d2.other_user_display);
                 });
             },
 
