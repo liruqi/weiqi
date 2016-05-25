@@ -215,7 +215,7 @@
                         return d2.is_online;
                     }
 
-                    return (''+d1.other_user_display).localeCompare(d2.other_user_display);
+                    return (''+d1.other_display).localeCompare(d2.other_display);
                 });
             },
 
