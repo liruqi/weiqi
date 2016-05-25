@@ -45,7 +45,7 @@
                 }
             },
 
-            'Math.round(total_seconds)': function() {
+            'Math.floor(total_seconds)': function() {
                 if(this.is_very_low_time) {
                     play_sound('beep');
                 }
