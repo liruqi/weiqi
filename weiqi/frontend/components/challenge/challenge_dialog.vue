@@ -195,7 +195,7 @@
             select.on('qi:set_user', function(ev, user_id) {
                 socket.send('play/challenge_setup_suggestion', {user_id: user_id}, function(data) {
                     select.empty().append(
-                            '<option value="'+data.other_user_id+'">' +
+                            '<option value="' + data.other_user_id + '">' +
                             this.option_text(data.other_display, data.other_rating) +
                             '</option>');
 
@@ -203,21 +203,13 @@
                     select.select2('data')[0].rating = data.other_rating;
                     select.trigger('change');
 
-                    if(data.handicap === null) {
-                        this.handicap = 'auto';
-                    } else {
-                        this.handicap = ''+data.handicap;
-                    }
+                    this.setup_suggestions(data);
+                }.bind(this));
+            }.bind(this));
 
-                    if(data.owner_is_black === null) {
-                        this.black_white = 'auto';
-                    } else if(data.owner_is_black) {
-                        this.black_white = 'black';
-                    } else {
-                        this.black_white = 'white';
-                    }
-
-                    this.komi = data.komi;
+            select.change(function() {
+                socket.send('play/challenge_setup_suggestion', {user_id: select.val()}, function(data) {
+                    this.setup_suggestions(data);
                 }.bind(this));
             }.bind(this));
         },
@@ -261,6 +253,24 @@
 
             option_text(display, rating) {
                 return display + ' (' + rating_to_rank(rating) + ')';
+            },
+
+            setup_suggestions(data) {
+                if(data.handicap === null) {
+                    this.handicap = 'auto';
+                } else {
+                    this.handicap = ''+data.handicap;
+                }
+
+                if(data.owner_is_black === null) {
+                    this.black_white = 'auto';
+                } else if(data.owner_is_black) {
+                    this.black_white = 'black';
+                } else {
+                    this.black_white = 'white';
+                }
+
+                this.komi = data.komi;
             },
 
             submit() {
