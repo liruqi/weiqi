@@ -134,11 +134,15 @@
         <ul class="sidebar-menu" v-if="user.logged_in">
             <li class="header">{{$t('sidebar.people')}}</li>
 
-            <template v-for="room in direct_rooms">
+            <template v-for="room in sorted_direct_rooms">
                 <li v-link-active :class="{highlight: room_has_update[room.room_id]}">
-                    <a v-link="{name:'user_message', params:{user_id:$key}}">
+                    <a v-link="{name:'user_message', params:{user_id:room.other_user_id}}">
                         <i :class="{'text-success': room.is_online, 'text-info': room_has_update[room.room_id]}" class="fa fa-user"></i>
                         {{room.other_display}}
+
+                        <span class="sidebar-item-action pull-right" @click.prevent="close_direct_room(room.other_user_id)">
+                            <i class="fa fa-times-circle"></i>
+                        </span>
                     </a>
                 </li>
             </template>
@@ -167,7 +171,7 @@
 </template>
 
 <script>
-    import { close_game } from '../vuex/actions';
+    import { close_game, close_direct_room } from '../vuex/actions';
     import * as socket from '../socket';
 
     export default {
@@ -183,7 +187,8 @@
             },
 
             actions: {
-                close_game
+                close_game,
+                close_direct_room
             }
         },
 
@@ -197,6 +202,19 @@
             sorted_games() {
                 return this.open_games.sort(function(g1, g2) {
                     return g1.id < g2.id;
+                });
+            },
+
+            sorted_direct_rooms() {
+                var direct = Object.keys(this.direct_rooms).map(function(key) {
+                    return this.direct_rooms[key];
+                }.bind(this));
+
+                return direct.sort(function(d1, d2) {
+                    if(d1.is_online != d2.is_online) {
+                        return d2.is_online;
+                    }
+                    return d1.other_user_id > d2.other_user_id;
                 });
             },
 

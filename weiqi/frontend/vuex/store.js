@@ -326,6 +326,23 @@ export const mutations = {
             mutations.MSG_LOAD_DIRECT_ROOM(state, data);
         });
     },
+
+    CLOSE_DIRECT_ROOM(state, user_id) {
+        socket.send('rooms/close_direct', {'user_id': user_id});
+
+        var room = state.direct_rooms[user_id];
+        if(!room) {
+            return;
+        }
+
+        Vue.delete(state.direct_rooms, user_id);
+        Vue.delete(state.room_logs, room.room_id);
+        Vue.delete(state.room_has_update, room.room_id);
+
+        if(state.route.name == "user_message" && state.route.params.user_id == user_id) {
+            state.route.router.go({name: 'root'});
+        }
+    },
     
     MSG_DIRECT_MESSAGE(state, data) {
         if(data.user_id == state.auth.user.user_id || state.direct_rooms[data.user_id]) {

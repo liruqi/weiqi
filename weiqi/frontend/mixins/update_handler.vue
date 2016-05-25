@@ -51,7 +51,10 @@ export default {
             }
 
             if(this.$route.name == 'user_message' && is_tab_visible()) {
-                this.clear_room_update(this.direct_rooms[this.$route.params.user_id].room_id);
+                var direct = this.direct_rooms[this.$route.params.user_id];
+                if(direct) {
+                    this.clear_room_update(direct.room_id);
+                }
             }
 
             if(this.$route.name == 'game' && is_tab_visible()) {

@@ -24,6 +24,7 @@ export const close_game = make_action('CLOSE_GAME');
 export const load_room_users = make_action('LOAD_ROOM_USERS');
 export const reload_user_avatar = make_action('RELOAD_USER_AVATAR');
 export const load_direct_room = make_action('LOAD_DIRECT_ROOM');
+export const close_direct_room = make_action('CLOSE_DIRECT_ROOM');
 export const clear_room_update = make_action('CLEAR_ROOM_UPDATE');
 export const clear_game_update = make_action('CLEAR_GAME_UPDATE');
 

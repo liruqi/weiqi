@@ -65,8 +65,6 @@ class RoomUserFactory(SQLAlchemyModelFactory):
     room = factory.SubFactory(RoomFactory)
     user = factory.SubFactory(UserFactory)
 
-    has_unread = False
-
 
 class RoomMessageFactory(SQLAlchemyModelFactory):
     class Meta:

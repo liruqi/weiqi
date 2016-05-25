@@ -200,9 +200,6 @@ class RoomUser(Base):
     user = relationship('User', back_populates='rooms', lazy='joined')
 
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    has_unread = Column(Boolean, nullable=False, default=False)
 
     def to_frontend(self):
         return {
@@ -246,6 +243,40 @@ class RoomMessage(Base):
             'user_rating': self.user_rating,
             'message': self.message
         }
+
+
+class DirectRoom(Base):
+    __tablename__ = 'direct_rooms'
+
+    id = Column(Integer, primary_key=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    room_id = Column(ForeignKey('rooms.id'), nullable=False)
+    room = relationship('Room')
+
+    user_one_id = Column(ForeignKey('users.id'), nullable=False)
+    user_one = relationship('User', foreign_keys=[user_one_id])
+    user_one_has_unread = Column(Boolean, nullable=False, default=False)
+
+    user_two_id = Column(ForeignKey('users.id'), nullable=False)
+    user_two = relationship('User', foreign_keys=[user_two_id])
+    user_two_has_unread = Column(Boolean, nullable=False, default=False)
+
+    @staticmethod
+    def filter_by_users(db, user, other):
+        return db.query(DirectRoom).filter(
+            ((DirectRoom.user_one == user) & (DirectRoom.user_two == other)) |
+            ((DirectRoom.user_one == other) & (DirectRoom.user_two == user)))
+
+    def other(self, user):
+        return self.user_one if user != self.user_one else self.user_two
+
+    def has_unread(self, user):
+        if user == self.user_one:
+            return self.user_one_has_unread
+        elif user == self.user_two:
+            return self.user_two_has_unread
+        return False
 
 
 class Automatch(Base):

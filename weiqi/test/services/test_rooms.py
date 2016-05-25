@@ -17,7 +17,7 @@
 import pytest
 from weiqi.test.factories import RoomFactory, RoomUserFactory, UserFactory
 from weiqi.services import RoomService, ServiceError
-from weiqi.models import User, RoomMessage, Room, RoomUser
+from weiqi.models import RoomMessage, Room, RoomUser, DirectRoom
 
 
 def test_room_users(db, socket):
@@ -82,16 +82,30 @@ def test_open_direct(db, socket):
 
     assert db.query(Room).count() == 1
     room = db.query(Room).first()
-    assert len(room.users.all()) == 2
-    assert set(u.user for u in room.users) == {user, other}
+    assert room.users.count() == 1
+    assert room.users.first().user == user
 
     svc = RoomService(db, socket, other)
     other_direct = svc.open_direct(user.id)
     assert db.query(Room).count() == 1
     other_room = db.query(Room).first()
     assert other_room == room
+    assert room.users.count() == 2
+    assert room.users.all()[1].user == other
 
     assert direct['room'] == other_direct['room']
+
+
+def test_close_direct(db, socket):
+    user = UserFactory()
+    other = UserFactory()
+
+    svc = RoomService(db, socket, user)
+    svc.execute('open_direct', {'user_id': other.id})
+    svc.execute('close_direct', {'user_id': other.id})
+
+    room = db.query(Room).first()
+    assert room.users.count() == 0
 
 
 def test_message_direct(db, socket):
@@ -113,7 +127,22 @@ def test_message_direct(db, socket):
     assert socket.sent_messages[1]['method'] == 'direct_message'
     assert socket.sent_messages[1]['data']['room_id'] == room.id
 
-    assert db.query(RoomUser).filter_by(user=other, room=room).first().has_unread
+    direct = DirectRoom.filter_by_users(db, user, other).one()
+    assert not direct.user_one_has_unread
+    assert direct.user_two_has_unread
+
+
+def test_message_direct_joins_other(db, socket):
+    user = UserFactory()
+    other = UserFactory()
+
+    svc = RoomService(db, socket, user)
+    svc.open_direct(other.id)
+
+    room = db.query(Room).first()
+    svc.execute('message', {'room_id': room.id, 'message': 'test'})
+
+    assert room.users.count() == 2
 
 
 def test_join_room(db, socket):

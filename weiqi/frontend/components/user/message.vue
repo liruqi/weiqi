@@ -40,6 +40,10 @@
 
         computed: {
             window_title() {
+                if(!this.room) {
+                    return '';
+                }
+
                 return this.room.other_display;
             },
 
