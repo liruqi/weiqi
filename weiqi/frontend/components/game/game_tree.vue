@@ -50,6 +50,10 @@
 
         methods: {
             expand_active_node() {
+                if(!this.active_node) {
+                    return;
+                }
+
                 var node = jQuery('#game-nav-node-'+this.active_node.id);
                 node.parents('.game-move-subtree').each(function(i, sub) {
                     sub = jQuery(sub);
