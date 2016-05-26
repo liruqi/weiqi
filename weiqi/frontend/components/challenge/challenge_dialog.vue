@@ -161,6 +161,12 @@
         ready() {
             var select = jQuery('#challenge-user');
 
+            // select2 has an issue if it is placed inside a bootstrap modal
+            // see:
+            // https://github.com/select2/select2/issues/1645
+            // https://github.com/select2/select2/issues/942
+            jQuery.fn.modal.Constructor.prototype.enforceFocus = function () {};
+
             select.select2({
                 theme: 'bootstrap',
                 minimumInputLength: 2,
