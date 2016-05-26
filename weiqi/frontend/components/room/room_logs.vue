@@ -89,22 +89,7 @@
                     }.bind(this))
                 }
 
-                logs = logs.map(function(original) {
-                    // Clone to avoid double-linking
-                    var log = JSON.parse(JSON.stringify(original));
-
-                    log.message = jQuery('<div>').text(log.message).html();
-                    log.message = link_html(log.message, {
-                        target: function(href, type) {
-                            if(type != 'url' || /(https?:\/\/)(www\.)?weiqi\.gs/.test(href)) {
-                                return null;
-                            }
-                            return '_blank';
-                        }
-                    });
-
-                    return log;
-                });
+                logs = this.linkify_logs(logs);
 
                 return logs;
             }
@@ -125,6 +110,8 @@
         },
 
         methods: {
+            moment: moment.utc,
+
             send_message() {
                 socket.send('rooms/message', {'room_id': this.room_id, 'message': this.message});
                 this.message = '';
@@ -140,7 +127,24 @@
                 }
             },
 
-            moment: moment.utc,
+            linkify_logs(logs) {
+                return logs.map(function(original) {
+                    // Clone to avoid double-linking
+                    var log = JSON.parse(JSON.stringify(original));
+
+                    log.message = jQuery('<div>').text(log.message).html();
+                    log.message = link_html(log.message, {
+                        target: function(href, type) {
+                            if(type != 'url' || /(https?:\/\/)(www\.)?weiqi\.gs/.test(href)) {
+                                return null;
+                            }
+                            return '_blank';
+                        }
+                    });
+
+                    return log;
+                });
+            }
         }
     }
 </script>
