@@ -94,7 +94,14 @@
                     var log = JSON.parse(JSON.stringify(original));
 
                     log.message = jQuery('<div>').text(log.message).html();
-                    log.message = link_html(log.message);
+                    log.message = link_html(log.message, {
+                        target: function(href, type) {
+                            if(type != 'url' || /(https?:\/\/)(www\.)?weiqi\.gs/.test(href)) {
+                                return null;
+                            }
+                            return '_blank';
+                        }
+                    });
 
                     return log;
                 });
