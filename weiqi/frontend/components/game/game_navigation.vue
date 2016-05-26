@@ -3,9 +3,7 @@
         <div class="game-navigation">
             <qi-game-tree :game="game"
                           :move_tree="move_tree"
-                          :active_node="current_node"
-                          :expanded.sync="expanded"
-                          :parent_id="false">
+                          :active_node="current_node">
             </qi-game-tree>
         </div>
 
@@ -34,7 +32,6 @@
 
         data() {
             return {
-                expanded: {}
             }
         },
 
@@ -192,22 +189,9 @@
                     return;
                 }
 
-                this.expand_node_path(node);
-
                 this.$nextTick(function() {
                     this.scroll_to_node(node);
                 });
-            },
-
-            expand_node_path(node) {
-                while(node.parent_id !== null) {
-                    if(this.is_mainline(node.id)) {
-                        break;
-                    }
-
-                    node = this.game.board.tree[node.parent_id];
-                    this.$set('expanded.n' + node.id, true);
-                }
             },
 
             scroll_to_node(node) {
