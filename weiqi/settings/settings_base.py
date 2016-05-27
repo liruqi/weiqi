@@ -77,3 +77,5 @@ CHALLENGE_EXPIRATION = timedelta(minutes=5)
 
 # Maintime to add to each player's clock after server downtime.
 RESUME_TIMING_ADD_TIME = timedelta(minutes=1)
+
+METRICS_COLLECTION_INTERVAL = timedelta(seconds=10)
