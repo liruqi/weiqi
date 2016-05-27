@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from prometheus_client import Summary, Gauge
+from prometheus_client import Summary, Gauge, Counter
 
 
 REQUEST_TIME = Summary('request_processing_seconds', 'Time spent processing requests', ['method'])
 SENT_MESSAGES = Summary('sent_message_bytes', 'Size of outgoing messages', ['method'])
 CONNECTED_SOCKETS = Gauge('connected_sockets', 'Number of connected websockets')
+EXCEPTIONS = Counter('exceptions_total', 'Number of exceptions in requests', ['method'])
+REGISTRATIONS = Counter('registrations_total', 'Total number of registrations')

@@ -21,15 +21,13 @@ BASE_DIR = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file_
 
 DEBUG = True
 
-NUM_PROCESSES = 1
-
 SECRET = b'j$\x1eM\xe2K\xda\xc0zndD\x80\x10\xc0\x8c\xba\xa1\xaeC\x01y\xe7\xe1'
 COOKIE_NAME = 'weiqi'
 
 TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
 STATIC_PATH = os.path.join(BASE_DIR, 'static')
 
-LISTEN_PORT = 8080
+LISTEN_PORT = 8000
 DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
 AMPQ_URL = 'amqp://guest:guest@127.0.0.1:5672/'
 
@@ -79,3 +77,5 @@ CHALLENGE_EXPIRATION = timedelta(minutes=5)
 
 # Maintime to add to each player's clock after server downtime.
 RESUME_TIMING_ADD_TIME = timedelta(minutes=1)
+
+METRICS_COLLECTION_INTERVAL = timedelta(seconds=10)

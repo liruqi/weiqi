@@ -23,4 +23,3 @@ from .connection import ConnectionService
 from .play import PlayService
 from .settings import SettingsService
 from .dashboard import DashboardService
-from .metrics import MetricsService

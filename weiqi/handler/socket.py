@@ -91,24 +91,25 @@ class SocketMixin:
         self.send(topic, data)
 
     def _execute_service(self, service, method, data=None):
-        service_names = {s.__service_name__: s for s in self._services}
-        service_class = service_names.get(service)
+        with metrics.EXCEPTIONS.labels(service+'/'+method).count_exceptions():
+            service_names = {s.__service_name__: s for s in self._services}
+            service_class = service_names.get(service)
 
-        if not service_class:
-            raise ValueError('service "{}" not found'.format(service))
+            if not service_class:
+                raise ValueError('service "{}" not found'.format(service))
 
-        with session() as db:
-            user = None
-            user_id = self.get_secure_cookie(settings.COOKIE_NAME)
+            with session() as db:
+                user = None
+                user_id = self.get_secure_cookie(settings.COOKIE_NAME)
 
-            if user_id:
-                user = db.query(User).get(int(user_id))
+                if user_id:
+                    user = db.query(User).get(int(user_id))
 
-            if user and method != 'ping':
-                user.last_activity_at = datetime.utcnow()
+                if user and method != 'ping':
+                    user.last_activity_at = datetime.utcnow()
 
-            svc = service_class(db, self, user)
-            return svc.execute(method, data)
+                svc = service_class(db, self, user)
+                return svc.execute(method, data)
 
 
 class SocketHandler(SocketMixin, WebSocketHandler):

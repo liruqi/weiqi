@@ -19,8 +19,6 @@ import tornado.web
 import tornado.options
 import tornado.httpserver
 from weiqi import settings
-from weiqi.db import create_db, session
-from weiqi.models import Connection, Automatch, User
 from weiqi.handler import auth, socket, index, metrics
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import Ampq
@@ -56,26 +54,18 @@ class Application(tornado.web.Application):
         super().__init__(
             handlers,
             debug=settings.DEBUG,
-            autoreload=(settings.DEBUG and settings.NUM_PROCESSES == 1),
+            autoreload=settings.DEBUG,
             cookie_secret=settings.SECRET,
             template_path=settings.TEMPLATE_PATH,
             static_path=settings.STATIC_PATH)
 
 
-def main():
-    tornado.options.parse_command_line()
-
+def run_app():
     logging.info("Starting application ...")
-
     app = create_app()
 
     logging.info("Listening on :{}".format(settings.LISTEN_PORT))
-    server = tornado.httpserver.HTTPServer(app, xheaders=True)
-    server.bind(settings.LISTEN_PORT)
-    server.start(settings.NUM_PROCESSES)
-
-    create_db()
-    _cleanup_db()
+    app.listen(settings.LISTEN_PORT, xheaders=True)
 
     tornado.ioloop.IOLoop.current().spawn_callback(app.broker.run)
     tornado.ioloop.IOLoop.current().spawn_callback(GameService.run_time_checker, app.pubsub)
@@ -85,12 +75,3 @@ def main():
 
 def create_app():
     return Application()
-
-
-def _cleanup_db():
-    """Cleans DB state before starting the server."""
-    with session() as db:
-        db.query(Connection).delete()
-        db.query(Automatch).delete()
-        db.query(User).update({'is_online': False})
-        GameService(db).resume_all_games()

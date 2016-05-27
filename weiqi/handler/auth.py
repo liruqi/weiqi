@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.web import HTTPError
-from weiqi import settings
+from weiqi import settings, metrics
 from weiqi.handler.base import BaseHandler
 from weiqi.models import User, RoomUser, Room
 from weiqi.rating import min_rating
@@ -47,6 +47,8 @@ class SignUpHandler(BaseHandler):
                'In order to activate your account and login please follow this link:\n\n%s') % url
 
         send_mail(user.email, user.display, 'Account activation', msg)
+
+        metrics.REGISTRATIONS.inc()
 
         self.write({})
 
