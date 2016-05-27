@@ -24,11 +24,11 @@ npm install
 
 node_modules/.bin/gulp build --production
 
-sudo supervisorctl stop weiqi
+sudo supervisorctl stop weiqi:\*
 
 export WEIQI_SETTINGS=\$HOME/settings.py
 alembic upgrade head
 ./main.py --prepare-startup
 
-sudo supervisorctl start weiqi
+sudo supervisorctl start weiqi:\*
 EOF
