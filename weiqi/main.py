@@ -34,7 +34,7 @@ def main():
         prepare_startup()
     else:
         if settings.DEBUG:
-            add_reload_hook(prepare_startup())
+            add_reload_hook(prepare_startup)
         run_app()
 
 
