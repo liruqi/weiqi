@@ -12,6 +12,7 @@
                 <tr>
                     <th>{{$t('game.white')}}</th>
                     <th>{{$t('game.black')}}</th>
+                    <th>{{$t('game.type')}}</th>
                     <th>{{$t('game.started')}}</th>
                 </tr>
             </thead>
@@ -31,6 +32,9 @@
                             <qi-username-rank :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
                         </td>
                     </template>
+                    <td>
+                        <qi-game-type :game="game"></qi-game-type>
+                    </td>
                     <td>{{started[game.id]}}</td>
                 </tr>
                 <tr v-if="sorted_games.length == 0">

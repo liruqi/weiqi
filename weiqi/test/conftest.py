@@ -15,12 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
+import json
 from tornado.httputil import HTTPServerRequest
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import DummyBroker
 from weiqi.handler.socket import SocketMixin
 from weiqi.test import session
-from weiqi.models import User, Room, RoomMessage, RoomUser, Connection, Automatch, Game, Timing, Challenge
+from weiqi.models import User, Room, RoomMessage, RoomUser, DirectRoom, Connection, Automatch, Game, Timing, Challenge
 
 
 @pytest.fixture
@@ -38,6 +39,7 @@ def db():
     session.query(RoomMessage).delete()
     session.query(Connection).delete()
     session.query(Room).delete()
+    session.query(DirectRoom).delete()
     session.query(User).delete()
     session.query(Automatch).delete()
     session.query(Game).delete()
@@ -54,4 +56,4 @@ class DummySocket(SocketMixin):
         self.request = HTTPServerRequest('GET', '/socket')
 
     def write_message(self, msg, *args, **kwargs):
-        self.sent_messages.append(msg)
+        self.sent_messages.append(json.loads(msg))

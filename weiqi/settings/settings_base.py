@@ -47,7 +47,6 @@ MAILER = {
 }
 
 ROOM_MESSAGES_LIMIT = 30
-DIRECT_ROOMS_LIMIT = 10
 
 RATING_PERIOD_DURATION = timedelta(days=1)
 GAME_START_DELAY = timedelta(seconds=10)

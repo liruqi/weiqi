@@ -62,10 +62,11 @@ def test_open_game_demo(db, socket):
     svc = GameService(db, socket, game.demo_owner)
     svc.execute('open_game', {'game_id': game.id})
 
-    assert len(socket.sent_messages) == 3
+    assert len(socket.sent_messages) == 4
     assert socket.sent_messages[0]['method'] == 'room_user'
-    assert socket.sent_messages[1]['method'] == 'game_data'
-    assert socket.sent_messages[2]['method'] == 'game_started'
+    assert socket.sent_messages[1]['method'] == 'room_logs'
+    assert socket.sent_messages[2]['method'] == 'game_data'
+    assert socket.sent_messages[3]['method'] == 'game_started'
 
 
 def test_close_game_demo(db, socket):
@@ -270,7 +271,8 @@ def test_timing(db, socket):
 
     svc.execute('move', {'game_id': game.id, 'move': 30})
 
-    assert abs(game.timing.black_main.total_seconds() - 16) < 2
+    # Because of slow CI runners this test cannot be exact.
+    assert abs(game.timing.black_main.total_seconds() - 16) < 3
 
 
 def test_timing_lose_on_time(db, socket):

@@ -6,6 +6,7 @@ weiqi.gs tries to be clean, simple and easy-to-use, while still providing all th
 
 Development environment
 -----------------------
+Backend is written in python3.5, frontend in [Vue.js](https://vuejs.org/):
 - `pip install -r requirements.txt`
 - `npm install`
 - [vagrant](https://www.vagrantup.com/) to run postgresql and rabbitmq

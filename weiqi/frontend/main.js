@@ -43,5 +43,6 @@ Vue.component('qi-recaptcha', require('./components/recaptcha.vue'));
 Vue.component('qi-create-demo', require('./components/create_demo.vue'));
 Vue.component('qi-upload-sgf', require('./components/upload_sgf.vue'));
 Vue.component('qi-challenge', require('./components/challenge/challenge_dialog.vue'));
+Vue.component('qi-game-type', require('./components/game/game_type.vue'));
 
 router.start(App, 'body > app');

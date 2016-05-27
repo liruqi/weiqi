@@ -25,7 +25,7 @@
                         </small>
                     </span>
 
-                    {{log.message}}
+                    {{{log.message}}}
                 </p>
             </div>
         </div>
@@ -54,6 +54,7 @@
 
 <script>
     import moment from 'moment';
+    var link_html = require('linkifyjs/html');
     import * as socket from '../../socket';
 
     export default {
@@ -71,7 +72,7 @@
                 rooms: function(state) { return state.rooms; },
                 all_logs: function(state) { return state.room_logs; },
                 room_has_update: function(state) { return state.room_has_update; }
-            },
+            }
         },
 
         computed: {
@@ -87,6 +88,8 @@
                         return this.show_only_user_ids.includes(log.user_id);
                     }.bind(this))
                 }
+
+                logs = this.linkify_logs(logs);
 
                 return logs;
             }
@@ -107,6 +110,8 @@
         },
 
         methods: {
+            moment: moment.utc,
+
             send_message() {
                 socket.send('rooms/message', {'room_id': this.room_id, 'message': this.message});
                 this.message = '';
@@ -122,7 +127,24 @@
                 }
             },
 
-            moment: moment.utc,
+            linkify_logs(logs) {
+                return logs.map(function(original) {
+                    // Clone to avoid double-linking
+                    var log = JSON.parse(JSON.stringify(original));
+
+                    log.message = jQuery('<div>').text(log.message).html();
+                    log.message = link_html(log.message, {
+                        target: function(href, type) {
+                            if(type != 'url' || /(https?:\/\/)(www\.)?weiqi\.gs/.test(href)) {
+                                return null;
+                            }
+                            return '_blank';
+                        }
+                    });
+
+                    return log;
+                });
+            }
         }
     }
 </script>

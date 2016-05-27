@@ -56,7 +56,7 @@
                         <th>{{$t('game.white')}}</th>
                         <th>{{$t('game.black')}}</th>
                         <th>{{$t('game.result')}}</th>
-                        <th>{{$t('game.ranked')}}</th>
+                        <th>{{$t('game.type')}}</th>
                         <th>{{$t('game.date')}}</th>
                         <th>&nbsp;</th>
                     </tr>
@@ -77,14 +77,7 @@
                         </template>
                         <td>{{game.result || '-'}}</td>
                         <td>
-                            <template v-if="!game.is_demo">
-                                <span v-if="game.is_ranked">
-                                    {{$t('game.ranked')}}
-                                </span>
-                                <span v-else>
-                                    {{$t('game.free')}}
-                                </span>
-                            </template>
+                            <qi-game-type :game="game"></qi-game-type>
                         </td>
                         <td>{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</td>
                         <td class="text-right">

@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi.services import BaseService, UserService, GameService, RoomService
-from weiqi.models import Game, Room, RoomUser, Connection, Automatch, Challenge
+from weiqi.models import Game, Room, RoomUser, DirectRoom, Connection, Automatch, Challenge
 from weiqi import settings
 
 
@@ -102,21 +102,21 @@ class ConnectionService(BaseService):
 
         direct = []
 
-        query = self.db.query(RoomUser).join(Room)
-        query = query.filter((Room.type == 'direct') & (RoomUser.user == self.user))
-        query = query.limit(settings.DIRECT_ROOMS_LIMIT)
+        query = self.db.query(DirectRoom).join(Room).join(RoomUser).filter(
+            ((DirectRoom.user_one == self.user) | (DirectRoom.user_two == self.user)) &
+            (RoomUser.user == self.user))
 
-        for ru in query:
-            other = self.db.query(RoomUser).filter((RoomUser.room_id == ru.room_id) &
-                                                   (RoomUser.user != self.user)).first()
+        for dr in query:
+            other = dr.other(self.user)
+
             direct.append({
-                'other_user_id': other.user_id,
-                'other_display': other.user.display,
-                'is_online': other.user.is_online,
+                'other_user_id': other.id,
+                'other_display': other.display,
+                'is_online': other.is_online,
                 'is_active': True,
-                'has_unread': ru.has_unread,
-                'room': ru.room.to_frontend(),
-                'room_logs': [m.to_frontend() for m in ru.room.recent_messages(self.db)]
+                'has_unread': dr.has_unread(self.user),
+                'room': dr.room.to_frontend(),
+                'room_logs': [m.to_frontend() for m in dr.room.recent_messages(self.db)]
             })
 
         return {'direct_rooms': direct}

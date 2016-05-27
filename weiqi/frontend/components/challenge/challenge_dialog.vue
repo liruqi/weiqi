@@ -161,6 +161,12 @@
         ready() {
             var select = jQuery('#challenge-user');
 
+            // select2 has an issue if it is placed inside a bootstrap modal
+            // see:
+            // https://github.com/select2/select2/issues/1645
+            // https://github.com/select2/select2/issues/942
+            jQuery.fn.modal.Constructor.prototype.enforceFocus = function () {};
+
             select.select2({
                 theme: 'bootstrap',
                 minimumInputLength: 2,
@@ -176,7 +182,7 @@
 
                     processResults: function(data, params) {
                         data.forEach(function(user) {
-                            user.text = this.option_text(user.id, user.display, user.rating);
+                            user.text = this.option_text(user.display, user.rating);
                         }.bind(this));
 
                         if(this.auth_user.logged_in) {
@@ -195,29 +201,21 @@
             select.on('qi:set_user', function(ev, user_id) {
                 socket.send('play/challenge_setup_suggestion', {user_id: user_id}, function(data) {
                     select.empty().append(
-                            '<option value="'+data.other_user_id+'">' +
-                            this.option_text(data.other_user_id, data.other_display, data.other_rating) +
+                            '<option value="' + data.other_user_id + '">' +
+                            this.option_text(data.other_display, data.other_rating) +
                             '</option>');
 
                     select.val(data.other_user_id);
                     select.select2('data')[0].rating = data.other_rating;
                     select.trigger('change');
 
-                    if(data.handicap === null) {
-                        this.handicap = 'auto';
-                    } else {
-                        this.handicap = ''+data.handicap;
-                    }
+                    this.setup_suggestions(data);
+                }.bind(this));
+            }.bind(this));
 
-                    if(data.owner_is_black === null) {
-                        this.black_white = 'auto';
-                    } else if(data.owner_is_black) {
-                        this.black_white = 'black';
-                    } else {
-                        this.black_white = 'white';
-                    }
-
-                    this.komi = data.komi;
+            select.change(function() {
+                socket.send('play/challenge_setup_suggestion', {user_id: select.val()}, function(data) {
+                    this.setup_suggestions(data);
                 }.bind(this));
             }.bind(this));
         },
@@ -259,8 +257,26 @@
                 return null;
             },
 
-            option_text(id, display, rating) {
-                return '#' + id + ' - ' + display + ' (' + rating_to_rank(rating) + ')';
+            option_text(display, rating) {
+                return display + ' (' + rating_to_rank(rating) + ')';
+            },
+
+            setup_suggestions(data) {
+                if(data.handicap === null) {
+                    this.handicap = 'auto';
+                } else {
+                    this.handicap = ''+data.handicap;
+                }
+
+                if(data.owner_is_black === null) {
+                    this.black_white = 'auto';
+                } else if(data.owner_is_black) {
+                    this.black_white = 'black';
+                } else {
+                    this.black_white = 'white';
+                }
+
+                this.komi = data.komi;
             },
 
             submit() {

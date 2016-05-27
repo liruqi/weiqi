@@ -2,6 +2,7 @@ export const server_messages = {
     'connection_data': make_action('MSG_CONNECTION_DATA'),
     'pong': make_action('MSG_PONG'),
     'room_message': make_action('MSG_ROOM_MESSAGE'),
+    'room_logs': make_action('MSG_ROOM_LOGS'),
     'room_user': make_action('MSG_ROOM_USER'),
     'room_user_left': make_action('MSG_ROOM_USER_LEFT'),
     'automatch_status': make_action('MSG_AUTOMATCH_STATUS'),
@@ -24,6 +25,7 @@ export const close_game = make_action('CLOSE_GAME');
 export const load_room_users = make_action('LOAD_ROOM_USERS');
 export const reload_user_avatar = make_action('RELOAD_USER_AVATAR');
 export const load_direct_room = make_action('LOAD_DIRECT_ROOM');
+export const close_direct_room = make_action('CLOSE_DIRECT_ROOM');
 export const clear_room_update = make_action('CLEAR_ROOM_UPDATE');
 export const clear_game_update = make_action('CLEAR_GAME_UPDATE');
 
