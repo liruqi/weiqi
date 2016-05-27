@@ -160,9 +160,9 @@
             <li>
                 <a href="https://gitlab.com/mibitzi/weiqi.gs" target="_blank"><i class="fa fa-gitlab"></i></a>
             </li>
-            <!--<li>
+            <li>
                 <a href="https://www.facebook.com/weiqi.gs" target="_blank"><i class="fa fa-facebook"></i></a>
-            </li>-->
+            </li>
         </ul>
 
         <p class="text-center">
