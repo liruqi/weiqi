@@ -26,7 +26,7 @@ def main():
     define_options()
     options.parse_command_line()
 
-    settings.LISTEN_PORT = options.port
+    settings.LISTEN_PORT += options.port_offset
 
     create_db()
 
@@ -42,4 +42,4 @@ def define_options():
     define("prepare_startup", type=bool, default=None,
            help="Prepare for startup instead of running the application.")
 
-    define("port", type=int, default=settings.LISTEN_PORT, help="Port to listen on")
+    define("port_offset", type=int, default=0, help="Offset to add to the port number")
