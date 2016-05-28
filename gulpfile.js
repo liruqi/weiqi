@@ -47,13 +47,25 @@ gulp.task('sass:watch', function() {
 
 gulp.task('server', function() {
     var spawn = require('child_process').spawn;
-    spawn('python', ['-m', 'tornado.autoreload', 'main.py'], {stdio: 'inherit'})
+    spawn('python', ['-m', 'tornado.autoreload', 'main.py'], {stdio: 'inherit'});
 });
 
-gulp.task('testjs', function(done) {
+gulp.task('karma', function(done) {
     new karma.Server({
         configFile: __dirname + '/karma.conf.js'
     }, done).start();
+});
+
+gulp.task('test', function(done) {
+    var spawn = require('child_process').spawn;
+    var cmd = spawn('py.test', ['-n8', 'weiqi'], {stdio: 'inherit'});
+    
+    cmd.on('close', function() {
+        new karma.Server({
+            configFile: __dirname + '/karma.conf.js',
+            singleRun: true
+        }, done).start();
+    });
 });
 
 gulp.task('fonts', function() {
@@ -61,6 +73,6 @@ gulp.task('fonts', function() {
     .pipe(gulp.dest('./static/dist/fonts'))
 });
 
-gulp.task('default', ['scripts', 'scripts:watch', 'sass', 'sass:watch', 'server', 'testjs', 'fonts']);
+gulp.task('default', ['scripts', 'scripts:watch', 'sass', 'sass:watch', 'server', 'karma', 'fonts']);
 
 gulp.task('build', ['scripts', 'sass', 'fonts']);

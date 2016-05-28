@@ -1,3 +1,4 @@
+import { assert } from 'chai';
 import Vue from 'vue';
 import { setup_test } from '../utils';
 import { create_game } from '../fixtures';
@@ -21,20 +22,6 @@ describe('game_navigation.vue', function() {
         }).$mount();
     }
 
-    it('should render correctly', function(done) {
-        var vm = get_component();
-        var comp = vm.$refs.component;
-        
-        comp.$set('expanded.n0', true);
-        comp.$set('expanded.n1', true);
-        comp.$set('expanded.n2', true);
-
-        comp.$nextTick(function() {
-            expect(vm.$el.querySelectorAll('.game-nav-node').length).toBe(3);
-            done();
-        });
-    });
-
     describe('back-to-game button', function() {
         var tests = [
             ['normal game', false, false, false, true],
@@ -53,9 +40,9 @@ describe('game_navigation.vue', function() {
 
                 comp.$nextTick(function () {
                     if(test[4]) {
-                        expect(comp.$els.back_to_game).toBeTruthy();
+                        assert.isOk(comp.$els.back_to_game);
                     } else {
-                        expect(comp.$els.back_to_game).toBeFalsy();
+                        assert.isNotOk(comp.$els.back_to_game);
                     }
                     done();
                 });

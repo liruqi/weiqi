@@ -1,3 +1,4 @@
+import { assert } from 'chai';
 import {store, mutations, default_state} from '../../vuex/store';
 
 describe('connection_data', function() {
@@ -9,8 +10,8 @@ describe('connection_data', function() {
             user_display: 'test'
         });
 
-        expect(state.auth.user.user_id).toEqual(1);
-        expect(state.auth.user.logged_in).toBeTruthy();
+        assert.equal(state.auth.user.user_id, 1);
+        assert.isOk(state.auth.user.logged_in);
     });
 
     it('should not be logged in for guests', function() {
@@ -20,7 +21,7 @@ describe('connection_data', function() {
             user_id: null
         });
 
-        expect(state.auth.user.logged_in).toBeFalsy();
+        assert.isNotOk(state.auth.user.logged_in);
     });
 });
 
@@ -36,8 +37,8 @@ describe('game_info', function() {
             white_display: 'white'
         });
         
-        expect(state.open_games[0].title).toEqual('title');
-        expect(state.open_games[0].black_display).toEqual('black');
-        expect(state.open_games[0].white_display).toEqual('white');
+        assert.equal(state.open_games[0].title, 'title');
+        assert.equal(state.open_games[0].black_display, 'black');
+        assert.equal(state.open_games[0].white_display, 'white');
     });
 });
