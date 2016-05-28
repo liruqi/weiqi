@@ -32,12 +32,12 @@
                     <div class="row">
                         <div class="col-xs-6">
                             <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'white'"
-                                            :display="game.white_display" :user_id="game.white_user_id"
+                                            :display="game.white_display || 'White'" :user_id="game.white_user_id"
                                             :rating="game.white_rating" :points="0" :main_time="white_time"></qi-game-player>
                         </div>
                         <div class="col-xs-6">
                             <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'black'"
-                                            :display="game.black_display" :user_id="game.black_user_id"
+                                            :display="game.black_display || 'Black'" :user_id="game.black_user_id"
                                             :rating="game.black_rating" :points="0" :main_time="black_time"></qi-game-player>
                         </div>
                     </div>
