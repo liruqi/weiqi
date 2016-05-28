@@ -48,16 +48,19 @@
                     <ul class="dropdown-menu col-xs-12">
                         <li>
                             <a href="#" data-toggle="modal" data-target="#qi-create-demo">
+                                <i class="fa fa-fw fa-desktop"></i>
                                 {{$t('sidebar.create_demo')}}
                             </a>
                         </li>
                         <li>
                             <a href="#" data-toggle="modal" data-target="#qi-upload-sgf">
+                                <i class="fa fa-fw fa-upload"></i>
                                 {{$t('sidebar.upload_sgf')}}
                             </a>
                         </li>
                         <li>
                             <a href="#" data-toggle="modal" data-target="#qi-challenge">
+                                <i class="fa fa-fw fa-trophy"></i>
                                 {{$t('sidebar.challenge')}}
                             </a>
                         </li>
