@@ -55,12 +55,12 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <th>{{$t('game.black')}}</th>
-                                        <td>{{game.black_display}}</td>
-                                    </tr>
-                                    <tr>
                                         <th>{{$t('game.white')}}</th>
                                         <td>{{game.white_display}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{$t('game.black')}}</th>
+                                        <td>{{game.black_display}}</td>
                                     </tr>
                                 </tbody>
                             </template>
@@ -117,13 +117,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="game-black">{{$t('game.black')}}</label>
-                            <input type="text" class="form-control" id="game-black" v-model="black">
+                            <label for="game-white">{{$t('game.white')}}</label>
+                            <input type="text" class="form-control" id="game-white" v-model="white">
                         </div>
 
                         <div class="form-group">
-                            <label for="game-white">{{$t('game.white')}}</label>
-                            <input type="text" class="form-control" id="game-white" v-model="white">
+                            <label for="game-black">{{$t('game.black')}}</label>
+                            <input type="text" class="form-control" id="game-black" v-model="black">
                         </div>
                     </div>
 
