@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="game-options">
         <div class="dropdown">
             <button class="btn btn-default btn-xs btn-block dropdown-toggle" type="button" data-toggle="dropdown">
                 {{$t('game.options')}}
