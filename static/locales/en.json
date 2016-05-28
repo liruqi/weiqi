@@ -38,7 +38,7 @@
     "back_to_game": "Back to game",
     "open": "Open",
     "download_sgf": "Download SGF",
-    "create_demo": "Create Demo"
+    "clone_demo": "Clone as Demo"
   },
 
   "demo": {

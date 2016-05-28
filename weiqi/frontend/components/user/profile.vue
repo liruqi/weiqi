@@ -94,7 +94,7 @@
                                     <li v-if="!is_self || !game.is_demo">
                                         <a href="javascript:void(0)" @click="create_demo(game.id)">
                                             <i class="fa fa-fw fa-desktop"></i>
-                                            {{$t('game.create_demo')}}
+                                            {{$t('game.clone_demo')}}
                                         </a>
                                     </li>
                                     <li>

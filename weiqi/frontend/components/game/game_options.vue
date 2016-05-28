@@ -25,7 +25,7 @@
                     <li v-if="game.demo_owner_id != user.user_id">
                         <a href="javascript:void(0)" @click="create_demo(game.id)">
                             <i class="fa fa-fw fa-desktop"></i>
-                            {{$t('game.create_demo')}}
+                            {{$t('game.clone_demo')}}
                         </a>
                     </li>
                     <li>
