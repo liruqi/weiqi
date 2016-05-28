@@ -200,6 +200,18 @@ export const mutations = {
 
         mutations.UPDATE_GAME_TIME(state, data.game_id);
     },
+    
+    MSG_GAME_INFO(state, data) {
+        var game = state.open_games.find(function(game) {
+            return game.id == data.game_id;
+        });
+
+        if(game) {
+            game.title = data.title;
+            game.black_display = data.black_display;
+            game.white_display = data.white_display;
+        }
+    },
 
     MSG_USER_STATUS(state, user) {
         if(user.id == state.auth.user.user_id) {

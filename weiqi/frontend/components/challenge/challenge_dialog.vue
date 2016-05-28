@@ -16,7 +16,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="challenge-board-size">{{$t('challenge.board_size')}}</label>
+                        <label for="challenge-board-size">{{$t('game.board_size')}}</label>
                         <select class="form-control" id="challenge-board-size" v-model="size">
                             <option :value="19">19x19</option>
                             <option :value="13">13x13</option>
@@ -25,7 +25,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="challenge-handicap">{{$t('challenge.handicap')}}</label>
+                        <label for="challenge-handicap">{{$t('game.handicap')}}</label>
                         <select class="form-control" id="challenge-handicap" v-model="handicap">
                             <option value="auto">{{$t('challenge.dialog.handicap.auto')}}</option>
                             <option value="0">{{$t('challenge.dialog.handicap.none')}}</option>
@@ -68,20 +68,20 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="challenge-komi">{{$t('challenge.komi')}}</label>
+                        <label for="challenge-komi">{{$t('game.komi')}}</label>
                         <input type="number" step="0.5" class="form-control" id="challenge-komi" v-model="komi"
                                :disabled="black_white == 'auto'">
                     </div>
 
                     <div class="form-group">
-                        <label for="challenge-timing-system">{{$t('challenge.timing')}}</label>
+                        <label for="challenge-timing-system">{{$t('game.timing')}}</label>
                         <select class="form-control" id="challenge-timing-system" v-model="timing">
                             <option value="fischer">Fischer</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="challenge-maintime">{{$t('challenge.maintime')}}</label>
+                        <label for="challenge-maintime">{{$t('game.maintime')}}</label>
                         <select class="form-control" id="challenge-maintime" v-model="maintime">
                             <option v-for="opt in maintime_options" :value="opt[0]">
                                 {{opt[1]}}
@@ -90,7 +90,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="challenge-overtime">{{$t('challenge.overtime')}}</label>
+                        <label for="challenge-overtime">{{$t('game.overtime')}}</label>
                         <select class="form-control" id="challenge-overtime" v-model="overtime">
                             <option v-for="opt in fischer_options" :value="opt[0]">
                                 {{opt[1]}}

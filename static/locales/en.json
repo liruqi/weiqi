@@ -1,15 +1,28 @@
 {
   "general": {
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close"
   },
 
   "game": {
     "black": "Black",
     "white": "White",
+    "board_size": "Board size",
+    "handicap": "Handicap",
+    "komi": "Komi",
+    "timing": "Timing system",
+    "maintime": "Main time",
+    "overtime": "Overtime",
     "result": "Result",
     "size": "Size",
     "date": "Date",
+    "title": "Title",
+    "options": "Options",
+    "info": "Info",
+    "edit_info": "Edit Info",
     "observers": "Observers",
     "started": "Started",
     "type": "Type",
@@ -25,7 +38,7 @@
     "back_to_game": "Back to game",
     "open": "Open",
     "download_sgf": "Download SGF",
-    "create_demo": "Create Demo",
+    "create_demo": "Create Demo"
   },
 
   "demo": {
@@ -293,12 +306,6 @@
 
   "challenge": {
     "opponent": "Opponent",
-    "board_size": "Board size",
-    "handicap": "Handicap",
-    "komi": "Komi",
-    "timing": "Timing system",
-    "maintime": "Main time",
-    "overtime": "Overtime",
 
     "dialog": {
       "header": "Challenge",

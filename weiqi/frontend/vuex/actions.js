@@ -1,3 +1,5 @@
+import * as socket from '../socket';
+
 export const server_messages = {
     'connection_data': make_action('MSG_CONNECTION_DATA'),
     'pong': make_action('MSG_PONG'),
@@ -10,6 +12,7 @@ export const server_messages = {
     'game_finished': make_action('MSG_GAME_FINISHED'),
     'game_data': make_action('MSG_GAME_DATA'),
     'game_update': make_action('MSG_GAME_UPDATE'),
+    'game_info': make_action('MSG_GAME_INFO'),
     'user_status': make_action('MSG_USER_STATUS'),
     'load_direct_room': make_action('MSG_LOAD_DIRECT_ROOM'),
     'direct_message': make_action('MSG_DIRECT_MESSAGE'),
@@ -31,4 +34,10 @@ export const clear_game_update = make_action('CLEAR_GAME_UPDATE');
 
 function make_action(type) {
     return ({dispatch}, ...args) => dispatch(type, ...args);
+}
+
+export function create_demo({dispatch, state}, game_id) {
+    socket.send('play/create_demo_from_game', {'game_id': game_id}, function(demo_id) {
+        state.route.router.go({name: 'game', params: {game_id: demo_id}});
+    });
 }

@@ -72,11 +72,13 @@ class GameService(BaseService):
     def subscribe(self, game_id):
         self.socket.subscribe('game_data/'+str(game_id))
         self.socket.subscribe('game_update/'+str(game_id))
+        self.socket.subscribe('game_info/'+str(game_id))
         self.socket.subscribe('demo_current_node_id/'+str(game_id))
 
     def unsubscribe(self, game_id):
         self.socket.unsubscribe('game_data/'+str(game_id))
         self.socket.unsubscribe('game_update/'+str(game_id))
+        self.socket.unsubscribe('game_info/'+str(game_id))
         self.socket.unsubscribe('demo_current_node_id/'+str(game_id))
 
     def publish_demos(self):
@@ -312,6 +314,21 @@ class GameService(BaseService):
 
         game.apply_board_change()
         self._publish_game_update(game)
+
+    @BaseService.authenticated
+    @BaseService.register
+    def edit_info(self, game_id, title, black_display, white_display):
+        game = self.db.query(Game).filter_by(id=game_id, is_demo=True, demo_owner_id=self.user.id).one()
+        game.title = title
+        game.black_display = black_display
+        game.white_display = white_display
+
+        self.socket.publish('game_info/'+str(game.id), {
+            'game_id': game.id,
+            'title': game.title,
+            'black_display': game.black_display,
+            'white_display': game.white_display
+        })
 
     @classmethod
     @gen.coroutine

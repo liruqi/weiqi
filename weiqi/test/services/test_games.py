@@ -32,6 +32,7 @@ def test_open(db, socket):
 
     assert socket.is_subscribed('game_data/'+str(game.id))
     assert socket.is_subscribed('game_update/'+str(game.id))
+    assert socket.is_subscribed('game_info/'+str(game.id))
     assert socket.is_subscribed('demo_current_node_id/'+str(game.id))
 
     assert socket.is_subscribed('room_message/'+str(game.room_id))
@@ -48,6 +49,7 @@ def test_close(db, socket):
 
     assert not socket.is_subscribed('game_data/'+str(game.id))
     assert not socket.is_subscribed('game_update/'+str(game.id))
+    assert not socket.is_subscribed('game_info/'+str(game.id))
     assert not socket.is_subscribed('demo_current_node_id/'+str(game.id))
 
     assert not socket.is_subscribed('room_message/'+str(game.room_id))
@@ -362,6 +364,32 @@ def test_demo_tool_triangle(db, socket):
     svc.execute('demo_tool_triangle', {'game_id': game.id, 'coord': 180})
 
     assert game.board.current_node.symbols['180'] == SYMBOL_TRIANGLE
+
+
+def test_edit_info(db, socket):
+    game = DemoGameFactory()
+    socket.subscribe('game_info/'+str(game.id))
+    svc = GameService(db, socket, game.demo_owner)
+    svc.execute('edit_info', {'game_id': game.id,
+                              'title': 'new title',
+                              'black_display': 'new black',
+                              'white_display': 'new white'})
+
+    assert game.title == 'new title'
+    assert game.black_display == 'new black'
+    assert game.white_display == 'new white'
+
+    assert len(socket.sent_messages) == 1
+    assert socket.sent_messages[0]['method'] == 'game_info'
+    assert socket.sent_messages[0]['data']['game_id'] == game.id
+
+
+def test_edit_info_not_owner(db, socket):
+    pass
+
+
+def test_edit_info_not_demo(db, socket):
+    pass
 
 
 def test_check_due_moves(db, socket):

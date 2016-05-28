@@ -60,6 +60,7 @@
                         </button>
                     </template>
 
+                    <qi-game-options :game="game" :is_player="is_player" :has_control="has_control"></qi-game-options>
                     <qi-game-navigation :game="game" :is_player="is_player" :has_control="has_control" :force_node_id.sync="force_node_id"></qi-game-navigation>
                 </div>
             </div>
@@ -85,6 +86,7 @@
 
         components: {
             'qi-game-player': require('./game_player.vue'),
+            'qi-game-options': require('./game_options.vue'),
             'qi-game-navigation': require('./game_navigation.vue')
         },
 

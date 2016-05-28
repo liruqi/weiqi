@@ -43,27 +43,27 @@
                 </td>
             </tr>
             <tr>
-                <th>{{$t('challenge.board_size')}}</th>
+                <th>{{$t('game.board_size')}}</th>
                 <td>{{challenge.board_size}}x{{challenge.board_size}}</td>
             </tr>
             <tr>
-                <th>{{$t('challenge.handicap')}}</th>
+                <th>{{$t('game.handicap')}}</th>
                 <td>{{challenge.handicap}}</td>
             </tr>
             <tr>
-                <th>{{$t('challenge.komi')}}</th>
+                <th>{{$t('game.komi')}}</th>
                 <td>{{challenge.komi}}</td>
             </tr>
             <tr>
-                <th>{{$t('challenge.timing')}}</th>
+                <th>{{$t('game.timing')}}</th>
                 <td>{{challenge.timing_system}}</td>
             </tr>
             <tr>
-                <th>{{$t('challenge.maintime')}}</th>
+                <th>{{$t('game.maintime')}}</th>
                 <td>{{format_duration(challenge.maintime)}}</td>
             </tr>
             <tr>
-                <th>{{$t('challenge.overtime')}}</th>
+                <th>{{$t('game.overtime')}}</th>
                 <td>{{format_duration(challenge.overtime)}}</td>
             </tr>
             <tr>

@@ -8,7 +8,8 @@
 
                 <div class="modal-body">
                     <div class="form-group">
-                        <input type="text" class="form-control" :placeholder="$t('create_demo.title')" v-model="title">
+                        <label for="demo-title">{{$t('game.title')}}</label>
+                        <input type="text" id="demo-title" class="form-control" :placeholder="$t('create_demo.title')" v-model="title">
                     </div>
 
                     <div class="form-group">

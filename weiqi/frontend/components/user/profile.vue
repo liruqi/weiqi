@@ -115,6 +115,7 @@
 
 <script>
     import moment from 'moment';
+    import { create_demo } from '../../vuex/actions';
     import * as socket from '../../socket';
 
     export default {
@@ -132,6 +133,10 @@
                 auth_user: function (state) {
                     return state.auth.user
                 }
+            },
+
+            actions: {
+                create_demo
             }
         },
 
@@ -164,13 +169,7 @@
         },
 
         methods: {
-            'moment': moment.utc,
-
-            create_demo(game_id) {
-                socket.send('play/create_demo_from_game', {'game_id': game_id}, function(demo_id) {
-                    this.$route.router.go({name: 'game', params: {game_id: demo_id}});
-                }.bind(this));
-            }
+            'moment': moment.utc
         }
     }
 </script>

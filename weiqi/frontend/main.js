@@ -10,6 +10,7 @@ import configValidator from './validator';
 window.jQuery = require('jquery');
 require('bootstrap-sass');
 require('select2');
+require('babel-polyfill');
 
 const App = Vue.extend(require('./app.vue'));
 

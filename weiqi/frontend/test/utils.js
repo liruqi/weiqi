@@ -8,6 +8,7 @@ export function setup_test() {
     });
     
     window.jQuery = require('jquery');
+    require('babel-polyfill');
 }
 
 export function trigger(target, event, process) {
