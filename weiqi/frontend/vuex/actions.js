@@ -17,23 +17,67 @@ export const server_messages = {
     'load_direct_room': make_action('MSG_LOAD_DIRECT_ROOM'),
     'direct_message': make_action('MSG_DIRECT_MESSAGE'),
     'demo_current_node_id': make_action('MSG_DEMO_CURRENT_NODE_ID'),
-    'challenges': make_action('MSG_CHALLENGES'),
+    'challenges': make_action('MSG_CHALLENGES')
 };
 
 export const update_route = make_action('UPDATE_ROUTE');
 export const toggle_sidebar = make_action('TOGGLE_SIDEBAR');
 export const update_game_time = make_action('UPDATE_GAME_TIME');
-export const open_game = make_action('OPEN_GAME');
-export const close_game = make_action('CLOSE_GAME');
-export const load_room_users = make_action('LOAD_ROOM_USERS');
 export const reload_user_avatar = make_action('RELOAD_USER_AVATAR');
-export const load_direct_room = make_action('LOAD_DIRECT_ROOM');
-export const close_direct_room = make_action('CLOSE_DIRECT_ROOM');
-export const clear_room_update = make_action('CLEAR_ROOM_UPDATE');
 export const clear_game_update = make_action('CLEAR_GAME_UPDATE');
 
 function make_action(type) {
     return ({dispatch}, ...args) => dispatch(type, ...args);
+}
+
+export function open_game({dispatch, state}, game_id) {
+    var game = state.open_games.find(function(game) {
+        return game.id == game_id;
+    });
+
+    if(game && game.board) {
+        return;
+    }
+
+    socket.send('games/open_game', {'game_id': game_id});
+}
+
+export function close_game({dispatch, state}, game_id) {
+    socket.send('games/close_game', {'game_id': game_id});
+    dispatch('CLOSE_GAME', game_id);
+}
+
+export function load_room_users({dispatch, state}, room_id) {
+    if(!room_id || !!state.room_users[room_id]) {
+        return;
+    }
+
+    socket.send('rooms/users', {'room_id': room_id}, function(data) {
+        dispatch('ROOM_USERS', room_id, data.users);
+    });
+}
+
+export function load_direct_room({dispatch, state}, user_id) {
+    socket.send('rooms/open_direct', {'user_id': user_id}, function(data) {
+        dispatch('MSG_LOAD_DIRECT_ROOM', data);
+    });
+}
+
+export function close_direct_room({dispatch, state}, user_id) {
+    socket.send('rooms/close_direct', {'user_id': user_id});
+    dispatch('CLOSE_DIRECT_ROOM', user_id);
+}
+
+export function clear_room_update({dispatch, state}, room_id) {
+    var is_direct = Object.keys(state.direct_rooms).find(function(user_id) {
+        return state.direct_rooms[user_id].room_id == room_id;
+    });
+
+    if(is_direct) {
+        socket.send('rooms/mark_read', {'room_id': room_id});
+    }
+    
+    dispatch('CLEAR_ROOM_UPDATE', room_id);
 }
 
 export function create_demo({dispatch, state}, game_id) {

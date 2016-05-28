@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import moment from 'moment';
-import * as socket from '../socket';
 
 Vue.use(Vuex);
 
@@ -299,21 +298,7 @@ export const mutations = {
         game.timing.timing_updated_at = moment.utc();
     },
 
-    OPEN_GAME(state, game_id) {
-        var game = state.open_games.find(function(game) {
-            return game.id == game_id;
-        });
-
-        if(game && game.board) {
-            return;
-        }
-
-        socket.send('games/open_game', {'game_id': game_id});
-    },
-
     CLOSE_GAME(state, game_id) {
-        socket.send('games/close_game', {'game_id': game_id});
-
         var game = state.open_games.find(function(game) {
             return game.id == game_id;
         });
@@ -334,29 +319,15 @@ export const mutations = {
         }
     },
     
-    LOAD_ROOM_USERS(state, room_id) {
-        if(!room_id || !!state.room_users[room_id]) {
-            return;
-        }
-
-        socket.send('rooms/users', {'room_id': room_id}, function(data) {
-            Vue.set(state.room_users, room_id, data.users);
-        });
+    ROOM_USERS(state, room_id, users) {
+        Vue.set(state.room_users, room_id, users);
     },
     
     RELOAD_USER_AVATAR(state) {
         state.auth.user.avatar_url = '/api/users/' + state.auth.user.user_id + '/avatar?' + (new Date()).getTime();
     },
     
-    LOAD_DIRECT_ROOM(state, user_id) {
-        socket.send('rooms/open_direct', {'user_id': user_id}, function(data) {
-            mutations.MSG_LOAD_DIRECT_ROOM(state, data);
-        });
-    },
-
     CLOSE_DIRECT_ROOM(state, user_id) {
-        socket.send('rooms/close_direct', {'user_id': user_id});
-
         var room = state.direct_rooms[user_id];
         if(!room) {
             return;
@@ -381,14 +352,6 @@ export const mutations = {
     
     CLEAR_ROOM_UPDATE(state, room_id) {
         Vue.set(state.room_has_update, room_id, false);
-
-        var is_direct = Object.keys(state.direct_rooms).find(function(user_id) {
-            return state.direct_rooms[user_id].room_id == room_id;
-        });
-
-        if(is_direct) {
-            socket.send('rooms/mark_read', {'room_id': room_id});
-        }
     },
     
     CLEAR_GAME_UPDATE(state, game_id) {
