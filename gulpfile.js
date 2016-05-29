@@ -12,14 +12,15 @@ var karma = require('karma');
 
 var config = {
     prod: !!util.env.production,
-    js_pattern: './weiqi/frontend/**/*.js',
-    scss_pattern: './weiqi/frontend/css/**/*.scss',
-    vue_pattern: './weiqi/frontend/**/*.vue'
+    js_main: './frontend/main.js',
+    js_pattern: './frontend/**/*.js',
+    scss_pattern: './frontend/css/**/*.scss',
+    vue_pattern: './frontend/**/*.vue'
 };
 
 gulp.task('scripts', function() {
     var task = browserify({
-        entries: './weiqi/frontend/main.js',
+        entries: config.js_main,
         debug: !config.prod
     })
         .transform('babelify', {presets: ['es2015']})

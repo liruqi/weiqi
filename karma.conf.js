@@ -5,11 +5,11 @@ module.exports = function(config) {
         frameworks: ['browserify', 'mocha'],
 
         files: [
-            'weiqi/frontend/**/*_test.js'
+            'frontend/**/*_test.js'
         ],
 
         preprocessors: {
-            'weiqi/frontend/**/*_test.js': ['browserify']
+            'frontend/**/*_test.js': ['browserify']
         },
 
         browserify: {
