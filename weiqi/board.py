@@ -106,7 +106,21 @@ class Node:
         self.symbols = {}
 
     def to_dict(self):
-        return self.__dict__
+        data = {
+            'id': self.id,
+            'parent_id': self.parent_id,
+            'children': self.children,
+            'action': self.action,
+            'move': self.move,
+        }
+
+        skip_empty = ['edits', 'captures', 'marked_dead', 'score_points', 'labels', 'symbols']
+        for field in skip_empty:
+            val = getattr(self, field)
+            if val:
+                data[field] = val
+
+        return data
 
     def toggle_symbol(self, coord, symbol):
         coord = str(coord)
