@@ -1,18 +1,16 @@
 image: python:3.5
 
-before_script:
-  - wget https://github.com/spf13/hugo/releases/download/v0.15/hugo_0.15_amd64.deb
-  - dpkg -i hugo*.deb
-  - pip install --upgrade -r requirements.txt
-
 pytest:
   script:
+    - pip install --upgrade -r requirements.txt
     - py.test --cov=weiqi --tb=native weiqi
 
 blog:
   only:
     - master
   script:
+    - wget https://github.com/spf13/hugo/releases/download/v0.15/hugo_0.15_amd64.deb
+    - dpkg -i hugo*.deb
     - cd blog && hugo && mv public ../public
   artifacts:
     paths:
