@@ -161,6 +161,9 @@
 
         <ul class="list-inline list-unstyled text-center">
             <li>
+                <a href="http://blog.weiqi.gs" target="_blank"><i class="fa fa-rss"></i></a>
+            </li>
+            <li>
                 <a href="https://gitlab.com/mibitzi/weiqi.gs" target="_blank"><i class="fa fa-gitlab"></i></a>
             </li>
             <li>
