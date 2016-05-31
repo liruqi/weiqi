@@ -2,7 +2,7 @@ baseurl = "http://blog.weiqi.gs/"
 languageCode = "en-us"
 title = "Development Blog"
 theme = "beautifulhugo"
-googleAnalytics = "UA-38646886-8"
+googleAnalytics = "UA-38646886-9"
 disqusShortname = "weiqigs"
 
 [Params]
