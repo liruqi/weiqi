@@ -1,4 +1,4 @@
-baseurl = "https://blog.weiqi.gs"
+baseurl = "https://blog.weiqi.gs/"
 languageCode = "en-us"
 title = "Development Blog"
 theme = "beautifulhugo"
