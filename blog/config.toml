@@ -1,0 +1,23 @@
+baseurl = "https://blog.weiqi.gs"
+languageCode = "en-us"
+title = "Development Blog"
+theme = "beautifulhugo"
+googleAnalytics = "UA-38646886-8"
+#disqusShortname = "XXX"
+
+[Params]
+    subtitle = "About the current development of weiqi.gs"
+    logo = "/logo.png"
+
+[Author]
+    name = "Michael Bitzi"
+    facebook = "https://facebook.com/weiqi.gs"
+    gitlab = "mibitzi/weiqi.gs"
+
+[[menu.main]]
+    name = "weiqi.gs"
+    url = "https://weiqi.gs"
+    weight = 1
+
+[permalinks]
+    post = "/:year/:month/:slug/"
