@@ -11,7 +11,7 @@ googleAnalytics = "UA-38646886-8"
 
 [Author]
     name = "Michael Bitzi"
-    facebook = "https://facebook.com/weiqi.gs"
+    facebook = "weiqi.gs"
     gitlab = "mibitzi/weiqi.gs"
 
 [[menu.main]]
