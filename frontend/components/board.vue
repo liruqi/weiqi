@@ -374,9 +374,11 @@
                         break;
 
                     case 'E':
-                        Object.keys(node.edits).forEach(function(key) {
-                            pos[+key] = colors[node.edits[key]];
-                        });
+                        if(node.edits) {
+                            Object.keys(node.edits).forEach(function (key) {
+                                pos[+key] = colors[node.edits[key]];
+                            });
+                        }
                         break;
                 }
 

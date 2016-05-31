@@ -32,6 +32,7 @@
     "resign": "Resign",
     "confirm_resign": "Really resign?",
     "pass": "Pass",
+    "resume_from_counting": "Resume",
     "confirm_pass": "Are you sure you want to pass?<br>Note that you must fill all neutral points (Chinese Ruleset).",
     "confirm_score": "Confirm Score",
     "will_start_in": "Game will start in ...",

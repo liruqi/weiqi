@@ -110,6 +110,29 @@ class GameService(BaseService):
             if game.is_demo or game.stage != 'finished':
                 self._publish_game_update(game)
 
+    @BaseService.authenticated
+    @BaseService.register
+    def resume_from_counting(self, game_id):
+        with self._game_for_update(game_id) as game:
+            if self.user not in [game.black_user, game.white_user]:
+                raise InvalidPlayerError()
+
+            if game.stage != 'counting':
+                raise ServiceError('game is not in counting stage')
+
+            game.stage = 'playing'
+
+            # In order to reset board changes (such as for point marks) we insert an empty edit node.
+            # This also has the effect that the pass-counter is reset.
+            game.board.add_edits([], [], [])
+            game.apply_board_change()
+
+            # To prevent loss of time we need to reset the last update time.
+            game.timing.timing_updated_at = datetime.utcnow()
+
+            self.db.commit()
+            self._publish_game_update(game)
+
     @contextmanager
     def _game_for_update(self, game_id):
         with transaction(self.db):
