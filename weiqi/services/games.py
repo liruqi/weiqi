@@ -118,7 +118,7 @@ class GameService(BaseService):
                 raise InvalidPlayerError()
 
             if game.stage != 'counting':
-                raise ServiceError('game is not in counting stage')
+                raise InvalidStageError()
 
             game.stage = 'playing'
 
