@@ -17,9 +17,10 @@
 from tornado.options import define, options
 from tornado.autoreload import add_reload_hook
 from weiqi import settings
-from weiqi.db import create_db
+from weiqi.db import create_db, session
 from weiqi.prepare_startup import prepare_startup
 from weiqi.application import run_app
+from weiqi.models import Room, RoomUser, User
 
 
 def main():
@@ -32,6 +33,8 @@ def main():
 
     if options.prepare_startup:
         prepare_startup()
+    elif options.create_room:
+        create_room(options.create_room)
     else:
         if settings.DEBUG:
             add_reload_hook(prepare_startup)
@@ -41,5 +44,19 @@ def main():
 def define_options():
     define("prepare_startup", type=bool, default=None,
            help="Prepare for startup instead of running the application.")
+    define("create_room", type=str, default=None,
+           help="Create a new default chat room")
 
     define("port_offset", type=int, default=0, help="Offset to add to the port number")
+
+
+def create_room(name):
+    with session() as db:
+        room = Room(type='main',
+                    is_default=True,
+                    name=name)
+        db.add(room)
+
+        for user_id in db.query(User.id):
+            ru = RoomUser(room=room, user_id=user_id)
+            db.add(ru)
