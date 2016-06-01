@@ -27,6 +27,8 @@ $ vagrant up
 $ ./gulp.sh
 ```
 
+After this the server will listen on http://localhost:8000 by default.
+
 Rooms
 -----
 Initially the database will be empty, meaning that there are no rooms. To create a new default chat room:
