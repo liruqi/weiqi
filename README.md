@@ -16,9 +16,22 @@ Besides the dependencies in `requirements.txt` and `package.json` you may also n
 $ sudo apt-get install python3-dev libpq-dev libffi-dev libjpeg-dev
 ```
 
+Before you can run the development server you will need to migrate the database. This step also needs to be run every time new DB migrations are created:
+```bash
+$ alembic upgrade head
+```
+
 To run the development server:
 ```bash
+$ vagrant up
 $ ./gulp.sh
+```
+
+Rooms
+-----
+Initially the database will be empty, meaning that there are no rooms. To create a new default chat room:
+```bash
+$ ./main.py --create-room='Main Room'
 ```
 
 Tests
