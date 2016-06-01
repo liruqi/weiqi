@@ -193,3 +193,17 @@ def test_users_max(db, socket):
     svc = RoomService(db, socket, UserFactory(is_online=False))
     svc.join_room(room.id)
     assert room.users_max == 2
+
+
+def test_create_default_room(db):
+    user = UserFactory()
+
+    svc = RoomService(db)
+    svc.create_default_room('test room')
+
+    assert db.query(Room).count() == 1
+
+    room = db.query(Room).first()
+    assert room.name == 'test room'
+    assert room.is_default
+    assert db.query(RoomUser).filter_by(user=user, room=room).count() == 1

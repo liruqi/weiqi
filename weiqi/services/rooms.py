@@ -183,5 +183,5 @@ class RoomService(BaseService):
         self.db.add(room)
 
         for user_id in self.db.query(User.id):
-            ru = RoomUser(room=room, user_id=user_id)
+            ru = RoomUser(room_id=room.id, user_id=user_id[0])
             self.db.add(ru)
