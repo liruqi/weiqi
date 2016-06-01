@@ -174,3 +174,14 @@ class RoomService(BaseService):
                 self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
             else:
                 self.socket.publish('room_user_left/'+str(ru.room_id), ru.to_frontend())
+
+    def create_default_room(self, name):
+        """Creates a new default room and adds all users to that room."""
+        room = Room(type='main',
+                    is_default=True,
+                    name=name)
+        self.db.add(room)
+
+        for user_id in self.db.query(User.id):
+            ru = RoomUser(room=room, user_id=user_id)
+            self.db.add(ru)
