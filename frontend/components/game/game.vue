@@ -42,13 +42,17 @@
                         </div>
                     </div>
 
-                    <p class="text-center" v-if="game.result">
+                    <p class="text-center" v-if="game.stage!='playing' && game.result">
                         {{game.result}}
                     </p>
 
                     <template v-if="is_player && has_started">
                         <button class="btn btn-default btn-block" v-if="game.stage=='playing'" @click="pass()">
                             {{$t('game.pass')}}
+                        </button>
+
+                        <button class="btn btn-default btn-block" v-if="game.stage=='counting'" @click="resume_from_counting()">
+                            {{$t('game.resume_from_counting')}}
                         </button>
 
                         <button class="btn btn-default btn-block" v-if="game.stage=='counting'" @click="confirm_score()">
@@ -325,6 +329,10 @@
                         }
                     }.bind(this)
                 });
+            },
+
+            resume_from_counting() {
+                socket.send('games/resume_from_counting', {'game_id': this.game_id});
             },
 
             confirm_score() {

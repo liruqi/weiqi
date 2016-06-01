@@ -179,6 +179,51 @@ def test_stages_playing_counting(db, socket):
     assert game.stage == 'counting'
 
 
+def test_resume_from_counting(db, socket):
+    game = GameFactory(stage='counting')
+    game.board.play(PASS)
+    game.board.play(PASS)
+    game.apply_board_change()
+
+    socket.subscribe('game_update/'+str(game.id))
+    svc = GameService(db, socket, game.black_user)
+
+    svc.execute('resume_from_counting', {'game_id': game.id})
+
+    assert game.stage == 'playing'
+    assert not game.board.both_passed
+    assert len(socket.sent_messages) == 1
+    assert socket.sent_messages[0]['method'] == 'game_update'
+
+
+def test_resume_from_counting_time(db, socket):
+    game = GameFactory(stage='counting')
+    svc = GameService(db, socket, game.black_user)
+
+    game.timing.timing_updated_at = datetime.utcnow() - timedelta(minutes=10)
+    svc.execute('resume_from_counting', {'game_id': game.id})
+
+    assert (game.timing.timing_updated_at - datetime.utcnow()).total_seconds() < 3
+
+
+def test_resume_counting_other(db, socket):
+    game = GameFactory(stage='counting')
+    svc = GameService(db, socket, game.white_user)
+    svc.execute('resume_from_counting', {'game_id': game.id})
+    assert game.stage == 'playing'
+
+
+def test_resume_counting_invalid_player(db, socket):
+    user = UserFactory()
+    game = GameFactory(stage='counting')
+    svc = GameService(db, socket, user)
+
+    with pytest.raises(InvalidPlayerError):
+        svc.execute('resume_from_counting', {'game_id': game.id})
+
+    assert game.stage == 'counting'
+
+
 def test_toggle_marked_dead(db, socket):
     game = GameFactory(stage='counting')
     svc = GameService(db, socket, game.black_user)
