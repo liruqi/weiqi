@@ -48,7 +48,7 @@ def upgrade():
     sa.ForeignKeyConstraint(['white_user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.add_column('automatch', sa.Column('user_rating', sa.Float(), nullable=False))
+    op.add_column('automatch', sa.Column('user_rating', sa.Float(), nullable=False, server_default='0'))
     ### end Alembic commands ###
 
 

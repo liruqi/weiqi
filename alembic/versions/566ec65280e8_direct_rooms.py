@@ -79,8 +79,9 @@ def upgrade():
 
     session.commit()
 
-    op.drop_column('room_users', 'updated_at')
-    op.drop_column('room_users', 'has_unread')
+    with op.batch_alter_table('room_users') as batch_op:
+        batch_op.drop_column('updated_at')
+        batch_op.drop_column('has_unread')
 
 
 def downgrade():
