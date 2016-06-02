@@ -342,14 +342,6 @@ export const mutations = {
         }
     },
     
-    MSG_DIRECT_MESSAGE(state, data) {
-        if(data.user_id == state.auth.user.user_id || state.direct_rooms[data.user_id]) {
-            mutations.MSG_ROOM_MESSAGE(state, data);
-        } else {
-            mutations.LOAD_DIRECT_ROOM(state, data.user_id);
-        }
-    },
-    
     CLEAR_ROOM_UPDATE(state, room_id) {
         Vue.set(state.room_has_update, room_id, false);
     },
