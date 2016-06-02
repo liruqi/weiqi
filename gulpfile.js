@@ -59,7 +59,7 @@ gulp.task('karma', function(done) {
 
 gulp.task('test', function(done) {
     var spawn = require('child_process').spawn;
-    var cmd = spawn('py.test', ['-n8', 'weiqi'], {stdio: 'inherit'});
+    var cmd = spawn('py.test', ['-n8', '--benchmark-skip', 'weiqi'], {stdio: 'inherit'});
     
     cmd.on('close', function() {
         new karma.Server({
