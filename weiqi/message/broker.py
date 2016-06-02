@@ -16,9 +16,11 @@
 
 from pika import adapters
 import pika
+from weiqi import settings
 
 
 class Ampq:
+    """Implements a client for the Advanced Message Queuing Protocol (AMPQ) which can be used to connect to RabbitMQ."""
     EXCHANGE = 'weiqi'
     EXCHANGE_TYPE = 'fanout'
 
@@ -99,8 +101,16 @@ class Ampq:
 
 
 class DummyBroker:
+    """Implements a dummy message broker client.
+
+    This implementation simply broadcasts all messages to all handlers and works only within the same process.
+    This can be used for tests and/or for development.
+    """
     def __init__(self):
         self._handler = set()
+
+    def run(self):
+        pass
 
     def add_handler(self, handler):
         self._handler.add(handler)
@@ -111,3 +121,11 @@ class DummyBroker:
     def send_message(self, message):
         for handler in self._handler:
             handler(message)
+
+
+def create_message_broker():
+    """Creates a new message broker instance based on the `weiqi.settings.MESSAGE_BROKER` setting."""
+    if settings.MESSAGE_BROKER == 'ampq':
+        return Ampq(settings.AMPQ_URL)
+    else:
+        return DummyBroker()

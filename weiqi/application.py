@@ -21,13 +21,13 @@ import tornado.httpserver
 from weiqi import settings
 from weiqi.handler import auth, socket, index, metrics
 from weiqi.message.pubsub import PubSub
-from weiqi.message.broker import Ampq
+from weiqi.message.broker import create_message_broker
 from weiqi.services import GameService, PlayService
 
 
 class Application(tornado.web.Application):
     def __init__(self):
-        self.broker = Ampq(settings.AMPQ_URL)
+        self.broker = create_message_broker()
         self.pubsub = PubSub(self.broker)
 
         def handler(route, cls):

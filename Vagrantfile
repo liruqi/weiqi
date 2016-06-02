@@ -1,5 +1,9 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+#
+# NOTE:
+# Vagrant is not required to run the weiqi.gs development environment.
+# It only serves to test the PostgreSQL and RabbitMQ backends.
 
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"

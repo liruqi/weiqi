@@ -28,8 +28,15 @@ TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
 STATIC_PATH = os.path.join(BASE_DIR, 'static')
 
 LISTEN_PORT = 8000
-DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
-AMPQ_URL = 'amqp://guest:guest@127.0.0.1:5672/'
+
+# Use this URL if you want to use vagrant and PostgreSQL
+# DB_URL = 'postgresql://weiqi:6ff6zzHxLmuLMpyuRyMC@localhost/weiqi'
+DB_URL = 'sqlite:///weiqi.db'
+
+# Set the message broker to 'ampq' if you want to use vagrant and RabbitMQ
+# MESSAGE_BROKER = 'ampq'
+# AMPQ_URL = 'amqp://guest:guest@127.0.0.1:5672/'
+MESSAGE_BROKER = 'dummy'
 
 RECAPTCHA = {
     'backend': 'dummy',
