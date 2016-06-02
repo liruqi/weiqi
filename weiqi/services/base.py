@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from tornado.web import HTTPError
-from weiqi.db import Session
 
 
 class ServiceError(Exception):
@@ -26,13 +25,7 @@ class BaseService:
     _methods = {}
 
     def __init__(self, db=None, socket=None, user=None):
-        if db is None:
-            self.db = Session()
-            self._close_session = True
-        else:
-            self.db = db
-            self._close_session = False
-
+        self.db = db
         self.socket = socket
         self.user = user
 
@@ -54,7 +47,3 @@ class BaseService:
             raise ServiceError('invalid method "{}"'.format(method))
 
         return self._methods[method](self, **(data or {}))
-
-    def close(self):
-        if self._close_session:
-            self.db.close()
