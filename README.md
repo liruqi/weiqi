@@ -9,7 +9,6 @@ Development environment
 Backend is written in python3.5, frontend in [Vue.js](https://vuejs.org/):
 - `pip install -r requirements.txt`
 - `npm install`
-- `vagrant up` - [vagrant](https://www.vagrantup.com/) to run postgresql and rabbitmq
 
 Besides the dependencies in `requirements.txt` and `package.json` you may also need to install some additional libraries first:
 ```bash
