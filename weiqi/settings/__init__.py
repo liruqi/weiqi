@@ -18,6 +18,11 @@ import os
 
 from .settings_base import *
 
+try:
+    from .settings_local import *
+except ImportError:
+    pass
+
 
 if 'WEIQI_SETTINGS' in os.environ:
     import importlib.util
