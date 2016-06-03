@@ -52,6 +52,7 @@ class AvatarHandler(BaseHandler):
             avatar = generate_identicon(data.encode()).getvalue()
 
         self.set_header('Content-Type', 'image/png')
+        self.set_header('Cache-control', 'max-age=' + str(3600*24))
         self.write(avatar)
 
 
