@@ -4,3 +4,8 @@
 		margin-bottom: 0;
 	}
 }
+
+.room-users .dropdown {
+	// Fix issues with dropdowns getting clipped by the panel
+	position: absolute;
+}
