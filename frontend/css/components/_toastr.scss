@@ -1,0 +1,7 @@
+#toast-container.toast-top-center {
+  top: $navbar-height + 10px;
+
+  > .toast + .toast {
+    margin-top: 5px;
+  }
+}

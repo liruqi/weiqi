@@ -29,6 +29,7 @@
 </template>
 
 <script>
+    import toastr from 'toastr';
     import * as socket from '../../socket';
 
     export default {
@@ -56,6 +57,8 @@
                     this.$nextTick(function() {
                         this.$resetValidation();
                     });
+
+                    toastr.success(this.$t('settings.password.saved'), this.$t('general.success'));
                 }.bind(this));
             }
         }

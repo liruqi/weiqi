@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueResource from 'vue-resource';
 import bootbox from 'bootbox';
+import toastr from 'toastr';
 import configRouter from './router';
 import configLocale from './locale';
 import configWebsocket from './socket';
@@ -27,6 +28,9 @@ const router = configRouter();
 bootbox.setDefaults({
     size: 'small'
 });
+
+toastr.options.newestOnTop = true;
+toastr.options.positionClass = 'toast-top-center';
 
 Vue.component('qi-header', require('./components/header.vue'));
 Vue.component('qi-sidebar', require('./components/sidebar.vue'));

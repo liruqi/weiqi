@@ -4,6 +4,7 @@
 @import "../../node_modules/cropper/dist/cropper";
 @import "../../node_modules/select2/dist/css/select2.min";
 @import "../../node_modules/select2-bootstrap-theme/src/select2-bootstrap";
+@import "../../node_modules/toastr/build/toastr";
 
 @import "layout";
 @import "components/page_load_spinner";
@@ -22,3 +23,4 @@
 @import "components/gamelist";
 @import "components/profile";
 @import "components/select2";
+@import "components/toastr";

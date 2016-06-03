@@ -4,7 +4,9 @@
     "no": "No",
     "save": "Save",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "success": "Success",
+    "error": "Error"
   },
 
   "game": {
@@ -250,13 +252,15 @@
       "header": "User info",
       "email": "Email",
       "text": "Info text",
-      "text_too_long": "Info text is too long"
+      "text_too_long": "Info text is too long",
+      "saved": "User info saved"
     },
 
     "password": {
       "change": "Change password",
       "new": "Password",
-      "new_confirm": "Confirm Password"
+      "new_confirm": "Confirm Password",
+      "saved": "New password saved"
     },
 
     "avatar": {
