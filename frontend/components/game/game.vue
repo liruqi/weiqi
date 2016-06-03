@@ -17,7 +17,7 @@
                         <option value="label">{{$t('demo.tool.label')}}</option>
                         <option value="number">{{$t('demo.tool.number')}}</option>
                     </select>
-                    <div class="clearfix"></div>
+                <div class="clearfix"></div>
                 </p>
                 <qi-board v-if="game.board"
                           :board="game.board"
@@ -212,10 +212,13 @@
             this.clear_update();
             this.timer = setInterval(this.update_timer, 200);
             this.update_timer();
+
+            jQuery(window).on('keyup', this.keyup_handler);
         },
 
         destroyed() {
             clearInterval(this.timer);
+            jQuery(window).off('keyup', this.keyup_handler);
         },
 
         events: {
@@ -337,6 +340,28 @@
 
             confirm_score() {
                 socket.send('games/confirm_score', {'game_id': this.game_id, 'result': this.game.result});
+            },
+
+            keyup_handler(ev) {
+                var target = jQuery(ev.target);
+
+                if(ev.shiftKey || ev.ctrlKey || ev.metaKey) {
+                    return;
+                }
+
+                if(target.is('input') || target.is('textarea') || target.is('select')) {
+                    return;
+                }
+
+                switch(String.fromCharCode(ev.which).toLowerCase()) {
+                    case 'v': this.demo_tool = 'move'; break;
+                    case 'e': this.demo_tool = 'edit'; break;
+                    case 't': this.demo_tool = 'triangle'; break;
+                    case 's': this.demo_tool = 'square'; break;
+                    case 'c': this.demo_tool = 'circle'; break;
+                    case 'a': this.demo_tool = 'label'; break;
+                    case '1': this.demo_tool = 'number'; break;
+                }
             }
         }
     }

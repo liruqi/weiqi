@@ -47,13 +47,13 @@
   "demo": {
     "title": "Title",
     "tool": {
-      "move": "Move tool",
-      "edit": "Edit tool",
-      "triangle": "Triangle",
-      "square": "Square",
-      "circle": "Circle",
-      "label": "Label",
-      "number": "Number",
+      "move": "(v) Move tool",
+      "edit": "(e) Edit tool",
+      "triangle": "(t) Triangle",
+      "square": "(s) Square",
+      "circle": "(c) Circle",
+      "label": "(a) Label",
+      "number": "(1) Number",
     }
   },
 
