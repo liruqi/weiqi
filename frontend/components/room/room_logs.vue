@@ -11,7 +11,7 @@
             </h3>
         </div>
 
-        <div class="panel-body chat flex-auto">
+        <div class="panel-body flex-auto">
             <div class="item" v-for="log in room_logs">
                 <img class="avatar" :src="'/api/users/' + log.user_id + '/avatar'">
 
@@ -118,7 +118,7 @@
             },
 
             scroll_bottom(force) {
-                var el = jQuery(this.$el).find('.chat');
+                var el = jQuery(this.$el).find('.panel-body');
                 var innerHeight = el.innerHeight();
                 var scrollHeight = el.prop("scrollHeight");
 

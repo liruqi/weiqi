@@ -1,11 +1,41 @@
 .room-page {
-	.room-logs, .room-users {
-		height: $main-height;
-		margin-bottom: 0;
-	}
+  .room-logs, .room-users {
+    height: $main-height;
+    margin-bottom: 0;
+  }
 }
 
 .room-users .dropdown {
-	// Fix issues with dropdowns getting clipped by the panel
-	position: absolute;
+  // Fix issues with dropdowns getting clipped by the panel
+  position: absolute;
+}
+
+.room-logs {
+  .panel-body {
+    padding: 5px 20px 5px 10px;
+  }
+
+  .item {
+    @include clearfix();
+    margin-bottom: 10px;
+
+    > img.avatar {
+      width: 40px;
+      height: 40px;
+    }
+
+    > .message {
+      margin-left: 55px;
+      margin-top: -40px;
+
+      > .name {
+        display: block;
+        font-weight: 600;
+
+        > .dropdown {
+          display: inline-block;
+        }
+      }
+    }
+  }
 }
