@@ -38,7 +38,7 @@
                                     <p class="small">{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</p>
                                     <p class="lead">
                                         <span v-if="game.title">{{game.title}}</span>
-                                        <span else>{{$t('game.demo')}}</span>
+                                        <span v-else>{{$t('game.demo')}}</span>
                                     </p>
                                     <a v-link="{name: 'game', params:{game_id: game.id}}" class="btn btn-default">
                                         {{$t('game.open')}}
