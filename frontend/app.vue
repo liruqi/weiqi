@@ -19,7 +19,9 @@
     </template>
 
     <template v-else>
-        <qi-page-load-spinner></qi-page-load-spinner>
+        <slot>
+            <qi-page-load-spinner></qi-page-load-spinner>
+        </slot>
     </template>
 </template>
 
