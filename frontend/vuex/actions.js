@@ -15,9 +15,18 @@ export const server_messages = {
     'game_info': make_action('MSG_GAME_INFO'),
     'user_status': make_action('MSG_USER_STATUS'),
     'load_direct_room': make_action('MSG_LOAD_DIRECT_ROOM'),
-    'direct_message': make_action('MSG_DIRECT_MESSAGE'),
     'demo_current_node_id': make_action('MSG_DEMO_CURRENT_NODE_ID'),
     'challenges': make_action('MSG_CHALLENGES')
+};
+
+server_messages.direct_message = function({dispatch, state}, data) {
+    if(data.user_id == state.auth.user.user_id || state.direct_rooms[data.user_id]) {
+        dispatch('MSG_ROOM_MESSAGE', data);
+    } else {
+        socket.send('rooms/open_direct', {'user_id': data.user_id}, function(data) {
+            dispatch('MSG_LOAD_DIRECT_ROOM', data);
+        });
+    }
 };
 
 export const update_route = make_action('UPDATE_ROUTE');
