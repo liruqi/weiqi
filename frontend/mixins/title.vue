@@ -49,12 +49,12 @@
         methods: {
             set_window_title() {
                 if(!is_tab_visible() && this.has_updates) {
-                    document.title = 'New message • weiqi.gs';
+                    document.title = 'New message - weiqi.gs';
                 } else {
                     if (!this.window_title) {
-                        document.title = 'weiqi.gs • Play weiqi online';
+                        document.title = 'weiqi.gs - Play weiqi online';
                     } else {
-                        document.title = this.window_title + ' • weiqi.gs';
+                        document.title = this.window_title + ' - weiqi.gs';
                     }
                 }
             },
