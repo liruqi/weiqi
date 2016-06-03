@@ -29,6 +29,7 @@ def test_profile(db, socket):
     assert profile.get('is_online') == user.is_online
     assert profile.get('rating') == user.rating
     assert profile.get('display') == user.display
+    assert profile.get('info_text_html') == user.info_text_html
 
 
 def test_autocomplete(db, socket):

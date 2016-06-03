@@ -49,6 +49,7 @@ class UserService(BaseService):
             'is_online': user.is_online,
             'rating': user.rating,
             'display': user.display,
+            'info_text_html': user.info_text_html,
         }
 
     @BaseService.register

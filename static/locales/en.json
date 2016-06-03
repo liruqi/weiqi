@@ -248,7 +248,9 @@
 
     "info": {
       "header": "User info",
-      "email": "Email"
+      "email": "Email",
+      "text": "Info text",
+      "text_too_long": "Info text is too long"
     },
 
     "password": {

@@ -14,24 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.services import SettingsService
-from weiqi.test.factories import UserFactory
+import bleach
+import markdown
 
 
-def test_change_user_info(db, socket):
-    user = UserFactory()
-    svc = SettingsService(db, socket, user)
+def markdown_to_html(text):
+    """Converts the given text from markdown to html.
 
-    svc.execute('save_user_info', {'email': 'new-test@test.test', 'info_text': 'new text'})
+    Note that this function will only sanitize the html after conversion. This means that html from the input text
+    will not be escaped unless it is deemed unsafe.
+    """
+    text = markdown.markdown(text)
 
-    assert user.email == 'new-test@test.test'
-    assert user.info_text == 'new text'
+    allowed_tags = bleach.ALLOWED_TAGS + ['h1', 'h2', 'h3', 'p']
+    text = bleach.clean(text, allowed_tags)
 
-
-def test_change_password(db, socket):
-    user = UserFactory()
-    svc = SettingsService(db, socket, user)
-
-    svc.execute('change_password', {'password': 'newpw'})
-
-    assert user.check_password('newpw')
+    return text

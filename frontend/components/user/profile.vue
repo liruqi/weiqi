@@ -40,6 +40,11 @@
                                 ({{user.rating.toFixed(2)}})
                             </div>
                         </div>
+
+                        <template v-if="user.info_text_html">
+                            <hr>
+                            {{{user.info_text_html}}}
+                        </template>
                     </div>
                 </div>
             </div>

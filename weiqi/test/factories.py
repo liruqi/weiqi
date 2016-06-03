@@ -34,6 +34,7 @@ class UserFactory(SQLAlchemyModelFactory):
     email = FuzzyText(suffix='@test.test')
     password = ''
     display = FuzzyText()
+    info_text = FuzzyText()
     is_online = True
     rating = 1000
     rating_data = factory.lazy_attribute(lambda o: Player(o.rating))

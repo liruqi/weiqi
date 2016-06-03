@@ -8,12 +8,19 @@
             <form @submit.prevent="save" novalidate>
                 <div class="panel-body">
                     <div class="form-group has-feedback" :class="form_group_classes($settings.email)">
-                        <input class="form-control" type="email"
-                                v-model="email"
-                                v-validate:email="{required: true, email: true, email_exists:{rule: true, initial: 'off'}}"
-                                placeholder="{{$t('settings.info.email')}}">
+                        <label for="user-email">{{$t('settings.info.email')}}</label>
+                        <input id="user-email" class="form-control" type="email"
+                               v-model="email"
+                               v-validate:email="{required: true, email: true, email_exists:{rule: true, initial: 'off'}}">
 
                         <p class="help-block text-danger" v-if="$settings.email.email_exists">{{$t('sign_up.email_exists')}}</p>
+                    </div>
+                    <div class="form-group" :class="form_group_classes($settings.info_text)">
+                        <label for="user-info-text">{{$t('settings.info.text')}}</label>
+                        <textarea id="user-info-text" class="form-control" v-model="info_text" rows="10"
+                                  v-validate:info_text="{maxlength: 10000}"></textarea>
+
+                        <p class="help-block text-danger" v-if="$settings.info_text.maxlength">{{$t('settings.info.text_too_long')}}</p>
                     </div>
                 </div>
                 <div class="panel-footer">
@@ -33,15 +40,17 @@
 
         data() {
             return {
-                savedEmail: '',
+                saved_email: '',
                 email: '',
+                info_text: ''
             }
         },
 
         ready() {
             socket.send('settings/user_info', {}, function(data) {
                 this.email = data.email;
-                this.savedEmail = data.email;
+                this.saved_email = data.email;
+                this.info_text = data.info_text;
 
                 this.$nextTick(function() {
                     this.$resetValidation();
@@ -51,7 +60,7 @@
 
         validators: {
             email_exists(email) {
-                if(email == this.vm.savedEmail) {
+                if(email == this.vm.saved_email) {
                     return true;
                 }
 
@@ -70,7 +79,8 @@
         methods: {
             save() {
                 var data = {
-                    email: this.email
+                    email: this.email,
+                    info_text: this.info_text
                 };
 
                 socket.send('settings/save_user_info', data, function() {

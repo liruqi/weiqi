@@ -27,6 +27,7 @@ from weiqi import settings
 from weiqi.db import Base
 from weiqi.glicko2 import player_from_dict, RatingEncoder
 from weiqi.board import board_from_dict, BLACK, WHITE
+from weiqi.markdown import markdown_to_html
 
 
 class RatingData(TypeDecorator):
@@ -55,6 +56,7 @@ class User(Base):
     password = Column(String, nullable=False)
 
     display = Column(String, nullable=False)
+    info_text = deferred(Column(Text, nullable=False, default=''))
 
     rating = Column(Float, nullable=False, default=0)
     last_rating_update_at = Column(DateTime, default=datetime.utcnow)
@@ -84,6 +86,12 @@ class User(Base):
     def validate_display(self, key, val):
         if not re.match(r'^[a-zA-Z0-9_-]{2,12}$', val):
             raise ValueError('invalid display name')
+        return val
+
+    @validates('info_text')
+    def validate_info_text(self, key, val):
+        if len(val) > settings.MAX_USER_INFO_TEXT_LENGTH:
+            raise ValueError('info text is too long')
         return val
 
     def auth_token(self, ts=None):
@@ -137,6 +145,12 @@ class User(Base):
         Needs to be called after in-place changes to the field.
         """
         flag_modified(self, 'rating_data')
+
+    @property
+    def info_text_html(self):
+        if not self.info_text:
+            return ''
+        return markdown_to_html(self.info_text)
 
 
 class Connection(Base):

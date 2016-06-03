@@ -86,3 +86,5 @@ CHALLENGE_EXPIRATION = timedelta(minutes=5)
 RESUME_TIMING_ADD_TIME = timedelta(minutes=1)
 
 METRICS_COLLECTION_INTERVAL = timedelta(seconds=10)
+
+MAX_USER_INFO_TEXT_LENGTH = 10000
