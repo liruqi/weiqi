@@ -6,6 +6,8 @@ title = "Spoken time and more"
 
 A few more additions and fixes have made it to weiqi.gs, one of which is a spoken countdown to help players when they are low on time.
 
+<!--more-->
+
 To have a taste of how it sounds like you can check the original work at [freesound.org](https://freesound.org/people/Corsica_S/sounds/82986/)
 
 Some other improvements include:

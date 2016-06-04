@@ -7,6 +7,8 @@ title = "Updates and new development blog"
 weiqi.gs now has it's own blog. Here I will publish updates about changes, features and the current development
 of weiqi.gs
 
+<!--more-->
+
 With a bit more than a week since the first public release there have already been several improvements and fixes:
 
 - Some basic sounds have been added for passing/timing/game started
