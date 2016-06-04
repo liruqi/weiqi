@@ -19,9 +19,6 @@ var sounds = {
 
 Howler.volume(0.8);
 
-window.sounds = sounds;
-window.howler = Howler;
-
 export function play_sound(key) {
     var snd = sounds[key];
     if(snd) {
