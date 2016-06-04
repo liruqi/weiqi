@@ -4,14 +4,3 @@ pytest:
   script:
     - pip install --upgrade -r requirements.txt
     - py.test --cov=weiqi --tb=native weiqi
-
-pages:
-  only:
-    - master
-  script:
-    - wget https://github.com/spf13/hugo/releases/download/v0.15/hugo_0.15_amd64.deb
-    - dpkg -i hugo*.deb
-    - cd blog && hugo && mv public ../public
-  artifacts:
-    paths:
-      - public
