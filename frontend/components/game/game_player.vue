@@ -45,16 +45,16 @@
                 }
             },
 
-            'Math.floor(total_seconds)': function() {
+            'total_seconds': function(val) {
                 if(this.is_very_low_time) {
-                    play_sound('beep');
+                    play_sound('count_'+val);
                 }
             }
         },
 
         computed: {
             total_seconds() {
-                return this.main_time;
+                return Math.ceil(this.main_time);
             },
 
             is_low_time() {
@@ -66,7 +66,7 @@
             },
 
             formatted_time() {
-                return format_duration(this.main_time);
+                return format_duration(this.total_seconds);
             }
         }
     }
