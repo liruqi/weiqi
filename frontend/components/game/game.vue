@@ -23,7 +23,7 @@
                           :board="game.board"
                           :current_node_id="current_node_id"
                           :coordinates="coordinates"
-                          :mouse_shadow="can_edit_board"
+                          :mouse_shadow="show_mouse_shadow"
                           :allow_shadow_move="demo_tool == 'edit'"
                           :current="current"></qi-board>
             </template>
@@ -237,6 +237,18 @@
 
                 return false;
             },
+
+            show_mouse_shadow() {
+                if(!this.can_edit_board) {
+                    return false;
+                }
+
+                if(this.game.is_demo && (this.demo_tool != 'move' && this.demo_tool != 'edit')) {
+                    return false;
+                }
+
+                return true;
+            }
         },
 
         watch: {
