@@ -221,23 +221,21 @@ class Board:
     @property
     def current(self):
         """Returns the current color based on the previous move."""
-        current = self.current_node
-        if not current:
+        node = self.current_node
+        if not node:
             return BLACK
 
-        if current.action == NODE_BLACK:
-            return WHITE
-        elif current.action == NODE_WHITE:
-            return BLACK
+        while node:
+            if node.action == NODE_BLACK:
+                return WHITE
+            elif node.action == NODE_WHITE:
+                return BLACK
 
-        if current.parent_id is None:
-            # Handicap game
-            return WHITE
+            if node.parent_id is None:
+                # Handicap game
+                return WHITE
 
-        if current.edits:
-            return WHITE if list(current.edits.items())[-1][1] == BLACK else BLACK
-
-        return BLACK
+            node = self.tree[node.parent_id]
 
     @current.setter
     def current(self, color):

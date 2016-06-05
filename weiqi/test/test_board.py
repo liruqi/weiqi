@@ -352,12 +352,17 @@ def test_current():
     board.play(2)
     assert board.current == BLACK
 
+
+def test_current_edits():
+    board = Board()
+    board.current = BLACK
+    board.play(1)
+
     board.add_edits([3], [], [])
     assert board.current == WHITE
 
+    board.play(2)
     board.add_edits([4], [], [])
-    assert board.current == WHITE
-
     board.add_edits([], [5], [])
     assert board.current == BLACK
 

@@ -7,26 +7,15 @@
 
 <script>
     export default {
-        props: {
-            board: {
-                type: Object,
-                required: true
-            },
-
-            force_node_id: false,
-
-            coordinates: {
-                type: Boolean,
-                default: true
-            }
-        },
+        props: ['board', 'current_node_id', 'coordinates', 'mouse_shadow', 'current'],
 
         data() {
             return {
                 wgo: null,
                 resize_interval: null,
                 confirm_coord: null,
-                click_event: null
+                click_event: null,
+                mouse_coord: null
             }
         },
 
@@ -43,6 +32,7 @@
 
             this.wgo.addEventListener("touchstart", this.click_handler);
             this.wgo.addEventListener("click", this.click_handler);
+            this.wgo.addEventListener("mousemove", this.mousemove_handler);
             jQuery(this.$els.board).on('DOMMouseScroll mousewheel', this.scroll_handler);
 
 
@@ -63,11 +53,6 @@
         },
 
         destroyed() {
-            this.wgo.removeEventListener("click", this.click_handler);
-            this.wgo.removeEventListener("touchstart", this.click_handler);
-            jQuery(this.$els.board).off('mousewheel');
-            jQuery(this.$els.board).off('DOMMouseScroll');
-
             clearInterval(this.resize_interval);
         },
 
@@ -75,17 +60,18 @@
             'current_node_hash': function() {
                 this.draw();
                 this.$dispatch('board-update');
+            },
+
+            'coordinates': function() {
+                this.draw();
+            },
+
+            'mouse_shadow': function() {
+                this.draw();
             }
         },
 
         computed: {
-            current_node_id() {
-                if(this.force_node_id !== false) {
-                    return this.force_node_id;
-                }
-                return this.board.current_node_id;
-            },
-
             current_node_hash() {
                 if((this.board.tree || []).length < 1) {
                     return null;
@@ -114,25 +100,28 @@
                 }
             },
 
+            mousemove_handler(x, y, event) {
+                var coord = this.get_mouse_coord(event);
+                this.update_mouse_shadow(coord);
+            },
+
             click_handler(x, y, event) {
                 // Stopping the event is required because we are listening to both touchstart and click.
                 event.stopPropagation();
                 event.preventDefault();
 
-                var mouse, coord;
+                var coord;
 
                 this.confirm_coord = null;
                 this.click_event = null;
 
                 if(event.type == 'touchstart') {
-                    mouse = this.get_mouse_coord(event.touches[0]);
-                    coord = mouse.x + mouse.y*this.board.size;
+                    coord = this.get_mouse_coord(event.touches[0]);
                     this.confirm_coord = coord;
                     this.click_event = event;
                     this.draw();
                 } else {
-                    mouse = this.get_mouse_coord(event);
-                    coord = mouse.x + mouse.y*this.board.size;
+                    coord = this.get_mouse_coord(event);
                     this.$dispatch('board-click', coord, event);
                 }
             },
@@ -158,10 +147,12 @@
                 y /= this.wgo.fieldHeight;
                 y = Math.round(y);
 
-                return {
+                var mouse = {
                     x: x >= this.wgo.size ? -1 : x,
                     y: y >= this.wgo.size ? -1 : y
                 };
+
+                return mouse.x + mouse.y*this.board.size;
             },
 
             scroll_handler(e) {
@@ -325,6 +316,25 @@
                 };
 
                 this.wgo.addCustomObject(coordinates);
+            },
+
+            update_mouse_shadow(coord) {
+                if(coord == this.mouse_coord || coord < 0) {
+                    return;
+                }
+
+                if(this.mouse_coord !== null) {
+                    var old_xy = this.coord_to_2d(this.mouse_coord);
+                    this.wgo.removeObject({x: old_xy[0], y: old_xy[1], type: "outline"});
+                }
+
+                if(this.mouse_shadow) {
+                    var xy = this.coord_to_2d(coord);
+                    var color = (this.current == 'o' ? WGo.W : WGo.B);
+                    this.wgo.addObject({x: xy[0], y: xy[1], c: color, type: "outline"});
+
+                    this.mouse_coord = coord;
+                }
             },
 
             construct_pos() {

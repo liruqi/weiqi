@@ -23,6 +23,14 @@
   }
 }
 
+.game-player-wrapper {
+  .game-player {
+    width: 50%;
+    float: left;
+    padding: 2px;
+  }
+}
+
 .game-player-low-time {
   font-weight: bold;
   color: $orange;

@@ -21,25 +21,26 @@
                 </p>
                 <qi-board v-if="game.board"
                           :board="game.board"
-                          :force_node_id="force_node_id"
-                          :coordinates="coordinates"></qi-board>
+                          :current_node_id="current_node_id"
+                          :coordinates="coordinates"
+                          :mouse_shadow="can_edit_board"
+                          :current="current"></qi-board>
             </template>
         </div>
 
         <div class="col-sm-3 game-detail-right">
             <div class="panel panel-default flex-fixed game-detail-players">
                 <div class="panel-body">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'white'"
-                                            :display="game.white_display || 'White'" :user_id="game.white_user_id"
-                                            :rating="game.white_rating" :points="0" :main_time="white_time"></qi-game-player>
-                        </div>
-                        <div class="col-xs-6">
-                            <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'black'"
-                                            :display="game.black_display || 'Black'" :user_id="game.black_user_id"
-                                            :rating="game.black_rating" :points="0" :main_time="black_time"></qi-game-player>
-                        </div>
+                    <div class="game-player-wrapper">
+                        <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'white'"
+                                        :display="game.white_display || 'White'" :user_id="game.white_user_id"
+                                        :rating="game.white_rating" :points="0" :main_time="white_time"
+                                        :is_current="white_is_current"></qi-game-player>
+                        <qi-game-player :demo="game.is_demo" :stage="game.stage" :color="'black'"
+                                        :display="game.black_display || 'Black'" :user_id="game.black_user_id"
+                                        :rating="game.black_rating" :points="0" :main_time="black_time"
+                                        :is_current="black_is_current"></qi-game-player>
+                        <div class="clearfix"></div>
                     </div>
 
                     <p class="text-center" v-if="game.stage!='playing' && game.result">
@@ -142,7 +143,8 @@
                         white_overtime: 0
                     },
                     board: {
-                        tree: []
+                        tree: [],
+                        current: 'x'
                     }
                 };
 
@@ -151,6 +153,44 @@
 
             is_player() {
                 return this.user.user_id == this.game.black_user_id || this.user.user_id == this.game.white_user_id;
+            },
+
+            current_node_id() {
+                if(this.force_node_id !== false) {
+                    return this.force_node_id;
+                }
+                return this.game.board.current_node_id;
+            },
+
+            current() {
+                if(this.game.board.tree.length == 0) {
+                    return 'x';
+                }
+
+                var node = this.game.board.tree[this.current_node_id];
+
+                while(node) {
+                    if (node.action == 'B') {
+                        return 'o';
+                    } else if (node.action == 'W') {
+                        return 'x';
+                    }
+
+                    if (node.parent_id === null) {
+                        // Handicap game
+                        return 'o';
+                    }
+
+                    node = this.game.board.tree[node.parent_id];
+                }
+            },
+
+            white_is_current() {
+                return this.current == 'o';
+            },
+
+            black_is_current() {
+                return this.current == 'x';
             },
 
             has_control() {
@@ -182,7 +222,25 @@
 
             coordinates() {
                 return !this.is_player || this.game.stage == 'finished';
-            }
+            },
+
+            can_edit_board() {
+                if(this.has_control) {
+                    return true;
+                }
+
+                if(this.game.stage == 'playing' && this.is_player) {
+                    if(this.current == 'x' && this.user.user_id == this.game.black_user_id) {
+                        return true;
+                    }
+
+                    if(this.current == 'o' && this.user.user_id == this.game.white_user_id) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
         },
 
         watch: {

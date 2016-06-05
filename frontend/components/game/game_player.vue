@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="game-player">
         <template v-if="demo">
             <p class="text-center">
                 <i v-if="color=='white'" class="fa fa-circle-thin"></i>

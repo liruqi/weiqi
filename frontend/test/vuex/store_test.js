@@ -42,3 +42,17 @@ describe('game_info', function() {
         assert.equal(state.open_games[0].white_display, 'white');
     });
 });
+
+describe('current_node_id', function() {
+    it('should set the current node', function() {
+        var state = default_state();
+        state.open_games.push({id: 1, board: {}});
+        
+        mutations.MSG_DEMO_CURRENT_NODE_ID(state, {
+            game_id: 1,
+            node_id: 3
+        });
+        
+        assert.equal(state.open_games[0].board.current_node_id, 3);
+    });
+});
