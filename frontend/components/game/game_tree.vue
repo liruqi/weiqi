@@ -27,18 +27,22 @@
             this.expand_active_node();
 
             jQuery(this.$els.tree).on('click', '.game-nav-node-label', function(ev) {
-                var node_id = jQuery(ev.target).closest('.game-nav-node').data('node_id');
+                var node_id = this.element_node_id(ev.target);
                 this.navigate(node_id);
             }.bind(this));
 
-            jQuery(this.$els.tree).on('dblclick', '.game-nav-node-label', function(ev) {
-                var node_id = jQuery(ev.target).closest('.game-nav-node').data('node_id');
-                this.toggle_node(node_id);
+            jQuery(this.$els.tree).on('contextmenu', '.game-nav-node-label', function(ev) {
+                this.toggle_node(this.element_node_id(ev.target));
+                return false;
             }.bind(this));
 
-            jQuery(this.$els.tree).on('click', '.game-nav-node-plus-minus', function(ev) {
-                var node_id = jQuery(ev.target).closest('.game-nav-node').data('node_id');
-                this.toggle_node(node_id);
+            jQuery(this.$els.tree).on('dblclick', '.game-nav-node-label', function(ev) {
+                this.toggle_node(this.element_node_id(ev.target));
+            }.bind(this));
+
+            jQuery(this.$els.tree).on('click contextmenu', '.game-nav-node-plus-minus', function(ev) {
+                this.toggle_node(this.element_node_id(ev.target));
+                return false;
             }.bind(this));
         },
 
@@ -61,6 +65,10 @@
                         this.toggle_node(sub.data('node_id'));
                     }
                 }.bind(this));
+            },
+
+            element_node_id(el) {
+                return jQuery(el).closest('.game-nav-node').data('node_id');
             },
 
             toggle_node(node_id) {
