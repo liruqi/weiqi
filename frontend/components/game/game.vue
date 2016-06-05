@@ -24,6 +24,7 @@
                           :current_node_id="current_node_id"
                           :coordinates="coordinates"
                           :mouse_shadow="can_edit_board"
+                          :allow_shadow_move="demo_tool == 'edit'"
                           :current="current"></qi-board>
             </template>
         </div>
@@ -117,7 +118,9 @@
                 force_node_id: false,
                 seconds_to_start: null,
                 timer_started: false,
-                demo_tool: 'move'
+                demo_tool: 'move',
+                shift_down: false,
+                ctrl_down: false
             }
         },
 
@@ -163,26 +166,19 @@
             },
 
             current() {
-                if(this.game.board.tree.length == 0) {
-                    return 'x';
+                var color = this.current_color();
+
+                if(this.game.is_demo && this.demo_tool == 'edit') {
+                    color = 'x';
+
+                    if(this.shift_down) {
+                        color = 'o';
+                    } else if(this.ctrl_down) {
+                        color = 'x';
+                    }
                 }
 
-                var node = this.game.board.tree[this.current_node_id];
-
-                while(node) {
-                    if (node.action == 'B') {
-                        return 'o';
-                    } else if (node.action == 'W') {
-                        return 'x';
-                    }
-
-                    if (node.parent_id === null) {
-                        // Handicap game
-                        return 'o';
-                    }
-
-                    node = this.game.board.tree[node.parent_id];
-                }
+                return color;
             },
 
             white_is_current() {
@@ -271,11 +267,13 @@
             this.timer = setInterval(this.update_timer, 200);
             this.update_timer();
 
+            jQuery(window).on('keydown', this.keydown_handler);
             jQuery(window).on('keyup', this.keyup_handler);
         },
 
         destroyed() {
             clearInterval(this.timer);
+            jQuery(window).off('keydown', this.keydown_handler);
             jQuery(window).off('keyup', this.keyup_handler);
         },
 
@@ -400,12 +398,47 @@
                 socket.send('games/confirm_score', {'game_id': this.game_id, 'result': this.game.result});
             },
 
-            keyup_handler(ev) {
-                var target = jQuery(ev.target);
+            current_color() {
+                if (this.game.board.tree.length == 0) {
+                    return 'x';
+                }
 
+                var node = this.game.board.tree[this.current_node_id];
+
+                while (node) {
+                    if (node.action == 'B') {
+                        return 'o';
+                    } else if (node.action == 'W') {
+                        return 'x';
+                    }
+
+                    if (node.parent_id === null) {
+                        // Handicap game
+                        return 'o';
+                    }
+
+                    node = this.game.board.tree[node.parent_id];
+                }
+            },
+
+            keydown_handler(ev) {
+                this.shift_down = ev.shiftKey;
+                this.ctrl_down = ev.ctrlKey;
+            },
+
+            keyup_handler(ev) {
+                this.handle_hotkey(ev);
+
+                this.shift_down = ev.shiftKey;
+                this.ctrl_down = ev.ctrlKey;
+            },
+
+            handle_hotkey(ev) {
                 if(ev.shiftKey || ev.ctrlKey || ev.metaKey) {
                     return;
                 }
+
+                var target = jQuery(ev.target);
 
                 if(target.is('input') || target.is('textarea') || target.is('select')) {
                     return;

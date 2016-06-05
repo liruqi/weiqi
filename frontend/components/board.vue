@@ -7,7 +7,7 @@
 
 <script>
     export default {
-        props: ['board', 'current_node_id', 'coordinates', 'mouse_shadow', 'current'],
+        props: ['board', 'current_node_id', 'coordinates', 'mouse_shadow', 'allow_shadow_move', 'current'],
 
         data() {
             return {
@@ -68,7 +68,11 @@
             },
 
             'mouse_shadow': function() {
-                this.draw();
+                this.draw_mouse_shadow();
+            },
+
+            'current': function() {
+                this.draw_mouse_shadow();
             }
         },
 
@@ -325,28 +329,39 @@
             },
 
             update_mouse_shadow(coord) {
-                if(coord == this.mouse_coord || coord < 0) {
+                if(coord == this.mouse_coord) {
+                    return;
+                }
+
+                this.remove_mouse_shadow();
+                this.mouse_coord = coord;
+                this.draw_mouse_shadow();
+            },
+
+            draw_mouse_shadow() {
+                this.remove_mouse_shadow();
+
+                if(this.mouse_coord === null || !this.mouse_shadow) {
+                    return;
+                }
+
+                if(!this.allow_shadow_move && this.pos.length > 0 &&
+                        (this.pos[this.mouse_coord] == 'B' || this.pos[this.mouse_coord] == 'W')) {
                     return;
                 }
 
                 if(this.mouse_coord !== null) {
+                    var xy = this.coord_to_2d(this.mouse_coord);
+                    var color = (this.current == 'o' ? WGo.W : WGo.B);
+                    this.wgo.addObject({x: xy[0], y: xy[1], c: color, type: "outline"});
+                }
+            },
+
+            remove_mouse_shadow() {
+                if(this.mouse_coord !== null) {
                     var old_xy = this.coord_to_2d(this.mouse_coord);
                     this.wgo.removeObject({x: old_xy[0], y: old_xy[1], type: "outline"});
                 }
-
-                if(coord === null || !this.mouse_shadow) {
-                    return;
-                }
-
-                if(this.pos.length > 0 && (this.pos[coord] == 'B' || this.pos[coord] == 'W')) {
-                    return;
-                }
-
-                var xy = this.coord_to_2d(coord);
-                var color = (this.current == 'o' ? WGo.W : WGo.B);
-                this.wgo.addObject({x: xy[0], y: xy[1], c: color, type: "outline"});
-
-                this.mouse_coord = coord;
             },
 
             construct_pos() {
