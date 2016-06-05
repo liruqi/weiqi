@@ -15,7 +15,8 @@
                 resize_interval: null,
                 confirm_coord: null,
                 click_event: null,
-                mouse_coord: null
+                mouse_coord: null,
+                pos: []
             }
         },
 
@@ -217,6 +218,8 @@
                 this.draw_symbols();
                 this.draw_labels();
                 this.draw_move_marker();
+
+                this.pos = pos;
             },
 
             draw_touch_shadow() {
@@ -331,13 +334,19 @@
                     this.wgo.removeObject({x: old_xy[0], y: old_xy[1], type: "outline"});
                 }
 
-                if(coord !== null && this.mouse_shadow) {
-                    var xy = this.coord_to_2d(coord);
-                    var color = (this.current == 'o' ? WGo.W : WGo.B);
-                    this.wgo.addObject({x: xy[0], y: xy[1], c: color, type: "outline"});
-
-                    this.mouse_coord = coord;
+                if(coord === null || !this.mouse_shadow) {
+                    return;
                 }
+
+                if(this.pos.length > 0 && (this.pos[coord] == 'B' || this.pos[coord] == 'W')) {
+                    return;
+                }
+
+                var xy = this.coord_to_2d(coord);
+                var color = (this.current == 'o' ? WGo.W : WGo.B);
+                this.wgo.addObject({x: xy[0], y: xy[1], c: color, type: "outline"});
+
+                this.mouse_coord = coord;
             },
 
             construct_pos() {
