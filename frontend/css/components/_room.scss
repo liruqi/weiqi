@@ -17,18 +17,11 @@
 
   .item {
     @include clearfix();
-    margin-bottom: 10px;
-
-    > img.avatar {
-      width: 40px;
-      height: 40px;
-    }
 
     > .message {
-      margin-left: 55px;
-      margin-top: -40px;
 
       > .name {
+        width: 100%;
         display: block;
         font-weight: 600;
 

@@ -13,8 +13,6 @@
 
         <div class="panel-body flex-auto">
             <div class="item" v-for="log in room_logs">
-                <img class="avatar" :src="'/api/users/' + log.user_id + '/avatar'">
-
                 <p class="message">
                     <span class="name">
                         <qi-user-context :user_id="log.user_id" :display="log.user_display" :rating="log.user_rating"></qi-user-context>
