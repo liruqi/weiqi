@@ -154,23 +154,23 @@
                     label.addClass('active');
                 }
 
-                if(this.color(move.node_id) == 'white') {
-                    label.append('<i class="fa fa-fw fa-circle-thin"></i>');
-                } else {
-                    label.append('<i class="fa fa-fw fa-circle"></i>');
-                }
-
+                label.append(this.render_icon(move.node_id));
                 label.append(move.move);
 
                 return label;
             },
 
-            color(node_id) {
+            render_icon(node_id) {
                 var node = this.game.board.tree[node_id];
-                if(node.action == 'W' || node.action == 'AW') {
-                    return 'white';
+
+                switch(node.action) {
+                    case 'W':
+                        return jQuery('<i class="fa fa-fw fa-circle-thin"></i>');
+                    case 'B':
+                        return jQuery('<i class="fa fa-fw fa-circle"></i>');
+                    default:
+                        return jQuery('<i class="fa fa-fw fa-pencil"></i>');
                 }
-                return 'black';
             }
         }
     }
