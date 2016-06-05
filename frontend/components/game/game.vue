@@ -66,6 +66,10 @@
                         </button>
                     </template>
 
+                    <button v-if="game.is_demo && has_control" class="btn btn-default btn-xs btn-block" @click="pass()">
+                        {{$t('game.pass')}}
+                    </button>
+
                     <qi-game-options :game="game" :is_player="is_player" :has_control="has_control"></qi-game-options>
                     <qi-game-navigation :game="game" :is_player="is_player" :has_control="has_control" :force_node_id.sync="force_node_id"></qi-game-navigation>
                 </div>
@@ -370,19 +374,23 @@
             },
 
             pass() {
-                bootbox.confirm({
-                    buttons: {
-                        confirm: {
-                            label: this.$t('game.pass')
-                        }
-                    },
-                    message: this.$t('game.confirm_pass'),
-                    callback: function (res) {
-                        if (res) {
-                            socket.send('games/move', {'game_id': this.game_id, 'move': -1});
-                        }
-                    }.bind(this)
-                });
+                if(this.game.is_demo) {
+                    socket.send('games/move', {'game_id': this.game_id, 'move': -1});
+                } else {
+                    bootbox.confirm({
+                        buttons: {
+                            confirm: {
+                                label: this.$t('game.pass')
+                            }
+                        },
+                        message: this.$t('game.confirm_pass'),
+                        callback: function (res) {
+                            if (res) {
+                                socket.send('games/move', {'game_id': this.game_id, 'move': -1});
+                            }
+                        }.bind(this)
+                    });
+                }
             },
 
             resign() {
