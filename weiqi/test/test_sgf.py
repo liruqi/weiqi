@@ -17,7 +17,7 @@
 from datetime import datetime
 from weiqi.sgf import (Reader, parse_property_name, parse_property_value, parse_sgf, game_from_sgf, game_to_sgf,
                        sgf_part_from_node)
-from weiqi.board import coord_from_sgf, coord2d, Board
+from weiqi.board import coord_from_sgf, coord2d, Board, BLACK, WHITE
 from weiqi.models import Game
 
 
@@ -130,6 +130,20 @@ def test_game_board():
     assert child.move == coord_from_sgf('ee', game.board.size)
     assert grand_child.action == 'B'
     assert grand_child.move == coord_from_sgf('gg', game.board.size)
+
+
+def test_game_board_setup_stones():
+    game = game_from_sgf('(;AB[dd][de]AW[qq][qr])')
+
+    assert len(game.board.tree) == 1
+
+    node = game.board.tree[0]
+    assert len(node.children) == 0
+    assert len(node.edits.items()) == 4
+    assert node.edits.get(str(coord_from_sgf('dd', 19))) == BLACK
+    assert node.edits.get(str(coord_from_sgf('de', 19))) == BLACK
+    assert node.edits.get(str(coord_from_sgf('qq', 19))) == WHITE
+    assert node.edits.get(str(coord_from_sgf('qr', 19))) == WHITE
 
 
 def test_game_to_sgf_basic():

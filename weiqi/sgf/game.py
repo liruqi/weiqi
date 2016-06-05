@@ -45,9 +45,9 @@ def game_from_node(node):
 
 def _replay_game(board, node):
     if node.props.get('AB') or node.props.get('AW') or node.props.get('AE'):
-        board.add_edits(_prop_coords(node.props.get('ab'), board.size),
-                        _prop_coords(node.props.get('aw'), board.size),
-                        _prop_coords(node.props.get('ae'), board.size))
+        board.add_edits(_prop_coords(node.props.get('AB'), board.size),
+                        _prop_coords(node.props.get('AW'), board.size),
+                        _prop_coords(node.props.get('AE'), board.size))
 
     if node.prop_one('B'):
         board.current = BLACK
