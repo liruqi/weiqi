@@ -12,8 +12,10 @@
         </div>
 
         <div class="panel-body flex-auto">
-            <div class="item" v-for="log in room_logs">
-                <p class="message">
+            <div class="item row" v-for="log in room_logs">
+                <img class="avatar col-lg-1 img-responsive hidden-md hidden-sm hidden-xs" :src="'/api/users/' + log.user_id + '/avatar'">
+
+                <p class="message col-xs-12 col-lg-11">
                     <span class="name">
                         <qi-user-context :user_id="log.user_id" :display="log.user_display" :rating="log.user_rating"></qi-user-context>
 

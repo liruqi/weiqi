@@ -17,11 +17,11 @@
 
   .item {
     @include clearfix();
+    margin-bottom: 10px;
 
     > .message {
 
       > .name {
-        width: 100%;
         display: block;
         font-weight: 600;
 
