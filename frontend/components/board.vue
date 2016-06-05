@@ -117,12 +117,16 @@
 
                 if(event.type == 'touchstart') {
                     coord = this.get_mouse_coord(event.touches[0]);
-                    this.confirm_coord = coord;
-                    this.click_event = event;
-                    this.draw();
+                    if(coord !== null) {
+                        this.confirm_coord = coord;
+                        this.click_event = event;
+                        this.draw();
+                    }
                 } else {
                     coord = this.get_mouse_coord(event);
-                    this.$dispatch('board-click', coord, event);
+                    if(coord !== null) {
+                        this.$dispatch('board-click', coord, event);
+                    }
                 }
             },
 
@@ -147,12 +151,11 @@
                 y /= this.wgo.fieldHeight;
                 y = Math.round(y);
 
-                var mouse = {
-                    x: x >= this.wgo.size ? -1 : x,
-                    y: y >= this.wgo.size ? -1 : y
-                };
+                if(x < 0 || y < 0 || x >= this.board.size || y >= this.board.size) {
+                    return null;
+                }
 
-                return mouse.x + mouse.y*this.board.size;
+                return x + y*this.board.size;
             },
 
             scroll_handler(e) {
@@ -328,7 +331,7 @@
                     this.wgo.removeObject({x: old_xy[0], y: old_xy[1], type: "outline"});
                 }
 
-                if(this.mouse_shadow) {
+                if(coord !== null && this.mouse_shadow) {
                     var xy = this.coord_to_2d(coord);
                     var color = (this.current == 'o' ? WGo.W : WGo.B);
                     this.wgo.addObject({x: xy[0], y: xy[1], c: color, type: "outline"});
