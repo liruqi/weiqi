@@ -76,7 +76,7 @@
             </div>
 
             <qi-room-users :room_id="game.room_id"></qi-room-users>
-            <qi-room-logs :room_id="game.room_id" :show_only_user_ids="room_logs_show_only"></qi-room-logs>
+            <qi-room-logs :room_id="game.room_id" :show_only_user_ids="room_logs_show_only" layout="narrow"></qi-room-logs>
         </div>
     </div>
     <div v-else>

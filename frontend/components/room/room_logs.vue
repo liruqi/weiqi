@@ -12,8 +12,8 @@
         </div>
 
         <div class="panel-body flex-auto">
-            <div class="item" v-for="log in room_logs">
-                <img class="avatar hidden-md hidden-sm hidden-xs" :src="'/api/users/' + log.user_id + '/avatar'">
+            <div class="item" :class="{'item-narrow': is_narrow}" v-for="log in room_logs">
+                <img class="avatar" :src="'/api/users/' + log.user_id + '/avatar'">
 
                 <p class="message">
                     <span class="name">
@@ -58,7 +58,7 @@
     import * as socket from '../../socket';
 
     export default {
-        props: ['room_id', 'title', 'show_only_user_ids'],
+        props: ['room_id', 'title', 'show_only_user_ids', 'layout'],
 
         data() {
             return {
@@ -92,6 +92,10 @@
                 logs = this.linkify_logs(logs);
 
                 return logs;
+            },
+
+            is_narrow() {
+                return this.layout == 'narrow';
             }
         },
 
