@@ -333,7 +333,7 @@
             },
 
             'board-scroll': function(scroll) {
-                if(this.game.is_demo || (this.is_player && this.game.stage != 'finished')) {
+                if(this.is_player && this.game.stage != 'finished') {
                     return;
                 }
 
