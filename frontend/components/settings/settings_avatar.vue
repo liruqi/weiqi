@@ -7,7 +7,7 @@
         <div class="box-body">
             <p class="text-center">
                 <br>
-                <img class="avatar" :src="user.avatar_url">
+                <img class="avatar" :src="'/api/users/'+user.user_id+'/avatar?size=large'">
             </p>
 
             <p class="text-center">
@@ -54,7 +54,6 @@
 <script>
     import bootbox from 'bootbox';
     import cropper from 'cropper';
-    import { reload_user_avatar } from '../../vuex/actions';
     import * as socket from '../../socket';
 
     export default {
@@ -67,8 +66,6 @@
         vuex: {
             getters: {
                 user: function(state) { return state.auth.user; }
-            }, actions: {
-                reload_user_avatar
             }
         },
 
@@ -77,7 +74,7 @@
                 bootbox.confirm(this.$t('settings.avatar.confirm_delete'), function(res) {
                     if (res) {
                         socket.send('settings/delete_avatar', {}, function() {
-                            this.reload_user_avatar();
+                            window.location.reload(true);
                         }.bind(this));
                     }
                 }.bind(this));
@@ -107,7 +104,7 @@
                 socket.send('settings/upload_avatar', {avatar: dataURL}, function() {
                     this.uploading = false;
                     jQuery('#avatar-modal').modal('hide');
-                    this.reload_user_avatar();
+                    window.location.reload(true);
                 }.bind(this));
             },
         },

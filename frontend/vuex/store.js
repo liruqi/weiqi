@@ -15,7 +15,6 @@ export function default_state() {
                 logged_in: false,
                 user_id: "",
                 rating: null,
-                avatar_url: "",
                 automatch: false,
                 wins: 0
             }
@@ -46,7 +45,6 @@ export const mutations = {
         state.auth.user.logged_in = !!data.user_id;
         state.auth.user.user_id = data.user_id;
         state.auth.user.user_display = data.user_display;
-        state.auth.user.avatar_url = '/api/users/' + data.user_id + '/avatar';
         state.auth.user.automatch = data.automatch;
         state.auth.user.wins = data.wins;
         state.auth.user.rating = data.rating;
@@ -321,10 +319,6 @@ export const mutations = {
     
     ROOM_USERS(state, room_id, users) {
         Vue.set(state.room_users, room_id, users);
-    },
-    
-    RELOAD_USER_AVATAR(state) {
-        state.auth.user.avatar_url = '/api/users/' + state.auth.user.user_id + '/avatar?' + (new Date()).getTime();
     },
     
     CLOSE_DIRECT_ROOM(state, user_id) {

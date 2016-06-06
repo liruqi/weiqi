@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-sm-4">
                 <p class="text-center">
-                    <img height="256" width="256" class="avatar" :src="'/api/users/'+user.id+'/avatar'">
+                    <img height="256" width="256" class="avatar" :src="'/api/users/'+user.id+'/avatar?size=large'">
                 </p>
             </div>
 

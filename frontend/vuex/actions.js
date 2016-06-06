@@ -32,7 +32,6 @@ server_messages.direct_message = function({dispatch, state}, data) {
 export const update_route = make_action('UPDATE_ROUTE');
 export const toggle_sidebar = make_action('TOGGLE_SIDEBAR');
 export const update_game_time = make_action('UPDATE_GAME_TIME');
-export const reload_user_avatar = make_action('RELOAD_USER_AVATAR');
 export const clear_game_update = make_action('CLEAR_GAME_UPDATE');
 
 function make_action(type) {

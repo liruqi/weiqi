@@ -65,6 +65,7 @@ class User(Base):
     is_online = Column(Boolean, nullable=False, default=False)
 
     avatar = deferred(Column(Binary))
+    avatar_large = deferred(Column(Binary))
 
     rooms = relationship('RoomUser', back_populates='user')
     connections = relationship('Connection', back_populates='user')

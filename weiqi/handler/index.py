@@ -41,15 +41,20 @@ class PingHandler(BaseHandler):
 
 class AvatarHandler(BaseHandler):
     def get(self, user_id):
-        user = self.db.query(User.avatar, User.display).filter_by(id=user_id).first()
+        want_large = self.get_argument('size', '') == 'large'
+
+        user = self.db.query(User.avatar, User.avatar_large, User.display).filter_by(id=user_id).first()
+
         if user:
-            avatar, display = user
+            avatar = user[1] if want_large else user[0]
+            display = user[2]
         else:
             avatar, display = None, ''
 
         if not avatar:
             data = '{}-{}'.format(user_id, display).strip('-')
-            avatar = generate_identicon(data.encode()).getvalue()
+            size = 256 if want_large else 64
+            avatar = generate_identicon(data.encode(), size=size).getvalue()
 
         self.set_header('Content-Type', 'image/png')
         self.set_header('Cache-control', 'max-age=' + str(3600*24))

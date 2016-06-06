@@ -52,15 +52,24 @@ class SettingsService(BaseService):
         img = Image.open(BytesIO(data))
         width, height = img.size
 
-        if width > 256 or height > 256:
-            raise InvalidImageError('image is too large, max 256x256 is allowed')
+        if width != 256 or height != 256:
+            raise InvalidImageError('image size must be 256x256')
 
-        self.user.avatar = data
+        large = BytesIO()
+        img.save(large, format='JPEG', quality=90, optimize=True, progressive=True)
+
+        small = BytesIO()
+        img.thumbnail((64, 64))
+        img.save(small, format='JPEG', quality=90, optimize=True, progressive=True)
+
+        self.user.avatar_large = large.getvalue()
+        self.user.avatar = small.getvalue()
 
     @BaseService.authenticated
     @BaseService.register
     def delete_avatar(self):
         self.user.avatar = None
+        self.user.avatar_large = None
 
     @BaseService.authenticated
     @BaseService.register

@@ -4,7 +4,7 @@
             <template v-if="user.logged_in">
                 <div class="pull-left image">
                     <a v-link="{name:'user', params:{user_id:user.user_id}}">
-                        <img :src="user.avatar_url" class="avatar">
+                        <img :src="'/api/users/'+user.user_id+'/avatar'" class="avatar">
                     </a>
                 </div>
                 <div class="pull-left info">
