@@ -10,6 +10,16 @@
   position: absolute;
 }
 
+@media (min-width: $screen-lg-min) {
+  .avatar {
+    width: 40px;
+    float: left;
+  }
+  .message {
+    margin-left: 50px;
+  }
+}
+
 .room-logs {
   .panel-body {
     padding: 5px 20px 5px 10px;
@@ -19,14 +29,7 @@
     @include clearfix();
     margin-bottom: 10px;
 
-    > img.avatar {
-      width: 40px;
-      height: 40px;
-    }
-
     > .message {
-      margin-left: 55px;
-      margin-top: -40px;
 
       > .name {
         display: block;

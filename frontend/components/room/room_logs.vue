@@ -13,7 +13,7 @@
 
         <div class="panel-body flex-auto">
             <div class="item" v-for="log in room_logs">
-                <img class="avatar" :src="'/api/users/' + log.user_id + '/avatar'">
+                <img class="avatar hidden-md hidden-sm hidden-xs" :src="'/api/users/' + log.user_id + '/avatar'">
 
                 <p class="message">
                     <span class="name">
