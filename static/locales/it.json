@@ -1,0 +1,350 @@
+{
+  "general": {
+    "yes": "Sì",
+    "no": "No",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "close": "Chiudi",
+    "success": "Successo",
+    "error": "Errore"
+  },
+
+  "game": {
+    "black": "Nero",
+    "white": "Bianco",
+    "board_size": "Dimensioni Goban",
+    "handicap": "Handicap",
+    "komi": "Komi",
+    "timing": "Controllo del tempo",
+    "maintime": "Tempo Principale",
+    "overtime": "Tempo supplementare",
+    "result": "Risultato",
+    "size": "Dimensione",
+    "date": "Data",
+    "title": "Titolo",
+    "options": "Opzioni",
+    "info": "Info",
+    "edit_info": "Modifica Info",
+    "observers": "Spettatori",
+    "started": "Cominciato",
+    "type": "Tipo",
+    "demo": "Demo",
+    "ranked": "Valida per il livello",
+    "free": "Amichevole",
+    "resign": "Abbandona",
+    "confirm_resign": "Vuoi davvero abbandonare?",
+    "pass": "Passa",
+    "resume_from_counting": "Riprendi",
+    "confirm_pass": "Sei sicuro di voler passare?<br>Nota che devi riempire tutti i punti neutri (Regole Cinesi).",
+    "confirm_score": "Conferma Punteggio",
+    "will_start_in": "La partita comincerà in ...",
+    "back_to_game": "Torna alla partita",
+    "open": "Apri",
+    "download_sgf": "Scarica SGF",
+    "clone_demo": "Clona come Demo"
+  },
+
+  "demo": {
+    "title": "Titolo",
+    "tool": {
+      "move": "(v) Strumento Mossa",
+      "edit": "(e) Strumento Modifica",
+      "triangle": "(t) Triangolo",
+      "square": "(s) Quadrato",
+      "circle": "(c) Cerchio",
+      "label": "(a) Etichetta",
+      "number": "(1) Numero",
+    }
+  },
+
+  "user": {
+    "view_profile": "Guarda profilo",
+    "send_message": "Manda un messaggio",
+    "challenge": "Sfida"
+  },
+
+  "header": {
+    "profile": "Profilo",
+    "settings": "Opzioni",
+    "logout": "Esci",
+    "help": "Aiuto"
+  },
+
+  "sidebar": {
+    "search": "Cerca",
+    "play": "Gioca",
+    "searching_automatch": "Ricerca partita ...",
+    "sign_in": "Entra",
+    "create_demo": "Crea Demo",
+    "upload_sgf": "Carica SGF",
+    "challenge": "Sfida utente",
+
+    "challenges": "Sfide",
+    "games": "Partite",
+    "no_games": "Non hai partite in corso",
+    "active_games": "Partite in Corso",
+    "rooms": "Stanze",
+    "people": "Persone",
+    "no_direct_rooms": "Non hai chat aperte"
+  },
+
+  "sign_in": {
+    "header": "Entra",
+    "close": "Chiudi",
+    "error": "Nome utente o password non valido",
+    "email": "Indirizzo E-Mail",
+    "password": "Password",
+    "sign_in": "Entra",
+    "forgot": "Hai dimenticato la password?",
+    "or": "o",
+    "new_account": "Nuovo Account"
+  },
+
+  "sign_up": {
+    "header": "Registrati",
+    "user_info": "Le tue informazioni",
+    "display": "Scegli un nome utente",
+    "display_invalid": "Solo lettere e numeri. 2-12 caratteri.",
+    "display_help": "Potrai modificarlo più tardi.",
+    "email": "La tua email",
+    "email_exists": "Indirizzo E-Mail già registrato",
+    "password": "Crea una password",
+    "rank": {
+      "header": "Livello",
+      "r20k": "Non ho mai giocato prima",
+      "r19k": "19k",
+      "r18k": "18k",
+      "r17k": "17k",
+      "r16k": "16k",
+      "r15k": "(15k) Conosco le regole e ho giocato qualche volta sul Goban grande",
+      "r14k": "14k",
+      "r13k": "13k",
+      "r12k": "12k",
+      "r11k": "11k",
+      "r10k": "(10k) Al circolo in molti sono ancora più forti di me",
+      "r9k": "9k",
+      "r8k": "8k",
+      "r7k": "7k",
+      "r6k": "6k",
+      "r5k": "5k",
+      "r4k": "4k",
+      "r3k": "3k",
+      "r2k": "2k",
+      "r1k": "1k",
+      "r1d": "1d",
+      "r2d": "2d",
+      "r3d": "3d"
+    },
+    "recaptcha": "Verifica che sei umano",
+    "sign_up": "Registrati",
+    "confirm_email": "Per favore segui il link nell'email che ti abbiamo mandato per attivare il tuo account.",
+  },
+
+  "forgot_password": {
+    "header": "Ho dimenticato la password",
+    "email": "Il tuo indirizzo email",
+    "reset": "Reimosta password",
+    "instructions": "Ti abbiamo mandato un'email con le istruzioni per reimpostare la tua password."
+  },
+
+  "play": {
+    "header": "Gioca",
+    "subheader": "Valida per il livello",
+    "play": "Gioca",
+    "cancel": "Annulla",
+
+    "fast": {
+      "header": "Veloce",
+      "l1": "fino a 30 minuti di gioco",
+      "l2": "5min + 10s/mossa"
+    },
+
+    "medium": {
+      "header": "Medio",
+      "l1": "fino ad 1 ora di gioco",
+      "l2": "10min + 20s/mossa"
+    },
+
+    "slow": {
+      "header": "Lento",
+      "l1": "circa 1-2 ore di gioco",
+      "l2": "15min + 30s/mossa"
+    },
+
+    "options": {
+      "max_hc": "Massima differenza di livello",
+      "no_hc": "Solo partite alla pari",
+    }
+  },
+
+  "room_logs": {
+    "chat": "Chat",
+    "sign_in": "Entra",
+    "to_chat": "per chattare",
+    "type_msg": "Scrivi un messaggio ...",
+  },
+
+  "room_users": {
+    "username": "Utenti",
+    "rank": "Livello"
+  },
+
+  "gamelist": {
+    "header": "Partite in Corso",
+    "no_games": "Nessuna partita in corso"
+  },
+
+  "faq": {
+    "header": "F.A.Q.",
+    "subheader": "Frequently Asked Questions",
+    "ratings": {
+      "header": "Come funziona il calcolo del livello?",
+      "text": {
+        "p1": "Usiamo <a href=\"http://www.glicko.net/glicko.html\" target=\"_blank\">Glicko-2</a> come sistema di calcolo. Inoltre aggreghiamo i risultati delle partite in periodi di giorni/settimane.",
+        "p2": "Il livello mostrato è basato su una proiezione del periodo corrente."
+      }
+    },
+    "contribute": {
+      "header": "Come posso contribuire?",
+      "text": {
+        "p1": "weiqi.gs è completamente open source, questo vuol dire che chiunque voglia contribuire ne ha la possibilità.",
+        "p2": "Anche se non sei un programmatore, ci sono molti modi in cui puoi contribuire. Se sei interessato, dai un'occhiata al nostro <a href=\"http://gitlab.com/mibitzi/weiqi.gs#contribute\" target=\"_blank\">repository su Gitlab</a> per più informazioni."
+      }
+    },
+    "bug": {
+      "header": "Ho trovato un bug",
+      "text": {
+        "p1": "Per favore riporta tutti i bug nel nostro <a href=\"http://gitlab.com/mibitzi/weiqi.gs/issues\" target=\"_blank\">issue tracker</a> su GitLab.",
+        "p2": "Per favore controlla anche che non ci sia una issue riguardante lo stesso problema prima di aprirne una nuova.",
+      }
+    },
+    "ruleset": {
+      "header": "Che regole sono usate?",
+      "text": {
+        "p1": "Tutte le partite sono giocate con regole cinesi. Questo vuol dire che dovrai riempire tutti i dame (punti neutri) alla fine della partita."
+      }
+    },
+    "ranked_free": {
+      "header": "Quali partite sono valide per il livello, quali amichevoli?",
+      "text": {
+        "p1": "Le partite giocate tramite sfida automatica sono sempre valide per il livello.",
+        "p2": "Le partite giocate tramite sfida diretta sono sempre amichevoli."
+      }
+    },
+    "avatar": {
+      "header": "Perché ho questa immagine profilo?",
+      "text": "Per ogni utente viene generata una <em>Identicon</em> univoca. Se l'utente non ha caricato la sua immagine profilo, verrà mostrata l'identicon.",
+    }
+  },
+
+  "user_detail": {
+    "member_since": "Membro dal",
+    "last_activity": "Ultima attività",
+    "online": "Online ora",
+    "rank": "Livello",
+    "games": "Partite"
+  },
+
+  "settings": {
+    "header": "Opzioni",
+
+    "info": {
+      "header": "Info Utente",
+      "email": "Email",
+      "text": "Testo di Info",
+      "text_too_long": "Il testo di Info è troppo lungo",
+      "saved": "Info utente salvata"
+    },
+
+    "password": {
+      "change": "Cambia password",
+      "new": "Password",
+      "new_confirm": "Conferma Password",
+      "saved": "Nuova password salvata"
+    },
+
+    "avatar": {
+      "header": "Immagine profilo",
+      "new": "Carica nuova immagine",
+      "delete": "Elimina la mia immagine",
+      "confirm_delete": "Sei sicuro di voler ELIMINARE la tua immagine profilo?<br><br>Nota che non puoi eliminare la tua immagine di default.",
+      "crop_help": "Puoi muovere e zommare la tua immagine come vuoi. Tutto quello che rimane al di fuori della porzione evidenziata sarà rimosso.",
+      "cancel": "Annulla"
+    },
+
+    "save": "Salva"
+  },
+
+  "create_demo": {
+    "header": "Crea Demo",
+    "title": "Titolo della tua demo",
+    "create": "Crea",
+    "cancel": "Annulla"
+  },
+
+  "upload_sgf": {
+    "header": "Carica SGF",
+    "upload": "Carica",
+    "choose_file": "file SGF",
+    "cancel": "Annulla"
+  },
+
+  "password_reset_confirm": {
+    "header": "Reimposta password",
+    "sent": "Ti è stata mandata un'email con la tua nuova password.",
+    "failed": "Questo link non è più valido."
+  },
+
+  "disconnected": {
+    "header": "Oops, sembra che abbiamo perso la connessione ...",
+    "body": "Per qualche motivo ci siamo disconnessi dal server.<br><br>Questo può succedere se il server si sta aggiornando. In questo caso per favore aspetta un po' fino a che il server non torna attivo.",
+    "trying_connect": "Tentativo di riconnessione ..."
+  },
+
+  "dashboard": {
+    "popular_games": "Partite popolari",
+    "stats": {
+      "heading": "Numeri",
+      "users": "Utenti",
+      "online": "Online",
+      "games": "Partite"
+    }
+  },
+
+  "challenge": {
+    "opponent": "Avversario",
+
+    "dialog": {
+      "header": "Sfida",
+      "subheader": "ad una partita amichevole",
+      "user": "Utente",
+
+      "handicap": {
+        "auto": "Automatico",
+        "none": "Nessun handicap",
+        "no_komi": "1 (Nessun komi)"
+      },
+
+      "black_white": "Nero / Bianco",
+
+      "bw": {
+        "auto": "Automatico",
+        "black": "Io gioco da nero",
+        "white": "Io gioco da bianco"
+      },
+
+      "submit": "Sfida",
+      "cancel": "Annulla"
+    },
+
+    "view": {
+      "heading": "Sfida",
+      "not_found": "La sfida non esiste o è scaduta",
+      "free_game": "Partita amichevole - non avrà impatto sul punteggio",
+      "expires_in": "Scade tra",
+      "cancel": "Annulla Sfida",
+      "accept": "Accetta",
+      "decline": "Rifiuta"
+    }
+  }
+}
