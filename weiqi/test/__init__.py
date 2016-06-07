@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from sqlalchemy.orm import scoped_session
 from weiqi import settings
 from weiqi.db import Session, create_db, create_schema
 
@@ -25,4 +26,4 @@ settings.MAILER['backend'] = 'console'
 create_db()
 create_schema()
 
-session = Session()
+session = scoped_session(Session)
