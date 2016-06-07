@@ -37,7 +37,7 @@ $ ./main.py --create-room='Main Room'
 Tests
 -----
 ```bash
-$ py.test weiqi
+$ py.test --benchmark-skip weiqi
 ```
 
 License
