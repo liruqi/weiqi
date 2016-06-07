@@ -19,7 +19,7 @@
     "maintime": "Tempo Principale",
     "overtime": "Tempo supplementare",
     "result": "Risultato",
-    "size": "Dimenzione",
+    "size": "Dimensione",
     "date": "Data",
     "title": "Titolo",
     "options": "Opzioni",
@@ -215,7 +215,7 @@
       "header": "Ho trovato un bug",
       "text": {
         "p1": "Per favore riporta tutti i bug nel nostro <a href=\"http://gitlab.com/mibitzi/weiqi.gs/issues\" target=\"_blank\">issue tracker</a> su GitLab.",
-        "p2": "Per favore controlla anche che non ci sia una issue riguardante lo stesso problema prima di aprire una nuova.",
+        "p2": "Per favore controlla anche che non ci sia una issue riguardante lo stesso problema prima di aprirne una nuova.",
       }
     },
     "ruleset": {
@@ -227,13 +227,13 @@
     "ranked_free": {
       "header": "Quali partite sono valide per il livello, quali amichevoli?",
       "text": {
-        "p1": "Le partite giocate tramite Sfida Automatica sono sempre valide per il livello.",
+        "p1": "Le partite giocate tramite sfida automatica sono sempre valide per il livello.",
         "p2": "Le partite giocate tramite sfida diretta sono sempre amichevoli."
       }
     },
     "avatar": {
       "header": "Perché ho questa immagine profilo?",
-      "text": "Per ogni utente vine generata una <em>Identicon</em> univoca. Se l'utente non ha caricato la sua immagine profilo, verrà mostrato l'identicon.",
+      "text": "Per ogni utente viene generata una <em>Identicon</em> univoca. Se l'utente non ha caricato la sua immagine profilo, verrà mostrata l'identicon.",
     }
   },
 
@@ -268,7 +268,7 @@
       "new": "Carica nuova immagine",
       "delete": "Elimina la mia immagine",
       "confirm_delete": "Sei sicuro di voler ELIMINARE la tua immagine profilo?<br><br>Nota che non puoi eliminare la tua immagine di default.",
-      "crop_help": "Puoi muovere e zommare la tua immagine come vuoi. Tutto quello che rimane al di fuori della porzione evidenziata sarà rimossa.",
+      "crop_help": "Puoi muovere e zommare la tua immagine come vuoi. Tutto quello che rimane al di fuori della porzione evidenziata sarà rimosso.",
       "cancel": "Annulla"
     },
 
