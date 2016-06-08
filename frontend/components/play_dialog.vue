@@ -31,6 +31,13 @@
                             {{$t('play.slow.l2')}}
                         </p>
                     </div>
+                    <div class="preset" :class="{active: preset=='correspondence'}" @click="presetCorrespondence">
+                        <p class="preset-name">{{$t('play.corr.header')}}</p>
+                        <p class="preset-description">
+                            {{$t('play.corr.l1')}}<br>
+                            {{$t('play.corr.l2')}}
+                        </p>
+                    </div>
 
                     <div class="form-horizontal">
                         <div class="form-group">
@@ -80,6 +87,9 @@
             },
             presetSlow() {
                 this.preset = 'slow';
+            },
+            presetCorrespondence() {
+                this.preset = 'correspondence';
             },
 
             play() {

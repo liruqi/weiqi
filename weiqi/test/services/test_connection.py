@@ -46,6 +46,18 @@ def test_connection_data_rooms(db, socket):
     assert len(data['rooms']) == 1
 
 
+def test_connection_data_automatch(db, socket):
+    match = AutomatchFactory()
+    socket.subscribe('connection_data')
+
+    svc = ConnectionService(db, socket, match.user)
+    svc.execute('connect')
+
+    data = socket.sent_messages[0]['data']
+
+    assert data['automatch']
+
+
 def test_disconnect_automatch(db, socket):
     user = UserFactory()
     AutomatchFactory(user=user)
@@ -54,3 +66,15 @@ def test_disconnect_automatch(db, socket):
     svc.execute('disconnect')
 
     assert db.query(Automatch).count() == 0
+
+
+def test_disconnect_automatch_correspondence(db, socket):
+    user = UserFactory()
+    AutomatchFactory(user=user, preset='slow')
+    AutomatchFactory(user=user, preset='correspondence')
+
+    svc = ConnectionService(db, socket, user)
+    svc.execute('disconnect')
+
+    assert db.query(Automatch).count() == 1
+    assert db.query(Automatch).filter_by(preset='correspondence').count() == 1

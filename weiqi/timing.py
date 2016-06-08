@@ -71,7 +71,12 @@ def update_timing(timing, is_blacks_turn):
 
 
 def _update_fischer(timing, main, overtime):
-    return main + timing.overtime, overtime
+    new_main = main + timing.overtime
+
+    if timing.cap and new_main > timing.cap:
+        new_main = timing.cap
+
+    return new_main, overtime
 
 
 def _update_byoyomi(timing, main, overtime):

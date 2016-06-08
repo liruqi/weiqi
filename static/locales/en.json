@@ -155,20 +155,26 @@
 
     "fast": {
       "header": "Fast",
-      "l1": "up to 30 minute playtime",
+      "l1": "Up to 30 minute playtime",
       "l2": "5min + 10s/move"
     },
 
     "medium": {
       "header": "Medium",
-      "l1": "up to 1 hour playtime",
+      "l1": "Up to 1 hour playtime",
       "l2": "10min + 20s/move"
     },
 
     "slow": {
       "header": "Slow",
-      "l1": "about 1-2 hours playtime",
+      "l1": "About 1-2 hours playtime",
       "l2": "15min + 30s/move"
+    },
+
+    "corr": {
+      "header": "Correspondence",
+      "l1": "Several weeks or months playtime",
+      "l2": "3d + 26h/move with a max maintime of 3 days"
     },
 
     "options": {

@@ -110,6 +110,25 @@ def test_automatch_create_game(db, socket):
     assert not socket.sent_messages[2]['data']['in_queue']
 
 
+def test_automatch_correspondence(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+    AutomatchFactory(user=other, preset='correspondence',
+                     user_rating=1500, user__rating=1500,
+                     min_rating=1500, max_rating=1500)
+
+    svc = PlayService(db, socket, user)
+    svc.execute('automatch', {'preset': 'correspondence', 'max_hc': 0})
+
+    assert db.query(Automatch).count() == 0
+    assert db.query(Game).count() == 1
+
+    game = db.query(Game).first()
+    assert game.is_correspondence
+    assert game.timing.cap is not None
+    assert game.timing.cap.total_seconds() > 0
+
+
 def test_game_players_handicap():
     svc = PlayService()
 

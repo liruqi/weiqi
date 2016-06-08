@@ -337,6 +337,7 @@ class Game(Base):
 
     is_demo = Column(Boolean, nullable=False, default=False)
     is_ranked = Column(Boolean, nullable=False, default=True)
+    is_correspondence = Column(Boolean, nullable=False, default=False)
 
     stage = Column(Enum('playing', 'counting', 'finished', name='game_stage'), nullable=False)
     title = Column(String, nullable=False, default='')
@@ -374,6 +375,12 @@ class Game(Base):
         CheckConstraint('is_demo OR black_user_id != white_user_id'),
         CheckConstraint('NOT is_demo OR demo_owner_id IS NOT NULL'),
     )
+
+    @validates('is_demo', 'is_correspondence')
+    def validate_is_correspondence(self, key, val):
+        if key == 'is_correspondence' and val and self.is_demo:
+            raise ValueError('demo games cannot be correspondence games')
+        return val
 
     @property
     def current_user(self):
@@ -468,6 +475,7 @@ class Timing(Base):
 
     system = Column(TimingSystem, nullable=False)
     main = Column(Interval, nullable=False)
+    cap = Column(Interval)
     overtime = Column(Interval, nullable=False)
     overtime_count = Column(Integer, nullable=False, default=0)
 

@@ -65,16 +65,24 @@ AUTOMATCH_SIZE = 19
 AUTOMATCH_PRESETS = {
     'fast': {
         'main': timedelta(minutes=5),
+        'cap': None,
         'overtime': timedelta(seconds=10),
     },
     'medium': {
         'main': timedelta(minutes=10),
+        'cap': None,
         'overtime': timedelta(seconds=20),
     },
     'slow': {
         'main': timedelta(minutes=15),
+        'cap': None,
         'overtime': timedelta(seconds=30),
     },
+    'correspondence': {
+        'main': timedelta(days=3),
+        'cap': timedelta(days=3),
+        'overtime': timedelta(hours=26),
+    }
 }
 
 DASHBOARD_POPULAR_GAMES = 5

@@ -78,9 +78,11 @@ class PlayService(BaseService):
         black, white, handicap = self.game_players_handicap(user, other)
         komi = settings.DEFAULT_KOMI if handicap == 0 else settings.HANDICAP_KOMI
         timing_preset = settings.AUTOMATCH_PRESETS[preset]
+        correspondence = (preset == 'correspondence')
 
-        return self._create_game(True, black, white, handicap, komi, settings.AUTOMATCH_SIZE,
-                                 'fischer', timing_preset['main'], timing_preset['overtime'], 0)
+        return self._create_game(True, correspondence, black, white, handicap, komi, settings.AUTOMATCH_SIZE,
+                                 'fischer', timing_preset['main'], timing_preset['cap'], timing_preset['overtime'],
+                                 0)
 
     @BaseService.authenticated
     @BaseService.register
@@ -264,8 +266,8 @@ class PlayService(BaseService):
         else:
             black, white = challenge.challengee, challenge.owner
 
-        game = self._create_game(False, black, white, challenge.handicap, challenge.komi, challenge.board_size,
-                                 challenge.timing_system, challenge.maintime, challenge.overtime,
+        game = self._create_game(False, False, black, white, challenge.handicap, challenge.komi, challenge.board_size,
+                                 challenge.timing_system, challenge.maintime, None, challenge.overtime,
                                  challenge.overtime_count)
 
         self.db.commit()
@@ -290,9 +292,10 @@ class PlayService(BaseService):
 
     def _create_game(self,
                      ranked,
+                     correspondence,
                      black, white,
                      handicap, komi, size,
-                     timing_system, maintime, overtime, overtime_count):
+                     timing_system, maintime, cap, overtime, overtime_count):
         board = Board(size, handicap)
 
         room = Room(type='game')
@@ -302,6 +305,7 @@ class PlayService(BaseService):
         game = Game(room=room,
                     is_demo=False,
                     is_ranked=ranked,
+                    is_correspondence=correspondence,
                     board=board,
                     stage='playing',
                     komi=komi,
@@ -323,6 +327,7 @@ class PlayService(BaseService):
                         timing_updated_at=start_at,
                         next_move_at=start_at,
                         main=maintime,
+                        cap=cap,
                         overtime=overtime,
                         overtime_count=overtime_count,
                         black_main=maintime,

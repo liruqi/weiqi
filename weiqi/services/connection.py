@@ -49,7 +49,8 @@ class ConnectionService(BaseService):
         self._check_is_online()
 
         if self.user:
-            self.db.query(Automatch).filter_by(user=self.user).delete()
+            self.db.query(Automatch).filter((Automatch.user == self.user) &
+                                            (Automatch.preset != 'correspondence')).delete()
 
         UserService(self.db, self.socket, self.user).publish_status()
         RoomService(self.db, self.socket, self.user).publish_user_rooms()
@@ -68,6 +69,7 @@ class ConnectionService(BaseService):
                 'user_display': self.user.display,
                 'rating': self.user.rating,
                 'wins': Game.count_wins(self.db, self.user),
+                'automatch': self.db.query(Automatch).filter_by(user=self.user).count() > 0,
             })
 
         data.update(self._connection_data_rooms())
