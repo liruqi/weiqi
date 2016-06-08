@@ -1,0 +1,8 @@
+{% extends "_base_mail.txt" %}
+
+{% block content %}
+You signed up on weiqi.gs
+In order to activate your account and login please follow this link:
+
+{{url}}
+{% end %}

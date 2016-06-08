@@ -14,14 +14,21 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os.path
 import smtplib
 from email.mime.text import MIMEText
+from tornado.template import Loader
 from weiqi import settings
 
+_loader = Loader(os.path.join(settings.BASE_DIR, 'templates', 'mails'))
 
-def send_mail(to_mail, to_name, subject, body):
+
+def send_mail(to_mail, to_name, subject, template, context):
     subject += ' - weiqi.gs'
-    body = 'Hello {}\n\n{}\n\nYour weiqi.gs team'.format(to_name, body)
+
+    context['recipient_name'] = to_name
+    body = _loader.load(template).generate(**context).decode()
+
     send_mail_raw(to_mail, subject, body)
 
 

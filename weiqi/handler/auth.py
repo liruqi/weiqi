@@ -39,14 +39,14 @@ class SignUpHandler(BaseHandler):
         self.db.add(user)
         self.db.commit()
 
-        token = user.auth_token()
-        url = '%s://%s/api/auth/sign-up/confirm/%d/%s' % (
-            self.request.protocol, self.request.host, user.id, token)
+        url = '%s://%s/api/auth/sign-up/confirm/%d/%s' % (self.request.protocol,
+                                                          self.request.host,
+                                                          user.id,
+                                                          user.auth_token())
 
-        msg = ('You signed up on weiqi.gs\n'
-               'In order to activate your account and login please follow this link:\n\n%s') % url
-
-        send_mail(user.email, user.display, 'Account activation', msg)
+        send_mail(user.email, user.display, 'Account activation', 'sign_up.txt', {
+            'url': url
+        })
 
         metrics.REGISTRATIONS.inc()
 
@@ -112,15 +112,14 @@ class PasswordResetHandler(BaseHandler):
         if not user:
             return
 
-        token = user.auth_token()
-        url = '%s://%s/api/auth/password-reset/confirm/%d/%s' % (
-            self.request.protocol, self.request.host, user.id, token)
+        url = '%s://%s/api/auth/password-reset/confirm/%d/%s' % (self.request.protocol,
+                                                                 self.request.host,
+                                                                 user.id,
+                                                                 user.auth_token())
 
-        msg = ('You have requested a password reset.\n'
-               'To reset your password and set a new one please follow this link:\n\n%s\n\n'
-               'If you have not made such a request or made it by mistake please ignore this email.') % url
-
-        send_mail(user.email, user.display, 'Password reset', msg)
+        send_mail(user.email, user.display, 'Password reset', 'password_reset.txt', {
+            'url': url
+        })
 
 
 class PasswordResetConfirmHandler(BaseHandler):

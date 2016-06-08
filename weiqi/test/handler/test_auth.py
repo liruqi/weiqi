@@ -83,6 +83,15 @@ class TestSignIn(BaseAsyncHTTPTestCase):
 
 
 class TestPasswordReset(BaseAsyncHTTPTestCase):
+    def test_password_reset(self):
+        user = UserFactory()
+
+        res = self.post('/api/auth/password-reset', {
+            'email': user.email
+        })
+
+        self.assertEqual(res.code, 200)
+
     def test_password_reset_confirm(self):
         user = UserFactory()
 

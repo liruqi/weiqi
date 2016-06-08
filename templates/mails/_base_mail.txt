@@ -1,0 +1,3 @@
+Hello {{recipient_name}}
+{% block content %}{% end %}
+Your weiqi.gs team
