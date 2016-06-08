@@ -166,6 +166,17 @@ def test_game_finished_user_status(db, socket):
     assert socket.sent_messages[1]['method'] == 'user_status'
 
 
+def test_game_finished_correspondence(db, socket, mails):
+    game = GameFactory(is_correspondence=True)
+    svc = GameService(db, socket, game.black_user)
+    svc.execute('move', {'game_id': game.id, 'move': RESIGN})
+
+    assert len(mails) == 2
+    assert mails[0]['template'] == 'correspondence/game_finished.txt'
+    assert mails[1]['template'] == 'correspondence/game_finished.txt'
+    assert {mails[0]['to'], mails[1]['to']} == {game.black_user.email, game.white_user.email}
+
+
 def test_stages_playing_counting(db, socket):
     game = GameFactory()
     svc = GameService(db, socket, game.black_user)

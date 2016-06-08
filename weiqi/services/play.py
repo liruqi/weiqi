@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 import random
 from weiqi import settings
 from weiqi.db import session
-from weiqi.services import BaseService, ServiceError
+from weiqi.services import BaseService, ServiceError, CorrespondenceService
 from weiqi.rating import rating_range, rank_diff
 from weiqi.models import Automatch, Room, RoomUser, Game, Timing, User, Challenge
 from weiqi.board import Board
@@ -71,6 +71,9 @@ class PlayService(BaseService):
             self._publish_game_started(game)
             self._publish_automatch(game.black_user, False)
             self._publish_automatch(game.white_user, False)
+
+            if game.is_correspondence:
+                CorrespondenceService(self.db, self.socket).notify_automatch_started(game)
         else:
             self._publish_automatch(self.user, True)
 
@@ -274,6 +277,9 @@ class PlayService(BaseService):
 
         self._publish_game_started(game)
         self._publish_challenges(challenge)
+
+        if game.is_correspondence:
+            CorrespondenceService(self.db, self.socket).notify_challenge_started(game)
 
     def game_players_handicap(self, user: User, other: User):
         handicap = rank_diff(user.rating, other.rating)

@@ -110,7 +110,7 @@ def test_automatch_create_game(db, socket):
     assert not socket.sent_messages[2]['data']['in_queue']
 
 
-def test_automatch_correspondence(db, socket):
+def test_automatch_correspondence(db, socket, mails):
     user = UserFactory(rating=1500)
     other = UserFactory(rating=1500)
     AutomatchFactory(user=other, preset='correspondence',
@@ -127,6 +127,11 @@ def test_automatch_correspondence(db, socket):
     assert game.is_correspondence
     assert game.timing.cap is not None
     assert game.timing.cap.total_seconds() > 0
+
+    assert len(mails) == 2
+    assert mails[0]['template'] == 'correspondence/automatch_started.txt'
+    assert mails[1]['template'] == 'correspondence/automatch_started.txt'
+    assert {mails[0]['to'], mails[1]['to']} == {user.email, other.email}
 
 
 def test_game_players_handicap():
@@ -357,6 +362,24 @@ def test_accept_expired_challenge(db, socket):
 
     with pytest.raises(ChallengeExpiredError):
         svc.execute('accept_challenge', {'challenge_id': challenge.id})
+
+
+@pytest.skip
+def test_challenge_correspondence(db, socket, mails):
+    challenge = ChallengeFactory()
+
+    svc = PlayService(db, socket, challenge.challengee)
+    svc.execute('accept_challenge', {'challenge_id': challenge.id})
+
+    game = db.query(Game).first()
+    assert game.is_correspondence
+    assert game.timing.cap is not None
+    assert game.timing.cap.total_seconds() > 0
+
+    assert len(mails) == 2
+    assert mails[0]['template'] == 'correspondence/challenge_started.txt'
+    assert mails[1]['template'] == 'correspondence/challenge_started.txt'
+    assert {mails[0]['to'], mails[1]['to']} == {challenge.owner.email, challenge.challengee.email}
 
 
 def test_cleanup_challenges(db, socket):

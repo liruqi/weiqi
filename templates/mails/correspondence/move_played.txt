@@ -1,0 +1,5 @@
+{% extends "_base.txt" %}
+
+{% block corr_content %}
+{{opponent}} has played a move in your correspondence game.
+{% end %}
