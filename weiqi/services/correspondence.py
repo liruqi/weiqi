@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from weiqi import settings
 from weiqi.services import BaseService
 from weiqi.mailer import send_mail
 
@@ -68,4 +69,4 @@ class CorrespondenceService(BaseService):
         return (game.black_user, game.white_user), (game.white_user, game.black_user)
 
     def _game_url(self, game):
-        return '/games/' + str(game.id)
+        return settings.BASE_URL + '/games/' + str(game.id)

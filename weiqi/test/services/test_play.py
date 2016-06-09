@@ -125,8 +125,7 @@ def test_automatch_correspondence(db, socket, mails):
 
     game = db.query(Game).first()
     assert game.is_correspondence
-    assert game.timing.cap is not None
-    assert game.timing.cap.total_seconds() > 0
+    assert game.timing.capped
 
     assert len(mails) == 2
     assert mails[0]['template'] == 'correspondence/automatch_started.txt'
@@ -268,6 +267,7 @@ def test_challenge(db, socket):
         'handicap': 0,
         'komi': 7.5,
         'owner_is_black': True,
+        'speed': 'live',
         'timing': 'fischer',
         'maintime': 10,
         'overtime': 20,
@@ -282,6 +282,8 @@ def test_challenge(db, socket):
     assert challenge.board_size == 19
     assert challenge.handicap == 0
     assert challenge.owner_is_black
+    assert ((challenge.expire_at - datetime.utcnow()) - settings.CHALLENGE_EXPIRATION).total_seconds() < 60
+    assert not challenge.is_correspondence
     assert challenge.timing_system == 'fischer'
     assert challenge.maintime == timedelta(minutes=10)
     assert challenge.overtime == timedelta(seconds=20)
@@ -289,6 +291,36 @@ def test_challenge(db, socket):
     assert len(socket.sent_messages) == 2
     assert socket.sent_messages[0]['method'] == 'challenges'
     assert socket.sent_messages[1]['method'] == 'challenges'
+
+
+def test_challenge_correspondence(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+
+    svc = PlayService(db, socket, user)
+
+    svc.execute('challenge', {
+        'user_id': other.id,
+        'size': 19,
+        'handicap': 0,
+        'komi': 7.5,
+        'owner_is_black': True,
+        'speed': 'correspondence',
+        'timing': 'fischer',
+        'maintime': 24*5,
+        'overtime': 24*3,
+        'overtime_count': 1,
+    })
+
+    assert db.query(Challenge).count() == 1
+    challenge = db.query(Challenge).first()
+
+    assert ((challenge.expire_at - datetime.utcnow()) -
+            settings.CORRESPONDENCE_CHALLENGE_EXPIRATION).total_seconds() < 60
+    assert challenge.is_correspondence
+    assert challenge.timing_system == 'fischer'
+    assert challenge.maintime == timedelta(hours=24*5)
+    assert challenge.overtime == timedelta(hours=24*3)
 
 
 def test_challange_again_replaces(db, socket):
@@ -302,6 +334,7 @@ def test_challange_again_replaces(db, socket):
         'handicap': 0,
         'komi': 7.5,
         'owner_is_black': True,
+        'speed': 'live',
         'timing': 'fischer',
         'maintime': 10,
         'overtime': 20,
@@ -364,17 +397,15 @@ def test_accept_expired_challenge(db, socket):
         svc.execute('accept_challenge', {'challenge_id': challenge.id})
 
 
-@pytest.skip
-def test_challenge_correspondence(db, socket, mails):
-    challenge = ChallengeFactory()
+def test_accept_challenge_correspondence(db, socket, mails):
+    challenge = ChallengeFactory(is_correspondence=True)
 
     svc = PlayService(db, socket, challenge.challengee)
     svc.execute('accept_challenge', {'challenge_id': challenge.id})
 
     game = db.query(Game).first()
     assert game.is_correspondence
-    assert game.timing.cap is not None
-    assert game.timing.cap.total_seconds() > 0
+    assert game.timing.capped
 
     assert len(mails) == 2
     assert mails[0]['template'] == 'correspondence/challenge_started.txt'

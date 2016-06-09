@@ -31,6 +31,9 @@
     "demo": "Demo",
     "ranked": "Ranked",
     "free": "Free",
+    "speed": "Speed",
+    "live": "Live",
+    "correspondence": "Correspondence",
     "resign": "Resign",
     "confirm_resign": "Really resign?",
     "pass": "Pass",
@@ -174,7 +177,7 @@
     "corr": {
       "header": "Correspondence",
       "l1": "Several weeks or months playtime",
-      "l2": "3d + 26h/move with a max maintime of 3 days"
+      "l2": "3d + 26h/move with a max maintime of 6 days"
     },
 
     "options": {

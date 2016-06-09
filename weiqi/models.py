@@ -475,7 +475,7 @@ class Timing(Base):
 
     system = Column(TimingSystem, nullable=False)
     main = Column(Interval, nullable=False)
-    cap = Column(Interval)
+    capped = Column(Boolean, nullable=False, default=False)
     overtime = Column(Interval, nullable=False)
     overtime_count = Column(Integer, nullable=False, default=0)
 
@@ -496,6 +496,10 @@ class Timing(Base):
     @property
     def white_total(self):
         return self.white_main + self.white_overtime
+
+    @property
+    def main_cap(self):
+        return self.main * settings.TIMING_MAIN_CAP_MULTIPLIER
 
     def to_frontend(self):
         return {
@@ -533,6 +537,7 @@ class Challenge(Base):
     handicap = Column(Integer, nullable=False)
     owner_is_black = Column(Boolean, nullable=False)
 
+    is_correspondence = Column(Boolean, nullable=False, default=False)
     timing_system = Column(TimingSystem, nullable=False)
     maintime = Column(Interval, nullable=False)
     overtime = Column(Interval, nullable=False)
@@ -574,6 +579,7 @@ class Challenge(Base):
             'handicap': self.handicap,
             'komi': self.komi,
             'owner_is_black': self.owner_is_black,
+            'is_correspondence': self.is_correspondence,
             'timing_system': self.timing_system,
             'maintime': self.maintime.total_seconds(),
             'overtime': self.overtime.total_seconds(),

@@ -18,6 +18,7 @@ import os.path
 from datetime import timedelta
 
 BASE_DIR = os.path.normpath(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)))
+BASE_URL = 'http://localhost:8000'
 
 DEBUG = True
 
@@ -64,23 +65,23 @@ HANDICAP_KOMI = 0.5
 AUTOMATCH_SIZE = 19
 AUTOMATCH_PRESETS = {
     'fast': {
+        'capped': False,
         'main': timedelta(minutes=5),
-        'cap': None,
         'overtime': timedelta(seconds=10),
     },
     'medium': {
+        'capped': False,
         'main': timedelta(minutes=10),
-        'cap': None,
         'overtime': timedelta(seconds=20),
     },
     'slow': {
+        'capped': False,
         'main': timedelta(minutes=15),
-        'cap': None,
         'overtime': timedelta(seconds=30),
     },
     'correspondence': {
+        'capped': True,
         'main': timedelta(days=3),
-        'cap': timedelta(days=3),
         'overtime': timedelta(hours=26),
     }
 }
@@ -89,6 +90,7 @@ DASHBOARD_POPULAR_GAMES = 5
 DASHBOARD_POPULAR_GAMES_MAX_AGE = timedelta(days=7)
 
 CHALLENGE_EXPIRATION = timedelta(minutes=5)
+CORRESPONDENCE_CHALLENGE_EXPIRATION = timedelta(days=3)
 
 # Maintime to add to each player's clock after server downtime.
 RESUME_TIMING_ADD_TIME = timedelta(minutes=1)
@@ -96,3 +98,5 @@ RESUME_TIMING_ADD_TIME = timedelta(minutes=1)
 METRICS_COLLECTION_INTERVAL = timedelta(seconds=10)
 
 MAX_USER_INFO_TEXT_LENGTH = 10000
+
+TIMING_MAIN_CAP_MULTIPLIER = 2

@@ -84,7 +84,7 @@ class PlayService(BaseService):
         correspondence = (preset == 'correspondence')
 
         return self._create_game(True, correspondence, black, white, handicap, komi, settings.AUTOMATCH_SIZE,
-                                 'fischer', timing_preset['main'], timing_preset['cap'], timing_preset['overtime'],
+                                 'fischer', timing_preset['capped'], timing_preset['main'], timing_preset['overtime'],
                                  0)
 
     @BaseService.authenticated
@@ -196,8 +196,9 @@ class PlayService(BaseService):
 
     @BaseService.authenticated
     @BaseService.register
-    def challenge(self, user_id, size, handicap, komi, owner_is_black, timing, maintime, overtime, overtime_count):
+    def challenge(self, user_id, size, handicap, komi, owner_is_black, speed, timing, maintime, overtime, overtime_count):
         other = self.db.query(User).filter_by(id=user_id).one()
+        correspondence = (speed == 'correspondence')
 
         if self.user == other:
             raise ServiceError('cannot challenge oneself')
@@ -208,11 +209,18 @@ class PlayService(BaseService):
         if size not in [9, 13, 19]:
             raise ServiceError('invalid board size')
 
-        if not 0 <= maintime <= 60:
-            raise ServiceError('invalid main time')
+        if correspondence:
+            if not 24 <= maintime <= 24*5:
+                raise ServiceError('invalid main time')
 
-        if not 0 <= overtime <= 60:
-            raise ServiceError('invalid overtime')
+            if not 4 <= overtime <= 24*3:
+                raise ServiceError('invalid overtime')
+        else:
+            if not 0 <= maintime <= 60:
+                raise ServiceError('invalid main time')
+
+            if not 0 <= overtime <= 60:
+                raise ServiceError('invalid overtime')
 
         if handicap is None:
             black, white, handicap = self.game_players_handicap(self.user, other)
@@ -223,16 +231,26 @@ class PlayService(BaseService):
 
         self.db.query(Challenge).filter_by(owner=self.user, challengee=other).delete()
 
-        challenge = Challenge(expire_at=(datetime.utcnow() + settings.CHALLENGE_EXPIRATION),
+        if correspondence:
+            expire_at = (datetime.utcnow() + settings.CORRESPONDENCE_CHALLENGE_EXPIRATION)
+            maintime = timedelta(hours=maintime)
+            overtime = timedelta(hours=overtime)
+        else:
+            expire_at = (datetime.utcnow() + settings.CHALLENGE_EXPIRATION)
+            maintime = timedelta(minutes=maintime)
+            overtime = timedelta(seconds=overtime)
+
+        challenge = Challenge(expire_at=expire_at,
                               owner=self.user,
                               challengee=other,
                               board_size=size,
                               handicap=handicap,
                               komi=komi,
                               owner_is_black=owner_is_black,
+                              is_correspondence=correspondence,
                               timing_system=timing,
-                              maintime=timedelta(minutes=maintime),
-                              overtime=timedelta(seconds=overtime),
+                              maintime=maintime,
+                              overtime=overtime,
                               overtime_count=overtime_count)
 
         self.db.add(challenge)
@@ -269,9 +287,9 @@ class PlayService(BaseService):
         else:
             black, white = challenge.challengee, challenge.owner
 
-        game = self._create_game(False, False, black, white, challenge.handicap, challenge.komi, challenge.board_size,
-                                 challenge.timing_system, challenge.maintime, None, challenge.overtime,
-                                 challenge.overtime_count)
+        game = self._create_game(False, challenge.is_correspondence, black, white, challenge.handicap, challenge.komi,
+                                 challenge.board_size, challenge.timing_system, challenge.is_correspondence,
+                                 challenge.maintime, challenge.overtime, challenge.overtime_count)
 
         self.db.commit()
 
@@ -301,7 +319,7 @@ class PlayService(BaseService):
                      correspondence,
                      black, white,
                      handicap, komi, size,
-                     timing_system, maintime, cap, overtime, overtime_count):
+                     timing_system, capped, maintime, overtime, overtime_count):
         board = Board(size, handicap)
 
         room = Room(type='game')
@@ -332,8 +350,8 @@ class PlayService(BaseService):
                         start_at=start_at,
                         timing_updated_at=start_at,
                         next_move_at=start_at,
+                        capped=capped,
                         main=maintime,
-                        cap=cap,
                         overtime=overtime,
                         overtime_count=overtime_count,
                         black_main=maintime,

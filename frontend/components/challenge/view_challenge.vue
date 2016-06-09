@@ -55,6 +55,10 @@
                 <td>{{challenge.komi}}</td>
             </tr>
             <tr>
+                <th>{{$t('game.speed')}}</th>
+                <td><qi-game-speed :game="challenge"></qi-game-speed></td>
+            </tr>
+            <tr>
                 <th>{{$t('game.timing')}}</th>
                 <td>{{challenge.timing_system}}</td>
             </tr>
