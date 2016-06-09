@@ -28,10 +28,11 @@
 <script>
     import store from './vuex/store';
     import { update_route } from './vuex/actions';
+    import { request_notify_permission } from './notify';
 
     export default {
         store: store,
-        mixins: [require('./mixins/update_handler.vue')],
+        mixins: [require('./mixins/update_handler.vue'), require('./mixins/notifications.vue')],
 
         vuex: {
             getters: {
@@ -46,6 +47,10 @@
         watch: {
             '$route.path': function() {
                 this.update_route(this.$route);
+            },
+
+            'loaded': function() {
+                request_notify_permission();
             }
         },
 

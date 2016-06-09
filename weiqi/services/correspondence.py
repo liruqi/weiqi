@@ -25,22 +25,20 @@ class CorrespondenceService(BaseService):
             return
 
         for user, other in self._both_self_other(game):
-            send_mail(user.email,
-                      user.display,
-                      'Correspondence game started',
-                      'correspondence/automatch_started.txt',
-                      {'url': self._game_url(game), 'opponent': other.display})
+            self._mail_if_offline(user,
+                                  'Correspondence game started',
+                                  'correspondence/automatch_started.txt',
+                                  {'url': self._game_url(game), 'opponent': other.display})
 
     def notify_challenge_started(self, game):
         if not game.is_correspondence:
             return
 
         for user, other in self._both_self_other(game):
-            send_mail(user.email,
-                      user.display,
-                      'Correspondence game started',
-                      'correspondence/challenge_started.txt',
-                      {'url': self._game_url(game), 'opponent': other.display})
+            self._mail_if_offline(user,
+                                  'Correspondence game started',
+                                  'correspondence/challenge_started.txt',
+                                  {'url': self._game_url(game), 'opponent': other.display})
 
     def notify_move_played(self, game, played_by):
         if not game.is_correspondence:
@@ -48,22 +46,24 @@ class CorrespondenceService(BaseService):
 
         other = (game.black_user if played_by == game.white_user else game.white_user)
 
-        send_mail(other.email,
-                  other.display,
-                  'Correspondence move played',
-                  'correspondence/move_played.txt',
-                  {'url': self._game_url(game), 'opponent': played_by.display})
+        self._mail_if_offline(other,
+                              'Correspondence move played',
+                              'correspondence/move_played.txt',
+                              {'url': self._game_url(game), 'opponent': played_by.display})
 
     def notify_game_finished(self, game):
         if not game.is_correspondence:
             return
 
         for user, other in self._both_self_other(game):
-            send_mail(user.email,
-                      user.display,
-                      'Correspondence game finished',
-                      'correspondence/game_finished.txt',
-                      {'url': self._game_url(game), 'opponent': other.display, 'result': game.result})
+            self._mail_if_offline(user,
+                                  'Correspondence game finished',
+                                  'correspondence/game_finished.txt',
+                                  {'url': self._game_url(game), 'opponent': other.display, 'result': game.result})
+
+    def _mail_if_offline(self, user, subject, template, context):
+        if not user.is_online:
+            send_mail(user.email, user.display, subject, template, context)
 
     def _both_self_other(self, game):
         return (game.black_user, game.white_user), (game.white_user, game.black_user)
