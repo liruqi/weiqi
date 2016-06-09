@@ -359,24 +359,6 @@ class GameService(BaseService):
             'white_display': game.white_display
         })
 
-    @classmethod
-    @gen.coroutine
-    def run_time_checker(cls, pubsub):
-        """A coroutine which periodically runs `check_due_moves`."""
-        from weiqi.handler.socket import SocketMixin
-
-        # Sleep for a random duration so that different processes don't all run at the same time.
-        yield gen.sleep(random.random())
-
-        while True:
-            with session() as db:
-                socket = SocketMixin()
-                socket.initialize(pubsub)
-                svc = GameService(db, socket)
-                svc.check_due_moves()
-
-            yield gen.sleep(1)
-
     def check_due_moves(self):
         """Checks and updates all timings which are due for a move being played."""
         timings = self.db.query(Timing).with_for_update().join('game').options(undefer('game.board')).filter(

@@ -370,24 +370,6 @@ class PlayService(BaseService):
     def _publish_game_started(self, game):
         self.socket.publish('game_started', game.to_frontend())
 
-    @staticmethod
-    @gen.coroutine
-    def run_challenge_cleaner(pubsub):
-        """A coroutine which periodically runs `cleanup_challenges`."""
-        from weiqi.handler.socket import SocketMixin
-
-        # Sleep for a random duration so that different processes don't all run at the same time.
-        yield gen.sleep(random.random())
-
-        while True:
-            with session() as db:
-                socket = SocketMixin()
-                socket.initialize(pubsub)
-                svc = PlayService(db, socket)
-                svc.cleanup_challenges()
-
-            yield gen.sleep(1)
-
     def cleanup_challenges(self):
         """Deletes and publishes expired challenges."""
         challenges = self.db.query(Challenge).with_for_update().filter((Challenge.expire_at < datetime.utcnow()))
@@ -400,3 +382,15 @@ class PlayService(BaseService):
         for user in [challenge.owner, challenge.challengee]:
             challenges = [c.to_frontend() for c in Challenge.open_challenges(self.db, user)]
             self.socket.publish('challenges/'+str(user.id), challenges)
+
+    def cleanup_automatches(self):
+        """Deletes automatch items which have expired or where the user was not online for a long period of time."""
+        items = (self.db.query(Automatch)
+                 .with_for_update()
+                 .join(Automatch.user)
+                 .filter(Automatch.preset == 'correspondence')
+                 .filter(User.is_online.is_(False))
+                 .filter(User.last_activity_at <= (datetime.utcnow() - settings.AUTOMATCH_EXPIRE_CORRESPONDENCE)))
+
+        for item in items:
+            self.db.delete(item)

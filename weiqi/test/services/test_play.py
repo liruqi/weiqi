@@ -111,8 +111,8 @@ def test_automatch_create_game(db, socket):
 
 
 def test_automatch_correspondence(db, socket, mails):
-    user = UserFactory(rating=1500)
-    other = UserFactory(rating=1500)
+    user = UserFactory(rating=1500, is_online=False)
+    other = UserFactory(rating=1500, is_online=False)
     AutomatchFactory(user=other, preset='correspondence',
                      user_rating=1500, user__rating=1500,
                      min_rating=1500, max_rating=1500)
@@ -398,7 +398,7 @@ def test_accept_expired_challenge(db, socket):
 
 
 def test_accept_challenge_correspondence(db, socket, mails):
-    challenge = ChallengeFactory(is_correspondence=True)
+    challenge = ChallengeFactory(is_correspondence=True, owner__is_online=False, challengee__is_online=False)
 
     svc = PlayService(db, socket, challenge.challengee)
     svc.execute('accept_challenge', {'challenge_id': challenge.id})
@@ -420,3 +420,22 @@ def test_cleanup_challenges(db, socket):
     svc.cleanup_challenges()
 
     assert db.query(Challenge).count() == 1
+
+
+def test_cleanup_automatches(db, socket):
+    u1 = UserFactory(is_online=True)
+    AutomatchFactory(user=u1, preset='correspondence')
+
+    u2 = UserFactory(is_online=False, last_activity_at=datetime.utcnow() - settings.AUTOMATCH_EXPIRE_CORRESPONDENCE)
+    AutomatchFactory(user=u2, preset='correspondence')
+
+    u3 = UserFactory(is_online=False, last_activity_at=datetime.utcnow() - settings.AUTOMATCH_EXPIRE_CORRESPONDENCE +
+                     timedelta(minutes=1))
+    AutomatchFactory(user=u3, preset='correspondence')
+
+    svc = PlayService(db, socket)
+    svc.cleanup_automatches()
+
+    matches = db.query(Automatch).all()
+    assert len(matches) == 2
+    assert {matches[0].user, matches[1].user} == {u1, u3}

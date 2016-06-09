@@ -167,7 +167,7 @@ def test_game_finished_user_status(db, socket):
 
 
 def test_game_finished_correspondence(db, socket, mails):
-    game = GameFactory(is_correspondence=True)
+    game = GameFactory(is_correspondence=True, black_user__is_online=False, white_user__is_online=False)
     svc = GameService(db, socket, game.black_user)
     svc.execute('move', {'game_id': game.id, 'move': RESIGN})
 
