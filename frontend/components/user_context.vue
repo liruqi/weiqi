@@ -1,5 +1,5 @@
 <template>
-    <div class="dropdown">
+    <div class="dropdown user-context">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <qi-username-rank :display="display" :rating="rating"></qi-username-rank>
         </a>
