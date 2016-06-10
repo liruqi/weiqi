@@ -83,10 +83,12 @@
                                         <th>{{$t('game.speed')}}</th>
                                         <td><qi-game-speed :game="game"></qi-game-speed></td>
                                     </tr>
+                                    <!-- TODO: No other timings implemented
                                     <tr>
                                         <th>{{$t('game.timing')}}</th>
                                         <td>{{game.timing.system}}</td>
                                     </tr>
+                                    -->
                                     <tr>
                                         <th>{{$t('game.maintime')}}</th>
                                         <td>{{format_duration(game.timing.main)}}</td>

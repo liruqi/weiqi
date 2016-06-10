@@ -90,12 +90,14 @@
                         </div>
                     </div>
 
+                    <!-- TODO: No other timings implemented
                     <div class="form-group">
                         <label for="challenge-timing-system">{{$t('game.timing')}}</label>
                         <select class="form-control" id="challenge-timing-system" v-model="timing" :disabled="speed == 'correspondence'">
                             <option value="fischer">Fischer</option>
                         </select>
                     </div>
+                    -->
 
                     <div class="form-group">
                         <label for="challenge-maintime">{{$t('game.maintime')}}</label>
