@@ -359,9 +359,6 @@
   },
 
   "notify": {
-    "move_played": {
-      "title": "Move played",
-      "body": "Game against {opponent}"
-    }
+    "move_played": "Move played in game against {opponent}"
   }
 }

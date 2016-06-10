@@ -39,7 +39,7 @@ export default {
 
                 var other = (this.user.user_id == game.black_user_id ? game.white_display : game.black_display);
 
-                notify(this.$t('notify.move_played.title'), this.$t('notify.move_played.body', {opponent: other}));
+                notify(this.$t('notify.move_played', {opponent: other}));
             }.bind(this));
         }
     },
