@@ -10,7 +10,14 @@
             <div class="col-sm-8">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h1 class="panel-title">#{{user.id}} &mdash; {{user.display}}</h1>
+                        <h1 class="panel-title pull-left">#{{user.id}} &mdash; {{user.display}}</h1>
+
+                        <span class="pull-right" v-if="!is_self">
+                            <a v-link="{name: 'user_message', params: {user_id: user.id}}" class="btn btn-default btn-xs">
+                                <i class="fa fa-fw fa-envelope"></i> {{$t('user.send_message')}}
+                            </a>
+                        </span>
+                        <div class="clearfix"></div>
                     </div>
 
                     <div class="panel-body">
