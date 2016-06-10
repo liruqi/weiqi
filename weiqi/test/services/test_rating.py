@@ -40,6 +40,19 @@ def test_update_ratings(db):
     assert game.white_user.rating > 1500
 
 
+def test_update_ratings_aborted(db):
+    game = GameFactory(stage='finished', result='aborted', black_user__rating=1500, white_user__rating=1500)
+    svc = RatingService(db)
+
+    svc.update_ratings(game)
+
+    assert len(game.black_user.rating_data.results) == 0
+    assert game.black_user.rating == 1500
+
+    assert len(game.white_user.rating_data.results) == 0
+    assert game.white_user.rating == 1500
+
+
 def test_handicap_black_win(db):
     game_normal = GameFactory(stage='finished', result='B+R', black_user__rating=1500, white_user__rating=1500)
     game_hc = GameFactory(stage='finished', result='B+R', black_user__rating=1500, white_user__rating=1700)
