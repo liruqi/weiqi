@@ -14,13 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from tornado.websocket import WebSocketHandler
 import json
 import uuid
 import logging
 from datetime import datetime
-from sockjs.tornado import SockJSConnection
-from tornado.web import decode_signed_value
-from weiqi import metrics, settings
+from weiqi import settings, metrics
 from weiqi.db import session
 from weiqi.services import (ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService,
                             DashboardService)
@@ -28,35 +27,22 @@ from weiqi.models import User
 
 
 class SocketMixin:
-    def __init__(self, pubsub=None):
+    def initialize(self, pubsub):
         self.id = str(uuid.uuid4())
+        self.pubsub = pubsub
         self._subs = set()
         self._services = [ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService,
                           DashboardService]
-        self.user_id = None
-        self.first_message = True
 
-        if pubsub:
-            self.pubsub = pubsub
-        else:
-            self.pubsub = self.session.server.settings.get('pubsub')
+    def get_compression_options(self):
+        return {}
 
-    @property
-    def remote_ip(self):
-        return ''
-
-    def on_open(self, info):
+    def open(self):
+        self._execute_service('connection', 'connect')
         metrics.CONNECTED_SOCKETS.inc()
 
     def on_message(self, data):
         msg = json.loads(data)
-
-        if self.first_message:
-            self.user_id = decode_signed_value(settings.SECRET, settings.COOKIE_NAME, msg.get('cookie'))
-            self.first_message = False
-            self._execute_service('connection', 'connect')
-            return
-
         service, method = msg.get('method').split('/', 1)
 
         with metrics.REQUEST_TIME.labels(msg.get('method')).time():
@@ -98,7 +84,7 @@ class SocketMixin:
 
         metrics.SENT_MESSAGES.labels(method).observe(len(data))
 
-        self.session.send_message(data)
+        self.write_message(data)
 
     def _on_pubsub(self, topic, data):
         topic = topic.split('/')[0]
@@ -114,8 +100,10 @@ class SocketMixin:
 
             with session() as db:
                 user = None
-                if self.user_id:
-                    user = db.query(User).get(int(self.user_id))
+                user_id = self.get_secure_cookie(settings.COOKIE_NAME)
+
+                if user_id:
+                    user = db.query(User).get(int(user_id))
 
                 if user and method != 'ping':
                     user.last_activity_at = datetime.utcnow()
@@ -124,11 +112,7 @@ class SocketMixin:
                 return svc.execute(method, data)
 
 
-class SocketHandler(SocketMixin, SockJSConnection):
-    def __init__(self, session):
-        SockJSConnection.__init__(self, session)
-        SocketMixin.__init__(self)
-
+class SocketHandler(SocketMixin, WebSocketHandler):
     def _execute_service(self, *args, **kwargs):
         try:
             return super()._execute_service(*args, **kwargs)

@@ -352,7 +352,8 @@ class PlayService(BaseService):
 
         while True:
             with session() as db:
-                socket = SocketMixin(pubsub)
+                socket = SocketMixin()
+                socket.initialize(pubsub)
                 svc = PlayService(db, socket)
                 svc.cleanup_challenges()
 

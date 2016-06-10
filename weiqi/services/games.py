@@ -364,7 +364,8 @@ class GameService(BaseService):
 
         while True:
             with session() as db:
-                socket = SocketMixin(pubsub)
+                socket = SocketMixin()
+                socket.initialize(pubsub)
                 svc = GameService(db, socket)
                 svc.check_due_moves()
 
