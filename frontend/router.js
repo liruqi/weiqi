@@ -17,11 +17,15 @@ export default function configRouter() {
         },
         '/settings': {
             name: 'settings',
-            component: require('./components/settings/settings.vue')
+            component: function(resolve) {
+                require(['./components/settings/settings.vue'], resolve);
+            } 
         },
         '/faq': {
             name: 'faq',
-            component: require('./components/faq.vue')
+            component: function(resolve) {
+                require(['./components/faq.vue'], resolve);
+            }
         },
         '/rooms/:room_id': {
             name: 'room',
@@ -29,23 +33,33 @@ export default function configRouter() {
         },
         '/users/:user_id': {
             name: 'user',
-            component: require('./components/user/profile.vue')
+            component: function(resolve) {
+                require(['./components/user/profile.vue'], resolve);
+            }
         },
         '/users/:user_id/message': {
             name: 'user_message',
-            component: require('./components/user/message.vue')
+            component: function(resolve) {
+                require(['./components/user/message.vue'], resolve);
+            }
         },
         '/games': {
             name: 'active_games',
-            component: require('./components/active_games.vue')
+            component: function(resolve) {
+                require(['./components/active_games.vue'], resolve);
+            }
         },
         '/games/:game_id': {
             name: 'game',
-            component: require('./components/game/game.vue')
+            component: function(resolve) {
+                require(['./components/game/game.vue'], resolve);
+            }
         },
         '/challenges/:challenge_id': {
             name: 'challenge',
-            component: require('./components/challenge/view_challenge.vue')
+            component: function(resolve) {
+                require(['./components/challenge/view_challenge.vue'], resolve);
+            }
         }
     });
 
