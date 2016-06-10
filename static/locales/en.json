@@ -260,6 +260,7 @@
     "info": {
       "header": "User info",
       "email": "Email",
+      "correspondence_emails": "Receive emails for correspondence games",
       "text": "Info text",
       "text_too_long": "Info text is too long",
       "saved": "User info saved"

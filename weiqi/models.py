@@ -67,6 +67,8 @@ class User(Base):
     avatar = deferred(Column(Binary))
     avatar_large = deferred(Column(Binary))
 
+    correspondence_emails = Column(Boolean, nullable=False, default=True)
+
     rooms = relationship('RoomUser', back_populates='user')
     connections = relationship('Connection', back_populates='user')
     automatch = relationship('Automatch', back_populates='user')

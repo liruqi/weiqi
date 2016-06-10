@@ -62,7 +62,7 @@ class CorrespondenceService(BaseService):
                                   {'url': self._game_url(game), 'opponent': other.display, 'result': game.result})
 
     def _mail_if_offline(self, user, subject, template, context):
-        if not user.is_online:
+        if user.correspondence_emails and not user.is_online:
             send_mail(user.email, user.display, subject, template, context)
 
     def _both_self_other(self, game):
