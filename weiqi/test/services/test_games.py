@@ -122,14 +122,24 @@ def test_move_finished(db, socket):
     assert game.board.at(30) == EMPTY
 
 
-def test_resign(db, socket):
-    game = GameFactory(stage='counting')
+def test_resign(db, socket, board):
+    game = GameFactory(stage='counting', board=board)
     svc = GameService(db, socket, game.black_user)
 
     svc.execute('move', {'game_id': game.id, 'move': RESIGN})
 
     assert game.stage == 'finished'
     assert game.result == 'W+R'
+
+
+def test_resign_aborted(db, socket):
+    game = GameFactory(stage='counting')
+    svc = GameService(db, socket, game.black_user)
+
+    svc.execute('move', {'game_id': game.id, 'move': RESIGN})
+
+    assert game.stage == 'finished'
+    assert game.result == 'aborted'
 
 
 def test_resign_counting(db, socket):
@@ -258,8 +268,8 @@ def test_toggle_marked_dead_finished(db, socket):
         svc.execute('toggle_marked_dead', {'game_id': game.id, 'coord': 30})
 
 
-def test_confirm_score(db, socket):
-    game = GameFactory(stage='counting', result='B+1.5')
+def test_confirm_score(db, socket, board):
+    game = GameFactory(stage='counting', result='B+1.5', board=board)
     svc = GameService(db, socket, game.black_user)
     svc.socket.subscribe('game_finished')
     svc.socket.subscribe('game_data/'+str(game.id))
@@ -274,6 +284,24 @@ def test_confirm_score(db, socket):
 
     assert game.result_white_confirmed == 'B+1.5'
     assert game.result == 'B+1.5'
+    assert game.stage == 'finished'
+    assert len(svc.socket.sent_messages) == 2
+    assert svc.socket.sent_messages[0]['method'] == 'game_finished'
+    assert svc.socket.sent_messages[1]['method'] == 'game_data'
+
+
+def test_confirm_score_aborted(db, socket):
+    game = GameFactory(stage='counting', result='B+1.5')
+    svc = GameService(db, socket, game.black_user)
+    svc.socket.subscribe('game_finished')
+    svc.socket.subscribe('game_data/'+str(game.id))
+
+    svc.user = game.black_user
+    svc.execute('confirm_score', {'game_id': game.id, 'result': 'B+1.5'})
+    svc.user = game.white_user
+    svc.execute('confirm_score', {'game_id': game.id, 'result': 'B+1.5'})
+
+    assert game.result == 'aborted'
     assert game.stage == 'finished'
     assert len(svc.socket.sent_messages) == 2
     assert svc.socket.sent_messages[0]['method'] == 'game_finished'
@@ -322,12 +350,14 @@ def test_timing(db, socket):
     assert abs(game.timing.black_main.total_seconds() - 16) < 3
 
 
-def test_timing_lose_on_time(db, socket):
+def test_timing_lose_on_time(db, socket, board):
     game = GameFactory(timing__timing_updated_at=datetime.utcnow()-timedelta(seconds=11),
                        timing__system='fischer',
                        timing__overtime=timedelta(seconds=15),
                        timing__black_main=timedelta(seconds=10),
-                       timing__black_overtime=timedelta())
+                       timing__black_overtime=timedelta(),
+                       board=board)
+
     svc = GameService(db, socket, game.black_user)
 
     svc.execute('move', {'game_id': game.id, 'move': 30})
@@ -437,12 +467,13 @@ def test_edit_info_not_demo(db, socket):
     pass
 
 
-def test_check_due_moves(db, socket):
+def test_check_due_moves(db, socket, board):
     game = GameFactory(timing__timing_updated_at=datetime.utcnow()-timedelta(seconds=11),
                        timing__system='fischer',
                        timing__overtime=timedelta(seconds=15),
                        timing__black_main=timedelta(seconds=10),
-                       timing__black_overtime=timedelta())
+                       timing__black_overtime=timedelta(),
+                       board=board)
 
     socket.subscribe('game_finished')
 

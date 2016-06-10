@@ -254,6 +254,9 @@ class GameService(BaseService):
         if game.is_demo or game.stage != 'finished':
             return
 
+        if game.board.size >= len(game.board.tree):
+            game.result = 'aborted'
+
         if game.is_ranked:
             RatingService(self.db).update_ratings(game)
 

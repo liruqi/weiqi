@@ -46,6 +46,9 @@ class RatingService(BaseService):
         if game.black_user == game.white_user:
             return
 
+        if game.result == 'aborted':
+            return
+
         winner, loser = game.winner_loser
 
         # `winner_hc` is the handicap relative to whether the winning player was black or white.

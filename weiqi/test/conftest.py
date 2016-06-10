@@ -21,7 +21,14 @@ from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import DummyBroker
 from weiqi.handler.socket import SocketMixin
 from weiqi.test import session
+from weiqi.board import Board
 from weiqi.models import User, Room, RoomMessage, RoomUser, DirectRoom, Connection, Automatch, Game, Timing, Challenge
+
+@pytest.fixture
+def board(size = 9):
+    board = Board(size)
+    [board.play(i) for i in range(size + 1)]
+    return board
 
 
 @pytest.fixture
