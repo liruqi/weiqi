@@ -62,6 +62,7 @@
                         <th>{{$t('game.black')}}</th>
                         <th>{{$t('game.result')}}</th>
                         <th>{{$t('game.type')}}</th>
+                        <th>{{$t('game.speed')}}</th>
                         <th>{{$t('game.date')}}</th>
                         <th>&nbsp;</th>
                     </tr>
@@ -83,6 +84,9 @@
                         <td>{{game.result || '-'}}</td>
                         <td>
                             <qi-game-type :game="game"></qi-game-type>
+                        </td>
+                        <td>
+                            <qi-game-speed :game="game"></qi-game-speed>
                         </td>
                         <td>{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</td>
                         <td class="text-right">

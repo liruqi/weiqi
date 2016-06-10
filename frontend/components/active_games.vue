@@ -13,6 +13,7 @@
                     <th>{{$t('game.white')}}</th>
                     <th>{{$t('game.black')}}</th>
                     <th>{{$t('game.type')}}</th>
+                    <th>{{$t('game.speed')}}</th>
                     <th>{{$t('game.started')}}</th>
                 </tr>
             </thead>
@@ -34,6 +35,9 @@
                     </template>
                     <td>
                         <qi-game-type :game="game"></qi-game-type>
+                    </td>
+                    <td>
+                        <qi-game-speed :game="game"></qi-game-speed>
                     </td>
                     <td>{{started[game.id]}}</td>
                 </tr>

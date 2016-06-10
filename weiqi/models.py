@@ -422,6 +422,7 @@ class Game(Base):
             'room_id': self.room_id,
             'is_demo': self.is_demo,
             'is_ranked': self.is_ranked,
+            'is_correspondence': self.is_correspondence,
             'stage': self.stage,
             'title': self.title,
             'komi': self.komi,
