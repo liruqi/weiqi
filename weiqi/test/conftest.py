@@ -26,7 +26,7 @@ from weiqi.models import User, Room, RoomMessage, RoomUser, DirectRoom, Connecti
 
 
 @pytest.fixture
-def board(size = 9):
+def board(size=9):
     board = Board(size)
     [board.play(i) for i in range(size + 1)]
     return board
