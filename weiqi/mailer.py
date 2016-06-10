@@ -21,6 +21,7 @@ from tornado.template import Loader
 from weiqi import settings
 
 _loader = Loader(os.path.join(settings.BASE_DIR, 'templates', 'mails'))
+console_mails = []
 
 
 def send_mail(to_mail, to_name, subject, template, context):
@@ -29,19 +30,22 @@ def send_mail(to_mail, to_name, subject, template, context):
     context['recipient_name'] = to_name
     body = _loader.load(template).generate(**context).decode()
 
-    send_mail_raw(to_mail, subject, body)
-
-
-def send_mail_raw(to, subject, body):
     backend = globals()[settings.MAILER['backend'] + '_mailer']
-    backend(to, subject, body)
+    backend(to_mail, subject, body, template)
 
 
-def console_mailer(to, subject, body):
+def console_mailer(to, subject, body, template=None):
     print('To: %s\nSubject: %s\nBody:\n%s' % (to, subject, body))
 
+    console_mails.append({
+        'to': to,
+        'subject': subject,
+        'body': body,
+        'template': template,
+    })
 
-def smtp_mailer(to, subject, body):
+
+def smtp_mailer(to, subject, body, template=None):
     msg = MIMEText(body)
     msg['Subject'] = subject
     msg['From'] = settings.MAILER['from']

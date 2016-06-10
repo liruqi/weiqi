@@ -15,14 +15,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import random
+from datetime import timedelta
+from tornado import gen
 import tornado.web
 import tornado.options
 import tornado.httpserver
 from weiqi import settings
 from weiqi.handler import auth, socket, index, metrics
+from weiqi.handler.socket import SocketMixin
 from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import create_message_broker
 from weiqi.services import GameService, PlayService
+from weiqi.db import session
 
 
 class Application(tornado.web.Application):
@@ -67,11 +72,32 @@ def run_app():
     logging.info("Listening on :{}".format(settings.LISTEN_PORT))
     app.listen(settings.LISTEN_PORT, xheaders=True)
 
-    tornado.ioloop.IOLoop.current().spawn_callback(app.broker.run)
-    tornado.ioloop.IOLoop.current().spawn_callback(GameService.run_time_checker, app.pubsub)
-    tornado.ioloop.IOLoop.current().spawn_callback(PlayService.run_challenge_cleaner, app.pubsub)
+    spawn_cb = tornado.ioloop.IOLoop.current().spawn_callback
+    spawn_cb(app.broker.run)
+    spawn_cb(service_callback_runner(app, GameService, 'check_due_moves', timedelta(seconds=1)))
+    spawn_cb(service_callback_runner(app, PlayService, 'cleanup_challenges', timedelta(seconds=1)))
+    spawn_cb(service_callback_runner(app, PlayService, 'cleanup_automatches', timedelta(seconds=10)))
+
     tornado.ioloop.IOLoop.current().start()
 
 
 def create_app():
     return Application()
+
+
+def service_callback_runner(app, service, method, interval):
+    """Returns a coroutine which periodically runs a method on the given service."""
+    @gen.coroutine
+    def callback():
+        # Sleep for a random duration so that different processes don't all run at the same time.
+        yield gen.sleep(random.random())
+
+        while True:
+            with session() as db:
+                socket = SocketMixin()
+                socket.initialize(app.pubsub)
+                svc = service(db, socket)
+                getattr(svc, method)()
+
+            yield gen.sleep(interval.total_seconds())
+    return callback

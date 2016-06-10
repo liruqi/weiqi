@@ -80,6 +80,10 @@
                                         <td><qi-game-type :game="game"></qi-game-type></td>
                                     </tr>
                                     <tr>
+                                        <th>{{$t('game.speed')}}</th>
+                                        <td><qi-game-speed :game="game"></qi-game-speed></td>
+                                    </tr>
+                                    <tr>
                                         <th>{{$t('game.timing')}}</th>
                                         <td>{{game.timing.system}}</td>
                                     </tr>

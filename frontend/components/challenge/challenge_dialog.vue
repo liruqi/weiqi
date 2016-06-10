@@ -42,7 +42,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="challenge-black-white">{{$t('challenge.dialog.black_white')}}</label>
+                        <label>{{$t('challenge.dialog.black_white')}}</label>
 
                         <div class="radio">
                             <label :class="{'text-muted': !can_auto_black_white}">
@@ -74,8 +74,25 @@
                     </div>
 
                     <div class="form-group">
+                        <label>{{$t('game.speed')}}</label>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="speed" v-model="speed" value="live">
+                                {{$t('game.live')}}
+                            </label>
+
+                            &nbsp;&nbsp;&nbsp;
+
+                            <label>
+                                <input type="radio" name="speed" v-model="speed" value="correspondence">
+                                {{$t('game.correspondence')}}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="challenge-timing-system">{{$t('game.timing')}}</label>
-                        <select class="form-control" id="challenge-timing-system" v-model="timing">
+                        <select class="form-control" id="challenge-timing-system" v-model="timing" :disabled="speed == 'correspondence'">
                             <option value="fischer">Fischer</option>
                         </select>
                     </div>
@@ -123,30 +140,9 @@
                 handicap: 'auto',
                 komi: SETTINGS.DEFAULT_KOMI,
                 black_white: 'auto',
+                speed: 'live',
                 maintime: 10,
                 overtime: 20,
-
-                maintime_options: [
-                    [1, "1min"],
-                    [5, "5min"],
-                    [10, "10min"],
-                    [15, "15min"],
-                    [20, "20min"],
-                    [30, "30min"],
-                    [40, "40min"],
-                    [50, "50min"],
-                    [60, "60min"]
-                ],
-
-                fischer_options: [
-                    [10, "10sec"],
-                    [15, "15sec"],
-                    [20, "20sec"],
-                    [30, "30sec"],
-                    [40, "40sec"],
-                    [50, "50sec"],
-                    [60, "60sec"]
-                ]
             }
         },
 
@@ -223,6 +219,60 @@
         computed: {
             can_auto_black_white() {
                 return this.handicap == 'auto' || this.handicap == '0';
+            },
+
+            maintime_options() {
+                if(this.speed == 'correspondence') {
+                    return [
+                        [24, "1d"],
+                        [24*2, "2d"],
+                        [24*3, "3d"],
+                        [24*4, "4d"],
+                        [24*5, "5d"]
+                    ];
+                } else {
+                    return [
+                        [1, "1min"],
+                        [5, "5min"],
+                        [10, "10min"],
+                        [15, "15min"],
+                        [20, "20min"],
+                        [30, "30min"],
+                        [40, "40min"],
+                        [50, "50min"],
+                        [60, "60min"]
+                    ];
+                }
+            },
+
+            fischer_options() {
+                if(this.speed == 'correspondence') {
+                    return [
+                        [4, "4h"],
+                        [5, "5h"],
+                        [6, "6h"],
+                        [7, "7h"],
+                        [8, "8h"],
+                        [10, "10h"],
+                        [12, "12h"],
+                        [16, "16h"],
+                        [20, "20h"],
+                        [24, "1d"],
+                        [36, "1d 12h"],
+                        [24*2, "2d"],
+                        [24*3, "3d"]
+                    ];
+                } else {
+                    return [
+                        [10, "10sec"],
+                        [15, "15sec"],
+                        [20, "20sec"],
+                        [30, "30sec"],
+                        [40, "40sec"],
+                        [50, "50sec"],
+                        [60, "60sec"]
+                    ];
+                }
             }
         },
 
@@ -244,6 +294,14 @@
                     this.komi = SETTINGS.HANDICAP_KOMI;
                 } else {
                     this.komi = SETTINGS.DEFAULT_KOMI;
+                }
+            },
+
+            'speed': function(val) {
+                if(val == 'correspondence') {
+                    this.timing = 'fischer';
+                    this.maintime = 24*3;
+                    this.overtime = 24;
                 }
             }
         },
@@ -286,6 +344,7 @@
                     handicap: null,
                     komi: +this.komi,
                     owner_is_black: null,
+                    speed: this.speed,
                     timing: this.timing,
                     maintime: this.maintime,
                     overtime: this.overtime,

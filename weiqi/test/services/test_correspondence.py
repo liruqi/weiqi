@@ -14,13 +14,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .base import BaseService, ServiceError
-from .rating import RatingService
-from .rooms import RoomService
-from .users import UserService
-from .correspondence import CorrespondenceService
-from .games import GameService
-from .connection import ConnectionService
-from .play import PlayService
-from .settings import SettingsService
-from .dashboard import DashboardService
+from weiqi.services import CorrespondenceService
+from weiqi.test.factories import GameFactory
+
+
+def test_correspondence_settings(db, socket, mails):
+    game = GameFactory(is_correspondence=True,
+                       black_user__correspondence_emails=False,
+                       black_user__is_online=False,
+                       white_user__correspondence_emails=True,
+                       white_user__is_online=False)
+
+    svc = CorrespondenceService(db, socket)
+    svc.notify_automatch_started(game)
+
+    assert len(mails) == 1
+    assert mails[0]['to'] == game.white_user.email

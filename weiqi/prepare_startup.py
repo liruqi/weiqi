@@ -33,6 +33,6 @@ def _prepare_db():
     logging.info("Cleaning database ...")
     with session() as db:
         db.query(Connection).delete()
-        db.query(Automatch).delete()
+        db.query(Automatch).filter(Automatch.preset != 'correspondence').delete()
         db.query(User).update({'is_online': False})
         GameService(db).resume_all_games()

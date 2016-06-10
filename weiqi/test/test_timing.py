@@ -92,3 +92,25 @@ def test_fischer():
     assert timing.white_main == timedelta(minutes=2, seconds=20)
     assert timing.white_overtime == timedelta()
     assert timing.next_move_at - (datetime.utcnow() + timedelta(minutes=2, seconds=50)) < timedelta(seconds=1)
+
+
+def test_fischer_cap():
+    timing = Timing(system='fischer',
+                    start_at=datetime.utcnow(),
+                    timing_updated_at=datetime.utcnow(),
+                    capped=True,
+                    main=timedelta(minutes=1, seconds=30),
+                    overtime=timedelta(seconds=20),
+                    black_main=timedelta(minutes=2, seconds=30),
+                    black_overtime=timedelta(),
+                    white_main=timedelta(minutes=2),
+                    white_overtime=timedelta())
+
+    update_timing_after_move(timing, True)
+    assert timing.black_main == timedelta(minutes=2, seconds=50)
+
+    update_timing_after_move(timing, True)
+    assert timing.black_main == timedelta(minutes=3)
+
+    update_timing_after_move(timing, True)
+    assert timing.black_main == timedelta(minutes=3)

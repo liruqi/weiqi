@@ -1,0 +1,7 @@
+{% extends "../_base_mail.txt" %}
+
+{% block content %}{% block corr_content %}{% end %}
+To see the game please follow this link:
+
+{{url}}
+{% end %}

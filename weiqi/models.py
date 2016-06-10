@@ -67,6 +67,8 @@ class User(Base):
     avatar = deferred(Column(Binary))
     avatar_large = deferred(Column(Binary))
 
+    correspondence_emails = Column(Boolean, nullable=False, default=True)
+
     rooms = relationship('RoomUser', back_populates='user')
     connections = relationship('Connection', back_populates='user')
     automatch = relationship('Automatch', back_populates='user')
@@ -337,6 +339,7 @@ class Game(Base):
 
     is_demo = Column(Boolean, nullable=False, default=False)
     is_ranked = Column(Boolean, nullable=False, default=True)
+    is_correspondence = Column(Boolean, nullable=False, default=False)
 
     stage = Column(Enum('playing', 'counting', 'finished', name='game_stage'), nullable=False)
     title = Column(String, nullable=False, default='')
@@ -374,6 +377,12 @@ class Game(Base):
         CheckConstraint('is_demo OR black_user_id != white_user_id'),
         CheckConstraint('NOT is_demo OR demo_owner_id IS NOT NULL'),
     )
+
+    @validates('is_demo', 'is_correspondence')
+    def validate_is_correspondence(self, key, val):
+        if key == 'is_correspondence' and val and self.is_demo:
+            raise ValueError('demo games cannot be correspondence games')
+        return val
 
     @property
     def current_user(self):
@@ -413,6 +422,7 @@ class Game(Base):
             'room_id': self.room_id,
             'is_demo': self.is_demo,
             'is_ranked': self.is_ranked,
+            'is_correspondence': self.is_correspondence,
             'stage': self.stage,
             'title': self.title,
             'komi': self.komi,
@@ -468,6 +478,7 @@ class Timing(Base):
 
     system = Column(TimingSystem, nullable=False)
     main = Column(Interval, nullable=False)
+    capped = Column(Boolean, nullable=False, default=False)
     overtime = Column(Interval, nullable=False)
     overtime_count = Column(Integer, nullable=False, default=0)
 
@@ -488,6 +499,10 @@ class Timing(Base):
     @property
     def white_total(self):
         return self.white_main + self.white_overtime
+
+    @property
+    def main_cap(self):
+        return self.main * settings.TIMING_MAIN_CAP_MULTIPLIER
 
     def to_frontend(self):
         return {
@@ -525,6 +540,7 @@ class Challenge(Base):
     handicap = Column(Integer, nullable=False)
     owner_is_black = Column(Boolean, nullable=False)
 
+    is_correspondence = Column(Boolean, nullable=False, default=False)
     timing_system = Column(TimingSystem, nullable=False)
     maintime = Column(Interval, nullable=False)
     overtime = Column(Interval, nullable=False)
@@ -566,6 +582,7 @@ class Challenge(Base):
             'handicap': self.handicap,
             'komi': self.komi,
             'owner_is_black': self.owner_is_black,
+            'is_correspondence': self.is_correspondence,
             'timing_system': self.timing_system,
             'maintime': self.maintime.total_seconds(),
             'overtime': self.overtime.total_seconds(),

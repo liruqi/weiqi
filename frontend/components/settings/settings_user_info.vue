@@ -15,6 +15,11 @@
 
                         <p class="help-block text-danger" v-if="$settings.email.email_exists">{{$t('sign_up.email_exists')}}</p>
                     </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" v-model="correspondence_emails"> {{$t('settings.info.correspondence_emails')}}
+                        </label>
+                    </div>
                     <div class="form-group" :class="form_group_classes($settings.info_text)">
                         <label for="user-info-text">{{$t('settings.info.text')}}</label>
                         <textarea id="user-info-text" class="form-control" v-model="info_text" rows="10"
@@ -43,6 +48,7 @@
             return {
                 saved_email: '',
                 email: '',
+                correspondence_emails: false,
                 info_text: ''
             }
         },
@@ -51,6 +57,7 @@
             socket.send('settings/user_info', {}, function(data) {
                 this.email = data.email;
                 this.saved_email = data.email;
+                this.correspondence_emails = data.correspondence_emails;
                 this.info_text = data.info_text;
 
                 this.$nextTick(function() {
@@ -81,7 +88,8 @@
             save() {
                 var data = {
                     email: this.email,
-                    info_text: this.info_text
+                    info_text: this.info_text,
+                    correspondence_emails: this.correspondence_emails
                 };
 
                 socket.send('settings/save_user_info', data, function() {

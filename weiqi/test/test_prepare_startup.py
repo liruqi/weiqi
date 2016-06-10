@@ -14,13 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .base import BaseService, ServiceError
-from .rating import RatingService
-from .rooms import RoomService
-from .users import UserService
-from .correspondence import CorrespondenceService
-from .games import GameService
-from .connection import ConnectionService
-from .play import PlayService
-from .settings import SettingsService
-from .dashboard import DashboardService
+from weiqi.prepare_startup import prepare_startup
+from weiqi.models import Automatch
+from weiqi.test.factories import AutomatchFactory
+
+
+def test_automatch_correspondence(db):
+    AutomatchFactory(preset='slow')
+    AutomatchFactory(preset='correspondence')
+
+    prepare_startup()
+
+    assert db.query(Automatch).count() == 1
+    assert db.query(Automatch).filter_by(preset='correspondence').count() == 1

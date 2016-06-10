@@ -1,0 +1,6 @@
+{% extends "_base.txt" %}
+
+{% block corr_content %}
+A new correspondence automatch game has started.
+Your opponent is {{opponent}}.
+{% end %}

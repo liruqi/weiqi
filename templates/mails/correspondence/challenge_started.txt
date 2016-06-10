@@ -1,0 +1,5 @@
+{% extends "_base.txt" %}
+
+{% block corr_content %}
+The correspondence game against {{opponent}} has started.
+{% end %}

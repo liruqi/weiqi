@@ -21,7 +21,7 @@ from datetime import datetime
 from tornado import gen
 from weiqi import settings
 from weiqi.db import transaction, session
-from weiqi.services import BaseService, ServiceError, UserService, RatingService, RoomService
+from weiqi.services import BaseService, ServiceError, UserService, RatingService, RoomService, CorrespondenceService
 from weiqi.models import Game, Timing
 from weiqi.board import RESIGN, BLACK, SYMBOL_TRIANGLE, SYMBOL_CIRCLE, SYMBOL_SQUARE
 from weiqi.scoring import count_score
@@ -109,6 +109,9 @@ class GameService(BaseService):
 
             if game.is_demo or game.stage != 'finished':
                 self._publish_game_update(game)
+
+            if game.is_correspondence and game.stage != 'finished':
+                CorrespondenceService(self.db, self.socket).notify_move_played(game, self.user)
 
     @BaseService.authenticated
     @BaseService.register
@@ -266,6 +269,9 @@ class GameService(BaseService):
         UserService(self.db, self.socket, game.black_user).publish_status()
         UserService(self.db, self.socket, game.white_user).publish_status()
 
+        if game.is_correspondence:
+            CorrespondenceService(self.db, self.socket).notify_game_finished(game)
+
     def _publish_game_data(self, game):
         self.socket.publish('game_data/'+str(game.id), game.to_frontend(full=True))
 
@@ -355,24 +361,6 @@ class GameService(BaseService):
             'black_display': game.black_display,
             'white_display': game.white_display
         })
-
-    @classmethod
-    @gen.coroutine
-    def run_time_checker(cls, pubsub):
-        """A coroutine which periodically runs `check_due_moves`."""
-        from weiqi.handler.socket import SocketMixin
-
-        # Sleep for a random duration so that different processes don't all run at the same time.
-        yield gen.sleep(random.random())
-
-        while True:
-            with session() as db:
-                socket = SocketMixin()
-                socket.initialize(pubsub)
-                svc = GameService(db, socket)
-                svc.check_due_moves()
-
-            yield gen.sleep(1)
 
     def check_due_moves(self):
         """Checks and updates all timings which are due for a move being played."""

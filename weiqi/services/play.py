@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 import random
 from weiqi import settings
 from weiqi.db import session
-from weiqi.services import BaseService, ServiceError
+from weiqi.services import BaseService, ServiceError, CorrespondenceService
 from weiqi.rating import rating_range, rank_diff
 from weiqi.models import Automatch, Room, RoomUser, Game, Timing, User, Challenge
 from weiqi.board import Board
@@ -71,6 +71,9 @@ class PlayService(BaseService):
             self._publish_game_started(game)
             self._publish_automatch(game.black_user, False)
             self._publish_automatch(game.white_user, False)
+
+            if game.is_correspondence:
+                CorrespondenceService(self.db, self.socket).notify_automatch_started(game)
         else:
             self._publish_automatch(self.user, True)
 
@@ -78,9 +81,11 @@ class PlayService(BaseService):
         black, white, handicap = self.game_players_handicap(user, other)
         komi = settings.DEFAULT_KOMI if handicap == 0 else settings.HANDICAP_KOMI
         timing_preset = settings.AUTOMATCH_PRESETS[preset]
+        correspondence = (preset == 'correspondence')
 
-        return self._create_game(True, black, white, handicap, komi, settings.AUTOMATCH_SIZE,
-                                 'fischer', timing_preset['main'], timing_preset['overtime'], 0)
+        return self._create_game(True, correspondence, black, white, handicap, komi, settings.AUTOMATCH_SIZE,
+                                 'fischer', timing_preset['capped'], timing_preset['main'], timing_preset['overtime'],
+                                 0)
 
     @BaseService.authenticated
     @BaseService.register
@@ -191,8 +196,9 @@ class PlayService(BaseService):
 
     @BaseService.authenticated
     @BaseService.register
-    def challenge(self, user_id, size, handicap, komi, owner_is_black, timing, maintime, overtime, overtime_count):
+    def challenge(self, user_id, size, handicap, komi, owner_is_black, speed, timing, maintime, overtime, overtime_count):
         other = self.db.query(User).filter_by(id=user_id).one()
+        correspondence = (speed == 'correspondence')
 
         if self.user == other:
             raise ServiceError('cannot challenge oneself')
@@ -203,11 +209,18 @@ class PlayService(BaseService):
         if size not in [9, 13, 19]:
             raise ServiceError('invalid board size')
 
-        if not 0 <= maintime <= 60:
-            raise ServiceError('invalid main time')
+        if correspondence:
+            if not 24 <= maintime <= 24*5:
+                raise ServiceError('invalid main time')
 
-        if not 0 <= overtime <= 60:
-            raise ServiceError('invalid overtime')
+            if not 4 <= overtime <= 24*3:
+                raise ServiceError('invalid overtime')
+        else:
+            if not 0 <= maintime <= 60:
+                raise ServiceError('invalid main time')
+
+            if not 0 <= overtime <= 60:
+                raise ServiceError('invalid overtime')
 
         if handicap is None:
             black, white, handicap = self.game_players_handicap(self.user, other)
@@ -218,16 +231,26 @@ class PlayService(BaseService):
 
         self.db.query(Challenge).filter_by(owner=self.user, challengee=other).delete()
 
-        challenge = Challenge(expire_at=(datetime.utcnow() + settings.CHALLENGE_EXPIRATION),
+        if correspondence:
+            expire_at = (datetime.utcnow() + settings.CORRESPONDENCE_CHALLENGE_EXPIRATION)
+            maintime = timedelta(hours=maintime)
+            overtime = timedelta(hours=overtime)
+        else:
+            expire_at = (datetime.utcnow() + settings.CHALLENGE_EXPIRATION)
+            maintime = timedelta(minutes=maintime)
+            overtime = timedelta(seconds=overtime)
+
+        challenge = Challenge(expire_at=expire_at,
                               owner=self.user,
                               challengee=other,
                               board_size=size,
                               handicap=handicap,
                               komi=komi,
                               owner_is_black=owner_is_black,
+                              is_correspondence=correspondence,
                               timing_system=timing,
-                              maintime=timedelta(minutes=maintime),
-                              overtime=timedelta(seconds=overtime),
+                              maintime=maintime,
+                              overtime=overtime,
                               overtime_count=overtime_count)
 
         self.db.add(challenge)
@@ -264,14 +287,17 @@ class PlayService(BaseService):
         else:
             black, white = challenge.challengee, challenge.owner
 
-        game = self._create_game(False, black, white, challenge.handicap, challenge.komi, challenge.board_size,
-                                 challenge.timing_system, challenge.maintime, challenge.overtime,
-                                 challenge.overtime_count)
+        game = self._create_game(False, challenge.is_correspondence, black, white, challenge.handicap, challenge.komi,
+                                 challenge.board_size, challenge.timing_system, challenge.is_correspondence,
+                                 challenge.maintime, challenge.overtime, challenge.overtime_count)
 
         self.db.commit()
 
         self._publish_game_started(game)
         self._publish_challenges(challenge)
+
+        if game.is_correspondence:
+            CorrespondenceService(self.db, self.socket).notify_challenge_started(game)
 
     def game_players_handicap(self, user: User, other: User):
         handicap = rank_diff(user.rating, other.rating)
@@ -290,9 +316,10 @@ class PlayService(BaseService):
 
     def _create_game(self,
                      ranked,
+                     correspondence,
                      black, white,
                      handicap, komi, size,
-                     timing_system, maintime, overtime, overtime_count):
+                     timing_system, capped, maintime, overtime, overtime_count):
         board = Board(size, handicap)
 
         room = Room(type='game')
@@ -302,6 +329,7 @@ class PlayService(BaseService):
         game = Game(room=room,
                     is_demo=False,
                     is_ranked=ranked,
+                    is_correspondence=correspondence,
                     board=board,
                     stage='playing',
                     komi=komi,
@@ -322,6 +350,7 @@ class PlayService(BaseService):
                         start_at=start_at,
                         timing_updated_at=start_at,
                         next_move_at=start_at,
+                        capped=capped,
                         main=maintime,
                         overtime=overtime,
                         overtime_count=overtime_count,
@@ -341,24 +370,6 @@ class PlayService(BaseService):
     def _publish_game_started(self, game):
         self.socket.publish('game_started', game.to_frontend())
 
-    @staticmethod
-    @gen.coroutine
-    def run_challenge_cleaner(pubsub):
-        """A coroutine which periodically runs `cleanup_challenges`."""
-        from weiqi.handler.socket import SocketMixin
-
-        # Sleep for a random duration so that different processes don't all run at the same time.
-        yield gen.sleep(random.random())
-
-        while True:
-            with session() as db:
-                socket = SocketMixin()
-                socket.initialize(pubsub)
-                svc = PlayService(db, socket)
-                svc.cleanup_challenges()
-
-            yield gen.sleep(1)
-
     def cleanup_challenges(self):
         """Deletes and publishes expired challenges."""
         challenges = self.db.query(Challenge).with_for_update().filter((Challenge.expire_at < datetime.utcnow()))
@@ -371,3 +382,15 @@ class PlayService(BaseService):
         for user in [challenge.owner, challenge.challengee]:
             challenges = [c.to_frontend() for c in Challenge.open_challenges(self.db, user)]
             self.socket.publish('challenges/'+str(user.id), challenges)
+
+    def cleanup_automatches(self):
+        """Deletes automatch items which have expired or where the user was not online for a long period of time."""
+        items = (self.db.query(Automatch)
+                 .with_for_update()
+                 .join(Automatch.user)
+                 .filter(Automatch.preset == 'correspondence')
+                 .filter(User.is_online.is_(False))
+                 .filter(User.last_activity_at <= (datetime.utcnow() - settings.AUTOMATCH_EXPIRE_CORRESPONDENCE)))
+
+        for item in items:
+            self.db.delete(item)

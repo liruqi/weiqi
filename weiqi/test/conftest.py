@@ -23,6 +23,7 @@ from weiqi.handler.socket import SocketMixin
 from weiqi.test import session
 from weiqi.board import Board
 from weiqi.models import User, Room, RoomMessage, RoomUser, DirectRoom, Connection, Automatch, Game, Timing, Challenge
+from weiqi.mailer import console_mails
 
 
 @pytest.fixture
@@ -54,6 +55,12 @@ def db():
     session.query(Timing).delete()
     session.query(Challenge).delete()
     return session
+
+
+@pytest.fixture
+def mails():
+    console_mails.clear()
+    return console_mails
 
 
 class DummySocket(SocketMixin):

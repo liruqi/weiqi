@@ -110,6 +110,29 @@ def test_automatch_create_game(db, socket):
     assert not socket.sent_messages[2]['data']['in_queue']
 
 
+def test_automatch_correspondence(db, socket, mails):
+    user = UserFactory(rating=1500, is_online=False)
+    other = UserFactory(rating=1500, is_online=False)
+    AutomatchFactory(user=other, preset='correspondence',
+                     user_rating=1500, user__rating=1500,
+                     min_rating=1500, max_rating=1500)
+
+    svc = PlayService(db, socket, user)
+    svc.execute('automatch', {'preset': 'correspondence', 'max_hc': 0})
+
+    assert db.query(Automatch).count() == 0
+    assert db.query(Game).count() == 1
+
+    game = db.query(Game).first()
+    assert game.is_correspondence
+    assert game.timing.capped
+
+    assert len(mails) == 2
+    assert mails[0]['template'] == 'correspondence/automatch_started.txt'
+    assert mails[1]['template'] == 'correspondence/automatch_started.txt'
+    assert {mails[0]['to'], mails[1]['to']} == {user.email, other.email}
+
+
 def test_game_players_handicap():
     svc = PlayService()
 
@@ -244,6 +267,7 @@ def test_challenge(db, socket):
         'handicap': 0,
         'komi': 7.5,
         'owner_is_black': True,
+        'speed': 'live',
         'timing': 'fischer',
         'maintime': 10,
         'overtime': 20,
@@ -258,6 +282,8 @@ def test_challenge(db, socket):
     assert challenge.board_size == 19
     assert challenge.handicap == 0
     assert challenge.owner_is_black
+    assert ((challenge.expire_at - datetime.utcnow()) - settings.CHALLENGE_EXPIRATION).total_seconds() < 60
+    assert not challenge.is_correspondence
     assert challenge.timing_system == 'fischer'
     assert challenge.maintime == timedelta(minutes=10)
     assert challenge.overtime == timedelta(seconds=20)
@@ -265,6 +291,36 @@ def test_challenge(db, socket):
     assert len(socket.sent_messages) == 2
     assert socket.sent_messages[0]['method'] == 'challenges'
     assert socket.sent_messages[1]['method'] == 'challenges'
+
+
+def test_challenge_correspondence(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+
+    svc = PlayService(db, socket, user)
+
+    svc.execute('challenge', {
+        'user_id': other.id,
+        'size': 19,
+        'handicap': 0,
+        'komi': 7.5,
+        'owner_is_black': True,
+        'speed': 'correspondence',
+        'timing': 'fischer',
+        'maintime': 24*5,
+        'overtime': 24*3,
+        'overtime_count': 1,
+    })
+
+    assert db.query(Challenge).count() == 1
+    challenge = db.query(Challenge).first()
+
+    assert ((challenge.expire_at - datetime.utcnow()) -
+            settings.CORRESPONDENCE_CHALLENGE_EXPIRATION).total_seconds() < 60
+    assert challenge.is_correspondence
+    assert challenge.timing_system == 'fischer'
+    assert challenge.maintime == timedelta(hours=24*5)
+    assert challenge.overtime == timedelta(hours=24*3)
 
 
 def test_challange_again_replaces(db, socket):
@@ -278,6 +334,7 @@ def test_challange_again_replaces(db, socket):
         'handicap': 0,
         'komi': 7.5,
         'owner_is_black': True,
+        'speed': 'live',
         'timing': 'fischer',
         'maintime': 10,
         'overtime': 20,
@@ -340,6 +397,22 @@ def test_accept_expired_challenge(db, socket):
         svc.execute('accept_challenge', {'challenge_id': challenge.id})
 
 
+def test_accept_challenge_correspondence(db, socket, mails):
+    challenge = ChallengeFactory(is_correspondence=True, owner__is_online=False, challengee__is_online=False)
+
+    svc = PlayService(db, socket, challenge.challengee)
+    svc.execute('accept_challenge', {'challenge_id': challenge.id})
+
+    game = db.query(Game).first()
+    assert game.is_correspondence
+    assert game.timing.capped
+
+    assert len(mails) == 2
+    assert mails[0]['template'] == 'correspondence/challenge_started.txt'
+    assert mails[1]['template'] == 'correspondence/challenge_started.txt'
+    assert {mails[0]['to'], mails[1]['to']} == {challenge.owner.email, challenge.challengee.email}
+
+
 def test_cleanup_challenges(db, socket):
     ChallengeFactory()
     ChallengeFactory(expire_at=datetime.utcnow() - timedelta(seconds=1))
@@ -347,3 +420,22 @@ def test_cleanup_challenges(db, socket):
     svc.cleanup_challenges()
 
     assert db.query(Challenge).count() == 1
+
+
+def test_cleanup_automatches(db, socket):
+    u1 = UserFactory(is_online=True)
+    AutomatchFactory(user=u1, preset='correspondence')
+
+    u2 = UserFactory(is_online=False, last_activity_at=datetime.utcnow() - settings.AUTOMATCH_EXPIRE_CORRESPONDENCE)
+    AutomatchFactory(user=u2, preset='correspondence')
+
+    u3 = UserFactory(is_online=False, last_activity_at=datetime.utcnow() - settings.AUTOMATCH_EXPIRE_CORRESPONDENCE +
+                     timedelta(minutes=1))
+    AutomatchFactory(user=u3, preset='correspondence')
+
+    svc = PlayService(db, socket)
+    svc.cleanup_automatches()
+
+    matches = db.query(Automatch).all()
+    assert len(matches) == 2
+    assert {matches[0].user, matches[1].user} == {u1, u3}

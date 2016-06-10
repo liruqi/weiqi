@@ -32,14 +32,16 @@ class SettingsService(BaseService):
     def user_info(self):
         return {
             'email': self.user.email,
-            'info_text': self.user.info_text
+            'info_text': self.user.info_text,
+            'correspondence_emails': self.user.correspondence_emails
         }
 
     @BaseService.authenticated
     @BaseService.register
-    def save_user_info(self, email, info_text):
+    def save_user_info(self, email, info_text, correspondence_emails):
         self.user.email = email
         self.user.info_text = info_text
+        self.user.correspondence_emails = correspondence_emails
 
     @BaseService.authenticated
     @BaseService.register
