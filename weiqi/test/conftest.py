@@ -24,6 +24,7 @@ from weiqi.test import session
 from weiqi.board import Board
 from weiqi.models import User, Room, RoomMessage, RoomUser, DirectRoom, Connection, Automatch, Game, Timing, Challenge
 
+
 @pytest.fixture
 def board(size = 9):
     board = Board(size)
