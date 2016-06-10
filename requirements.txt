@@ -14,3 +14,4 @@ prometheus-client==0.0.13
 pytest-benchmark==3.0.0
 bleach==1.4.3
 Markdown==2.6.6
+sockjs-tornado==1.0.3

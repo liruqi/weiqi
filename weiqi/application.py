@@ -18,6 +18,7 @@ import logging
 import tornado.web
 import tornado.options
 import tornado.httpserver
+from sockjs.tornado import SockJSRouter
 from weiqi import settings
 from weiqi.handler import auth, socket, index, metrics
 from weiqi.message.pubsub import PubSub
@@ -30,12 +31,13 @@ class Application(tornado.web.Application):
         self.broker = create_message_broker()
         self.pubsub = PubSub(self.broker)
 
+        self.socket_router = SockJSRouter(socket.SocketHandler, '/api/socket', {'pubsub': self.pubsub})
+
         def handler(route, cls):
             return route, cls, dict(pubsub=self.pubsub)
 
-        handlers = [
+        handlers = self.socket_router.urls + [
             handler(r'/api/ping', index.PingHandler),
-            handler(r'/api/socket', socket.SocketHandler),
             handler(r'/api/auth/sign-up', auth.SignUpHandler),
             handler(r'/api/auth/sign-up/confirm/(.*?)/(.*?)', auth.SignUpConfirmHandler),
             handler(r'/api/auth/sign-in', auth.SignInHandler),
@@ -61,6 +63,8 @@ class Application(tornado.web.Application):
 
 
 def run_app():
+    logging.getLogger().setLevel(logging.DEBUG)
+
     logging.info("Starting application ...")
     app = create_app()
 

@@ -144,7 +144,7 @@ class ConnectionService(BaseService):
     def _insert_connection(self):
         conn = Connection(id=self.socket.id,
                           user=self.user,
-                          ip=self.socket.request.remote_ip)
+                          ip=self.socket.remote_ip)
 
         self.db.add(conn)
 

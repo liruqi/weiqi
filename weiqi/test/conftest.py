@@ -26,9 +26,7 @@ from weiqi.models import User, Room, RoomMessage, RoomUser, DirectRoom, Connecti
 
 @pytest.fixture
 def socket():
-    socket = DummySocket()
-    socket.initialize(PubSub(DummyBroker()))
-    return socket
+    return DummySocket(PubSub(DummyBroker()))
 
 
 @pytest.fixture
@@ -49,11 +47,9 @@ def db():
 
 
 class DummySocket(SocketMixin):
-    def initialize(self, pubsub):
-        super().initialize(pubsub)
+    def __init__(self, pubsub):
+        super().__init__(pubsub)
         self.sent_messages = []
-        self._compress = False
-        self.request = HTTPServerRequest('GET', '/socket')
 
-    def write_message(self, msg, *args, **kwargs):
-        self.sent_messages.append(json.loads(msg))
+    def _send_data(self, data, response_to=''):
+        self.sent_messages.append(data)

@@ -1,3 +1,4 @@
+import SockJS from 'sockjs-client';
 import store from './vuex/store';
 import { server_messages } from './vuex/actions';
 
@@ -6,11 +7,12 @@ var message_counter = 0;
 var request_handler = {};
 
 export default function configWebsocket() {
-    var proto = (window.location.protocol == 'https:' ? 'wss' : 'ws');
-    
-    socket = new WebSocket(proto + '://' + window.location.host + '/api/socket');
+    socket = new SockJS(window.location.protocol + '//' + window.location.host + '/api/socket');
 
     socket.onopen = function() {
+        var cookie = getCookie('weiqi') || '';
+        cookie = cookie.slice(1, -1);
+        socket.send(JSON.stringify({cookie: cookie}));
     };
 
     socket.onmessage = function(e) {
@@ -42,6 +44,12 @@ export default function configWebsocket() {
     socket.onclose = function() {
         jQuery("#qi-disconnected").modal("show");
     };
+}
+
+function getCookie(name) {
+  var value = "; " + document.cookie;
+  var parts = value.split("; " + name + "=");
+  if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
 export function send(method, data, success) {
