@@ -17,15 +17,11 @@ export default function configRouter() {
         },
         '/settings': {
             name: 'settings',
-            component: function(resolve) {
-                require(['./components/settings/settings.vue'], resolve);
-            } 
+            component: require('./components/settings/settings.vue')
         },
         '/faq': {
             name: 'faq',
-            component: function(resolve) {
-                require(['./components/faq.vue'], resolve);
-            }
+            component: require('./components/faq.vue')
         },
         '/rooms/:room_id': {
             name: 'room',
@@ -33,33 +29,23 @@ export default function configRouter() {
         },
         '/users/:user_id': {
             name: 'user',
-            component: function(resolve) {
-                require(['./components/user/profile.vue'], resolve);
-            }
+            component: require('./components/user/profile.vue')
         },
         '/users/:user_id/message': {
             name: 'user_message',
-            component: function(resolve) {
-                require(['./components/user/message.vue'], resolve);
-            }
+            component: require('./components/user/message.vue')
         },
         '/games': {
             name: 'active_games',
-            component: function(resolve) {
-                require(['./components/active_games.vue'], resolve);
-            }
+            component: require('./components/active_games.vue')
         },
         '/games/:game_id': {
             name: 'game',
-            component: function(resolve) {
-                require(['./components/game/game.vue'], resolve);
-            }
+            component: require('./components/game/game.vue')
         },
         '/challenges/:challenge_id': {
             name: 'challenge',
-            component: function(resolve) {
-                require(['./components/challenge/view_challenge.vue'], resolve);
-            }
+            component: require('./components/challenge/view_challenge.vue')
         }
     });
 
