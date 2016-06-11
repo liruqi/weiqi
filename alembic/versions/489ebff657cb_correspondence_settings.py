@@ -17,7 +17,7 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.add_column('users', sa.Column('correspondence_emails', sa.Boolean(), nullable=False, server_default='1'))
+    op.add_column('users', sa.Column('correspondence_emails', sa.Boolean(), nullable=False, server_default=sa.true()))
 
 
 def downgrade():
