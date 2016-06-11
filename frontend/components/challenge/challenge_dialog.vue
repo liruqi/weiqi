@@ -116,6 +116,14 @@
                             </option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                      <div class="checkbox">
+                          <label>
+                              <input type="checkbox" v-model="private"> {{$t('challenge.dialog.private')}}
+                          </label>
+                      </div>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -145,6 +153,7 @@
                 speed: 'live',
                 maintime: 10,
                 overtime: 20,
+                private: false
             }
         },
 
@@ -350,7 +359,8 @@
                     timing: this.timing,
                     maintime: this.maintime,
                     overtime: this.overtime,
-                    overtime_count: 1
+                    overtime_count: 1,
+                    private: this.private
                 };
 
                 if(this.handicap != 'auto') {

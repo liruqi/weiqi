@@ -342,7 +342,7 @@
         "black": "I play black",
         "white": "I play white"
       },
-
+      "private": "Private",
       "submit": "Challenge",
       "cancel": "Cancel"
     },

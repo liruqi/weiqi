@@ -49,6 +49,9 @@ class GameService(BaseService):
         if not game:
             return
 
+        if game.is_private and game.black_user != self.user and game.white_user != self.user:
+            return
+
         RoomService(self.db, self.socket, self.user).join_room(game.room_id, True)
 
         self.subscribe(game.id)

@@ -71,6 +71,42 @@ def test_open_game_demo(db, socket):
     assert socket.sent_messages[3]['method'] == 'game_started'
 
 
+def test_open_game_private_as_player(db, socket):
+    game = GameFactory(is_private=True)
+    socket.subscribe('game_started')
+
+    svc = GameService(db, socket, game.black_user)
+    svc.execute('open_game', {'game_id': game.id})
+
+    assert socket.is_subscribed('game_data/'+str(game.id))
+    assert socket.is_subscribed('game_update/'+str(game.id))
+    assert socket.is_subscribed('game_info/'+str(game.id))
+    assert socket.is_subscribed('demo_current_node_id/'+str(game.id))
+
+    assert socket.is_subscribed('room_message/'+str(game.room_id))
+    assert socket.is_subscribed('room_user/'+str(game.room_id))
+    assert socket.is_subscribed('room_user_left/'+str(game.room_id))
+
+
+def test_open_game_private_not_player(db, socket):
+    game = GameFactory(is_private=True)
+    socket.subscribe('game_started')
+
+    random_user = UserFactory()
+
+    svc = GameService(db, socket, random_user)
+    svc.execute('open_game', {'game_id': game.id})
+
+    assert not socket.is_subscribed('game_data/'+str(game.id))
+    assert not socket.is_subscribed('game_update/'+str(game.id))
+    assert not socket.is_subscribed('game_info/'+str(game.id))
+    assert not socket.is_subscribed('demo_current_node_id/'+str(game.id))
+
+    assert not socket.is_subscribed('room_message/'+str(game.room_id))
+    assert not socket.is_subscribed('room_user/'+str(game.room_id))
+    assert not socket.is_subscribed('room_user_left/'+str(game.room_id))
+
+
 def test_close_game_demo(db, socket):
     game = DemoGameFactory()
     socket.subscribe('game_finished')

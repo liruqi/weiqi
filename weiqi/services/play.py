@@ -85,7 +85,7 @@ class PlayService(BaseService):
 
         return self._create_game(True, correspondence, black, white, handicap, komi, settings.AUTOMATCH_SIZE,
                                  'fischer', timing_preset['capped'], timing_preset['main'], timing_preset['overtime'],
-                                 0)
+                                 0, False)
 
     @BaseService.authenticated
     @BaseService.register
@@ -196,7 +196,7 @@ class PlayService(BaseService):
 
     @BaseService.authenticated
     @BaseService.register
-    def challenge(self, user_id, size, handicap, komi, owner_is_black, speed, timing, maintime, overtime, overtime_count):
+    def challenge(self, user_id, size, handicap, komi, owner_is_black, speed, timing, maintime, overtime, overtime_count, private):
         other = self.db.query(User).filter_by(id=user_id).one()
         correspondence = (speed == 'correspondence')
 
@@ -251,7 +251,8 @@ class PlayService(BaseService):
                               timing_system=timing,
                               maintime=maintime,
                               overtime=overtime,
-                              overtime_count=overtime_count)
+                              overtime_count=overtime_count,
+                              is_private=private)
 
         self.db.add(challenge)
         self.db.commit()
@@ -289,7 +290,7 @@ class PlayService(BaseService):
 
         game = self._create_game(False, challenge.is_correspondence, black, white, challenge.handicap, challenge.komi,
                                  challenge.board_size, challenge.timing_system, challenge.is_correspondence,
-                                 challenge.maintime, challenge.overtime, challenge.overtime_count)
+                                 challenge.maintime, challenge.overtime, challenge.overtime_count, challenge.is_private)
 
         self.db.commit()
 
@@ -319,7 +320,8 @@ class PlayService(BaseService):
                      correspondence,
                      black, white,
                      handicap, komi, size,
-                     timing_system, capped, maintime, overtime, overtime_count):
+                     timing_system, capped, maintime, overtime, overtime_count,
+                     private):
         board = Board(size, handicap)
 
         room = Room(type='game')
@@ -330,6 +332,7 @@ class PlayService(BaseService):
                     is_demo=False,
                     is_ranked=ranked,
                     is_correspondence=correspondence,
+                    is_private=private,
                     board=board,
                     stage='playing',
                     komi=komi,

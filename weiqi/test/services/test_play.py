@@ -272,6 +272,7 @@ def test_challenge(db, socket):
         'maintime': 10,
         'overtime': 20,
         'overtime_count': 1,
+        'private': False
     })
 
     assert db.query(Challenge).count() == 1
@@ -310,6 +311,7 @@ def test_challenge_correspondence(db, socket):
         'maintime': 24*5,
         'overtime': 24*3,
         'overtime_count': 1,
+        'private': False
     })
 
     assert db.query(Challenge).count() == 1
@@ -323,7 +325,33 @@ def test_challenge_correspondence(db, socket):
     assert challenge.overtime == timedelta(hours=24*3)
 
 
-def test_challange_again_replaces(db, socket):
+def test_challenge_private(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+
+    svc = PlayService(db, socket, user)
+
+    svc.execute('challenge', {
+        'user_id': other.id,
+        'size': 19,
+        'handicap': 0,
+        'komi': 7.5,
+        'owner_is_black': True,
+        'speed': 'correspondence',
+        'timing': 'fischer',
+        'maintime': 24*5,
+        'overtime': 24*3,
+        'overtime_count': 1,
+        'private': True
+    })
+
+    assert db.query(Challenge).count() == 1
+    challenge = db.query(Challenge).first()
+
+    assert challenge.is_private
+
+
+def test_challenge_again_replaces(db, socket):
     challenge = ChallengeFactory()
     other = ChallengeFactory(owner=challenge.owner, challengee=UserFactory())
 
@@ -339,6 +367,7 @@ def test_challange_again_replaces(db, socket):
         'maintime': 10,
         'overtime': 20,
         'overtime_count': 1,
+        'private': False
     })
 
     assert db.query(Challenge).count() == 2
