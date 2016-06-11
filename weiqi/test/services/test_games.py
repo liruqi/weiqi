@@ -89,8 +89,6 @@ def test_open_game_private_as_player(db, socket):
 
 
 def test_open_game_private_not_player(db, socket):
-
-
     game = GameFactory(is_private=True)
     socket.subscribe('game_started')
 
