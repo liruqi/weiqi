@@ -23,6 +23,7 @@
         window.SETTINGS = {% raw json_encode(settings) %};
     </script>
     <script src="{{ static_url("js/vendor/wgo.min.js") }}"></script>
-    <script src="{{ static_url("dist/all.js") }}"></script>
+    <script src="{{ static_url("dist/vendor.js") }}"></script>
+    <script src="{{ static_url("dist/app.js") }}"></script>
     <script src='https://www.google.com/recaptcha/api.js?onload=recaptchaOnload&render=explicit' async defer></script>
 {% end %}

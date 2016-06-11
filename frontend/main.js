@@ -9,7 +9,7 @@ import configValidator from './validator';
 
 // TODO: move to gulpfile
 window.jQuery = require('jquery');
-require('bootstrap-sass');
+//require('bootstrap-sass');
 require('select2');
 require('babel-polyfill');
 
