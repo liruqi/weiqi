@@ -40,6 +40,10 @@ class GameHasNotStartedError(ServiceError):
     pass
 
 
+class NotAllowedError(ServiceError):
+    pass
+
+
 class GameService(BaseService):
     __service_name__ = 'games'
 
@@ -48,6 +52,9 @@ class GameService(BaseService):
         game = self.db.query(Game).get(game_id)
         if not game:
             return
+
+        if game.is_private and game.black_user != self.user and game.white_user != self.user:
+            raise NotAllowedError('this game is private')
 
         RoomService(self.db, self.socket, self.user).join_room(game.room_id, True)
 

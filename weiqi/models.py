@@ -340,6 +340,7 @@ class Game(Base):
     is_demo = Column(Boolean, nullable=False, default=False)
     is_ranked = Column(Boolean, nullable=False, default=True)
     is_correspondence = Column(Boolean, nullable=False, default=False)
+    is_private = Column(Boolean, nullable=False, default=False)
 
     stage = Column(Enum('playing', 'counting', 'finished', name='game_stage'), nullable=False)
     title = Column(String, nullable=False, default='')
@@ -423,6 +424,7 @@ class Game(Base):
             'is_demo': self.is_demo,
             'is_ranked': self.is_ranked,
             'is_correspondence': self.is_correspondence,
+            'is_private': self.is_private,
             'stage': self.stage,
             'title': self.title,
             'komi': self.komi,
@@ -435,7 +437,7 @@ class Game(Base):
             'white_rating': self.white_rating,
             'demo_owner_id': self.demo_owner_id,
             'demo_owner_display': self.demo_owner_display,
-            'demo_owner_rating': self.demo_owner_rating,
+            'demo_owner_rating': self.demo_owner_rating
         }
 
         if full:
@@ -546,6 +548,8 @@ class Challenge(Base):
     overtime = Column(Interval, nullable=False)
     overtime_count = Column(Integer, nullable=False, default=0)
 
+    is_private = Column(Boolean, nullable=False, default=False)
+
     __table_args__ = (
         CheckConstraint('owner_id != challengee_id'),
         UniqueConstraint('owner_id', 'challengee_id'),
@@ -587,6 +591,7 @@ class Challenge(Base):
             'maintime': self.maintime.total_seconds(),
             'overtime': self.overtime.total_seconds(),
             'overtime_count': self.overtime_count,
+            'is_private': self.is_private
         }
 
 

@@ -105,6 +105,7 @@ class GameFactory(SQLAlchemyModelFactory):
 
     is_demo = False
     is_ranked = True
+    is_private = False
     stage = 'playing'
     board = factory.lazy_attribute(lambda o: Board(9))
     komi = 7.5

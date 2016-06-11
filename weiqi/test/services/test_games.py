@@ -18,7 +18,7 @@ import pytest
 from datetime import datetime, timedelta
 from weiqi import settings
 from weiqi.services import GameService, ServiceError
-from weiqi.services.games import InvalidPlayerError, InvalidStageError, GameHasNotStartedError
+from weiqi.services.games import InvalidPlayerError, InvalidStageError, GameHasNotStartedError, NotAllowedError
 from weiqi.models import Timing
 from weiqi.test.factories import GameFactory, DemoGameFactory, UserFactory
 from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN, SYMBOL_TRIANGLE
@@ -69,6 +69,37 @@ def test_open_game_demo(db, socket):
     assert socket.sent_messages[1]['method'] == 'room_logs'
     assert socket.sent_messages[2]['method'] == 'game_data'
     assert socket.sent_messages[3]['method'] == 'game_started'
+
+
+def test_open_game_private_as_player(db, socket):
+    game = GameFactory(is_private=True)
+    socket.subscribe('game_started')
+
+    svc = GameService(db, socket, game.black_user)
+    svc.execute('open_game', {'game_id': game.id})
+
+    assert socket.is_subscribed('game_data/'+str(game.id))
+    assert socket.is_subscribed('game_update/'+str(game.id))
+    assert socket.is_subscribed('game_info/'+str(game.id))
+    assert socket.is_subscribed('demo_current_node_id/'+str(game.id))
+
+    assert socket.is_subscribed('room_message/'+str(game.room_id))
+    assert socket.is_subscribed('room_user/'+str(game.room_id))
+    assert socket.is_subscribed('room_user_left/'+str(game.room_id))
+
+
+def test_open_game_private_not_player(db, socket):
+    game = GameFactory(is_private=True)
+    socket.subscribe('game_started')
+
+    random_user = UserFactory()
+
+    svc = GameService(db, socket, random_user)
+
+    with pytest.raises(NotAllowedError) as exinfo:
+        svc.execute('open_game', {'game_id': game.id})
+
+    assert 'this game is private' in str(exinfo.value)
 
 
 def test_close_game_demo(db, socket):

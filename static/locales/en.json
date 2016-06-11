@@ -34,6 +34,7 @@
     "speed": "Speed",
     "live": "Live",
     "correspondence": "Correspondence",
+    "private": "Private",
     "resign": "Resign",
     "confirm_resign": "Really resign?",
     "pass": "Pass",
@@ -342,7 +343,7 @@
         "black": "I play black",
         "white": "I play white"
       },
-
+      "private": "Private",
       "submit": "Challenge",
       "cancel": "Cancel"
     },
