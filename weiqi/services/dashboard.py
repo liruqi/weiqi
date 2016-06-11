@@ -29,7 +29,7 @@ class DashboardService(BaseService):
         games = (self.db.query(Game)
                  .join(Room)
                  .filter(Game.created_at >= datetime.utcnow() - settings.DASHBOARD_POPULAR_GAMES_MAX_AGE)
-                 .filter(Game.is_private == 0)
+                 .filter(Game.is_private.is_(False))
                  .order_by(Room.users_max.desc())
                  .order_by(desc(
                     case([
