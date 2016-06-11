@@ -262,6 +262,10 @@ class Board:
 
         return self.tree[self.current_node.parent_id].move == PASS
 
+    @property
+    def moves_played(self):
+        return len(self.tree)
+
     def play(self, move):
         validate_move(move, self.size)
 

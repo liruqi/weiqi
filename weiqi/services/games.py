@@ -257,7 +257,7 @@ class GameService(BaseService):
         if game.is_demo or game.stage != 'finished':
             return
 
-        if game.board.size >= len(game.board.tree):
+        if game.board.moves_played <= game.board.size:
             game.result = 'aborted'
 
         if game.is_ranked:
