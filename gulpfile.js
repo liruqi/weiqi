@@ -2,38 +2,38 @@
 
 var gulp = require('gulp');
 var util = require('gulp-util');
-var browserify = require('browserify');
-var vueify = require('vueify');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var uglify = require('gulp-uglify');
+var webpack = require('webpack');
 var sass = require('gulp-sass');
 var karma = require('karma');
 
+if(util.env.production) {
+    process.env.NODE_ENV = 'production';
+}
+
 var config = {
     prod: !!util.env.production,
-    js_main: './frontend/main.js',
-    js_pattern: './frontend/**/*.js',
     scss_pattern: './frontend/css/**/*.scss',
-    vue_pattern: './frontend/**/*.vue'
 };
 
-gulp.task('scripts', function() {
-    var task = browserify({
-        entries: config.js_main,
-        debug: !config.prod
-    })
-        .transform('babelify', {presets: ['es2015']})
-        .transform(vueify)
-        .bundle()
-        .pipe(source('all.js'))
-        .pipe(config.prod ? buffer() : util.noop())
-        .pipe(config.prod ? uglify() : util.noop())
-        .pipe(gulp.dest('./static/dist'));
-});
+var webpack_config = require('./webpack.config.js');
 
-gulp.task('scripts:watch', function() {
-    gulp.watch([config.vue_pattern, config.js_pattern], ['scripts']);
+if(!util.env.production) {
+    webpack_config.watch = true;
+}
+
+gulp.task('scripts', function() {
+    webpack(webpack_config, function(error, stats) {
+        if (error) {
+            util.log('[webpack]', error);
+        }
+
+        util.log('[webpack]', stats.toString({
+            colors: true, hash: false, version: false, timings: false, assets: true, chunks: false,
+            chunkModules: false, modules: false, children: false, cached: false, reasons: false,
+            source: false, errorDetails: false, chunkOrigins: false
+            //context: '', modulesSort: '', chunksSort: '', assetsSort: ''
+        }));
+    });
 });
 
 gulp.task('sass', function() {
@@ -52,9 +52,10 @@ gulp.task('server', function() {
 });
 
 gulp.task('karma', function(done) {
-    new karma.Server({
+    // Does not work with current webpack configuration
+    /*new karma.Server({
         configFile: __dirname + '/karma.conf.js'
-    }, done).start();
+    }, done).start();*/
 });
 
 gulp.task('test', function(done) {
@@ -74,6 +75,6 @@ gulp.task('fonts', function() {
     .pipe(gulp.dest('./static/dist/fonts'))
 });
 
-gulp.task('default', ['scripts', 'scripts:watch', 'sass', 'sass:watch', 'server', 'karma', 'fonts']);
+gulp.task('default', ['scripts', 'sass', 'sass:watch', 'server', 'karma', 'fonts']);
 
 gulp.task('build', ['scripts', 'sass', 'fonts']);

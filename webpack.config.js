@@ -4,7 +4,8 @@ var webpack = require('webpack');
 module.exports = {
     entry: {
         app: './frontend/main.js',
-        vendor: ['jquery', 'bootstrap-sass', 'vue', 'vuex']
+        vendor: ['jquery', 'bootstrap-sass', 'vue', 'vuex', 'vue-i18n', 'vue-router', 'vue-resource', 'vue-validator',
+            'moment', 'howler', 'cropper', 'linkifyjs', 'toastr', 'select2', 'bootbox', 'babel-polyfill']
     },
     output: {
         path: path.resolve(__dirname, './static/dist'),
@@ -49,15 +50,12 @@ module.exports = {
             }
         ]
     },
-    devServer: {
-        historyApiFallback: true,
-        noInfo: true
-    },
     devtool: '#eval-source-map'
 };
 
 if (process.env.NODE_ENV === 'production') {
     module.exports.devtool = '#source-map';
+    
     // http://vuejs.github.io/vue-loader/workflow/production.html
     module.exports.plugins = (module.exports.plugins || []).concat([
         new webpack.DefinePlugin({
@@ -65,11 +63,12 @@ if (process.env.NODE_ENV === 'production') {
                 NODE_ENV: '"production"'
             }
         }),
+        new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false
             }
         }),
-        new webpack.optimize.OccurenceOrderPlugin()
+        new webpack.optimize.OccurenceOrderPlugin(true)
     ])
 }

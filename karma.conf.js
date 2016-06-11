@@ -1,20 +1,27 @@
+var webpack_config = require('./webpack.config.js');
+
+webpack_config.plugins = [];
+webpack_config.entry = "";
+
 module.exports = function(config) {
     config.set({
         browsers: ['PhantomJS'],
 
-        frameworks: ['browserify', 'mocha'],
+        frameworks: ['mocha'],
 
         files: [
             'frontend/**/*_test.js'
         ],
 
         preprocessors: {
-            'frontend/**/*_test.js': ['browserify']
+            'frontend/**/*_test.js': ['webpack']
         },
-
-        browserify: {
-            debug: true,
-            transform: [['babelify', {'presets': 'es2015'}], 'vueify']
+        
+        webpack: webpack_config,
+        
+        webpackMiddleware: {
+            noInfo: true,
+            quiet: true,
         }
     });
 };
