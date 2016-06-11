@@ -2,15 +2,27 @@ import store from './vuex/store';
 import { server_messages } from './vuex/actions';
 
 var socket;
+var connected = false;
 var message_counter = 0;
 var request_handler = {};
 
 export default function configWebsocket() {
+    connect();
+}
+
+function connect() {
     var proto = (window.location.protocol == 'https:' ? 'wss' : 'ws');
     
     socket = new WebSocket(proto + '://' + window.location.host + '/api/socket');
 
     socket.onopen = function() {
+        connected = true;
+    };
+    
+    socket.onerror = function() {
+        if(!connected) {
+            setTimeout(connect, 5000);
+        }
     };
 
     socket.onmessage = function(e) {
