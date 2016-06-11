@@ -17,9 +17,9 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.add_column('games', sa.Column('is_correspondence', sa.Boolean(), nullable=False, server_default='0'))
-    op.add_column('timings', sa.Column('capped', sa.Boolean(), nullable=False, server_default='0'))
-    op.add_column('challenges', sa.Column('is_correspondence', sa.Boolean(), nullable=False, server_default='0'))
+    op.add_column('games', sa.Column('is_correspondence', sa.Boolean(), nullable=False, server_default=sa.false()))
+    op.add_column('timings', sa.Column('capped', sa.Boolean(), nullable=False, server_default=sa.false()))
+    op.add_column('challenges', sa.Column('is_correspondence', sa.Boolean(), nullable=False, server_default=sa.false()))
 
 
 def downgrade():
