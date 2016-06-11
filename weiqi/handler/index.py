@@ -31,7 +31,11 @@ class IndexHandler(BaseHandler):
             'HANDICAP_KOMI': settings.HANDICAP_KOMI,
         }
 
-        self.render("index.html", settings=conf)
+        self.set_header('Cache-control', 'no-cache, no-store, must-revalidate')
+        self.set_header('Pragma', 'no-cache')
+        self.set_header('Expires', '0')
+
+        self.render('index.html', settings=conf)
 
 
 class PingHandler(BaseHandler):
