@@ -351,6 +351,34 @@ def test_challenge_private(db, socket):
     assert challenge.is_private
 
 
+def test_private_challenge_generates_private_game(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+
+    svc = PlayService(db, socket, user)
+    svc2 = PlayService(db, socket, other)
+
+    svc.execute('challenge', {
+        'user_id': other.id,
+        'size': 19,
+        'handicap': 0,
+        'komi': 7.5,
+        'owner_is_black': True,
+        'speed': 'correspondence',
+        'timing': 'fischer',
+        'maintime': 24*5,
+        'overtime': 24*3,
+        'overtime_count': 1,
+        'private': True
+    })
+
+    challenge = db.query(Challenge).first()
+    svc2.execute('accept_challenge', {'challenge_id': challenge.id})
+    game = db.query(Game).first()
+
+    assert game.is_private
+
+
 def test_challenge_again_replaces(db, socket):
     challenge = ChallengeFactory()
     other = ChallengeFactory(owner=challenge.owner, challengee=UserFactory())
