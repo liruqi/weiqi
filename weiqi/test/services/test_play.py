@@ -110,6 +110,24 @@ def test_automatch_create_game(db, socket):
     assert not socket.sent_messages[2]['data']['in_queue']
 
 
+def test_automatch_preset(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+    third = UserFactory(rating=1500)
+    AutomatchFactory(user=user, user_rating=1500, user__rating=1500, min_rating=1500, max_rating=1500, preset='fast')
+
+    svc = PlayService(db, socket, other)
+    svc.execute('automatch', {'preset': 'slow', 'max_hc': 1})
+    assert db.query(Automatch).count() == 2
+    assert db.query(Game).count() == 0
+
+    svc = PlayService(db, socket, third)
+    svc.execute('automatch', {'preset': 'fast', 'max_hc': 1})
+    assert db.query(Automatch).count() == 1
+    assert db.query(Automatch).first().preset == 'slow'
+    assert db.query(Game).count() == 1
+
+
 def test_automatch_correspondence(db, socket, mails):
     user = UserFactory(rating=1500, is_online=False)
     other = UserFactory(rating=1500, is_online=False)

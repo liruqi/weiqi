@@ -47,7 +47,8 @@ class PlayService(BaseService):
             query = query.filter(Automatch.min_rating <= self.user.rating,
                                  Automatch.max_rating >= self.user.rating,
                                  Automatch.user_rating >= start,
-                                 Automatch.user_rating <= end)
+                                 Automatch.user_rating <= end,
+                                 Automatch.preset == preset)
             query = query.order_by(Automatch.created_at)
             other = query.first()
 
