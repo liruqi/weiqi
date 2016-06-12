@@ -333,6 +333,12 @@ class GameService(BaseService):
         with self._demo_tool(game_id) as (game, node):
             game.board.toggle_edit(coord, color)
 
+    @BaseService.authenticated
+    @BaseService.register
+    def demo_tool_edit_cycle(self, game_id, coord):
+        with self._demo_tool(game_id) as (game, node):
+            game.board.edit_cycle(coord)
+
     @contextmanager
     def _demo_tool(self, game_id):
         game = self.db.query(Game).options(undefer('board')).get(game_id)
