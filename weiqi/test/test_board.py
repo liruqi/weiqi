@@ -563,6 +563,26 @@ def test_toggle_edit_remove():
     assert board.at(10) == EMPTY
 
 
+def test_toggle_edit_capture():
+    board = board_from_string(
+        '.........'
+        '.........'
+        '..ooo....'
+        '..oxo....'
+        '..oxo....'
+        '..xxx....'
+        '.........'
+        '.........'
+        '.........')
+
+    upper = coord2d(4, 4)
+    lower = coord2d(4, 5)
+
+    board.toggle_edit(lower, WHITE)
+    assert board.at(upper) == EMPTY
+    assert board.at(lower) == WHITE
+
+
 def test_edit_cycle():
     board = Board(9)
     board.toggle_edit(10, BLACK)
@@ -583,7 +603,7 @@ def test_edit_cycle_capture():
            '..ooo....'
            '..oxo....'
            '..oxo....'
-           '.........'
+           '..xxx....'
            '.........'
            '.........'
            '.........')

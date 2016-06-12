@@ -499,8 +499,13 @@ class Board:
         if self.at(coord) == color:
             node.edits[str(coord)] = EMPTY
         else:
+            # Setting to EMPTY is necessary to find the correct captures
+            node.edits[str(coord)] = EMPTY
+            self._rebuild_pos()
+
             for c in self._find_captures(coord, color):
                 node.edits[str(c)] = EMPTY
+
             node.edits[str(coord)] = color
 
         self._rebuild_pos()
@@ -521,6 +526,10 @@ class Board:
             new_color = BLACK if not self.is_suicide(coord, BLACK) else WHITE
 
         if new_color != EMPTY:
+            # Setting to EMPTY is necessary to find the correct captures
+            node.edits[str(coord)] = EMPTY
+            self._rebuild_pos()
+
             for c in self._find_captures(coord, new_color):
                 node.edits[str(c)] = EMPTY
 
