@@ -116,7 +116,6 @@
                 event.preventDefault();
 
                 var coord;
-                var color;
 
                 this.confirm_coord = null;
                 this.click_event = null;
