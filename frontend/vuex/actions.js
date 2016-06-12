@@ -1,5 +1,9 @@
 import * as socket from '../socket';
 
+function make_action(type) {
+    return ({dispatch}, ...args) => dispatch(type, ...args);
+}
+
 export const server_messages = {
     'connection_data': make_action('MSG_CONNECTION_DATA'),
     'pong': make_action('MSG_PONG'),
@@ -33,10 +37,6 @@ export const update_route = make_action('UPDATE_ROUTE');
 export const toggle_sidebar = make_action('TOGGLE_SIDEBAR');
 export const update_game_time = make_action('UPDATE_GAME_TIME');
 export const clear_game_update = make_action('CLEAR_GAME_UPDATE');
-
-function make_action(type) {
-    return ({dispatch}, ...args) => dispatch(type, ...args);
-}
 
 export function open_game({dispatch, state}, game_id) {
     var game = state.open_games.find(function(game) {

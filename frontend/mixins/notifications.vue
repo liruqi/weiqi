@@ -1,18 +1,21 @@
 <script>
 import { is_tab_visible } from '../visibility'
 import { notify } from '../notify';
+import { add_event_listener } from '../events';
 
 export default {
     vuex: {
         getters: {
-            user: function(state) { return state.auth.user; },
-            game_has_update: function (state) { return state.game_has_update; },
-            open_games: function(state) { return state.open_games; }
+            user: function(state) { return state.auth.user; }
         }
     },
 
-    watch: {
-        'game_updates': function (val, old) {
+    ready() {
+        add_event_listener('game_update', this.handle_game_update);
+    },
+
+    methods: {
+        handle_game_update(game) {
             if(!this.user.logged_in) {
                 return;
             }
@@ -21,32 +24,12 @@ export default {
                 return;
             }
 
-            val = JSON.parse(val);
-            old = JSON.parse(old);
+            if(this.user.user_id != game.black_user_id && this.user.user_id != game.white_user_id) {
+                return;
+            }
 
-            Object.keys(val).forEach(function(game_id) {
-                if(!val[game_id] || val[game_id] == old[game_id]) {
-                    return;
-                }
-
-                var game = this.open_games.find(function(game) {
-                    return game.id == game_id;
-                });
-
-                if(this.user.user_id != game.black_user_id && this.user.user_id != game.white_user_id) {
-                    return;
-                }
-
-                var other = (this.user.user_id == game.black_user_id ? game.white_display : game.black_display);
-
-                notify(this.$t('notify.move_played', {opponent: other}));
-            }.bind(this));
-        }
-    },
-
-    computed: {
-        game_updates() {
-            return JSON.stringify(this.game_has_update);
+            var other = (this.user.user_id == game.black_user_id ? game.white_display : game.black_display);
+            notify(this.$t('notify.move_played', {opponent: other}));
         }
     }
 }

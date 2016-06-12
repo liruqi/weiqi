@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import moment from 'moment';
+import { publish_event } from '../events';
 
 Vue.use(Vuex);
 
@@ -194,6 +195,7 @@ export const mutations = {
         }
 
         Vue.set(state.game_has_update, data.game_id, true);
+        publish_event('game_update', game);
 
         mutations.UPDATE_GAME_TIME(state, data.game_id);
     },
