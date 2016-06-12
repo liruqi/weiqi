@@ -378,13 +378,11 @@ class GameService(BaseService):
     def resume_all_games(self):
         """Gracefully resumes all games on startup.
 
-        Resets the timings so that no time is lost after a server downtime.
-        In addition to that the overtime for each player is reset and a pre-defined amount of time is added to the
-        player's maintime.
+        Resets the timings to reduce lost time after a server downtime.
+        The overtime for each player is reset and a pre-defined amount of time is added to the player's maintime.
         """
 
         for timing in self.db.query(Timing).join(Game).filter(Game.stage == 'playing'):
-            timing.timing_updated_at = datetime.utcnow()
             timing.black_main += settings.RESUME_TIMING_ADD_TIME
             timing.white_main += settings.RESUME_TIMING_ADD_TIME
 

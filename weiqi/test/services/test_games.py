@@ -542,7 +542,6 @@ def test_resume_all_games_fischer(db):
     svc.resume_all_games()
 
     timing = db.query(Timing).first()
-    assert abs(datetime.utcnow() - timing.timing_updated_at).total_seconds() < 2
     assert timing.black_main == (timedelta(seconds=10) + settings.RESUME_TIMING_ADD_TIME)
     assert timing.white_main == (timedelta(seconds=20) + settings.RESUME_TIMING_ADD_TIME)
     assert timing.black_overtime == timedelta()
