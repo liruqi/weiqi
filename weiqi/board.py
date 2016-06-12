@@ -516,7 +516,7 @@ class Board:
 
         # In edit-mode we allow to play on ko points and non-empty points, but don't allow suicide.
         if self.is_suicide(coord, new_color):
-            new_color = EMPTY
+            new_color = opposite(new_color)
 
         if new_color != EMPTY:
          for c in self._find_captures(coord, new_color):

@@ -598,4 +598,4 @@ def test_edit_cycle_boxes():
 
     assert board.at(lower_black_stone) == WHITE
     assert board.at(middle_black_stone) == EMPTY
-    assert board.at(middle_empty) == EMPTY
+    assert board.at(middle_empty) == WHITE
