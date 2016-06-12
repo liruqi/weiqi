@@ -329,7 +329,7 @@
             },
 
             update_mouse_shadow(coord) {
-                if(coord == this.mouse_coord) {
+                if(coord == this.mouse_coord || !this.mouse_shadow) {
                     return;
                 }
 
