@@ -546,3 +546,19 @@ def test_resume_all_games_fischer(db):
     assert timing.white_main == (timedelta(seconds=20) + settings.RESUME_TIMING_ADD_TIME)
     assert timing.black_overtime == timedelta()
     assert timing.white_overtime == timedelta()
+
+
+def test_resume_all_games_cap(db):
+    GameFactory(stage='playing',
+                timing__system='fischer',
+                timing__capped=True,
+                timing__main=timedelta(minutes=1),
+                timing__black_main=timedelta(minutes=2),
+                timing__white_main=timedelta(minutes=3))
+
+    svc = GameService(db)
+    svc.resume_all_games()
+
+    timing = db.query(Timing).first()
+    assert timing.black_main == timing.main_cap
+    assert timing.white_main == timing.main_cap

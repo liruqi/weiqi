@@ -392,6 +392,12 @@ class GameService(BaseService):
             timing.black_main += settings.RESUME_TIMING_ADD_TIME
             timing.white_main += settings.RESUME_TIMING_ADD_TIME
 
+            if timing.capped:
+                if timing.black_main > timing.main_cap:
+                    timing.black_main = timing.main_cap
+                if timing.white_main > timing.main_cap:
+                    timing.white_main = timing.main_cap
+
             if timing.system != 'fischer':
                 timing.black_overtime = timing.overtime * timing.overtime_count
                 timing.white_overtime = timing.overtime * timing.overtime_count
