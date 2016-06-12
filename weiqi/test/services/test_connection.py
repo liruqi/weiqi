@@ -60,7 +60,9 @@ def test_connection_data_automatch(db, socket):
 
 def test_disconnect_automatch(db, socket):
     user = UserFactory()
-    AutomatchFactory(user=user)
+    AutomatchFactory(user=user, preset='fast')
+    AutomatchFactory(user=user, preset='normal')
+    AutomatchFactory(user=user, preset='slow')
 
     svc = ConnectionService(db, socket, user)
     svc.execute('disconnect')
@@ -70,7 +72,7 @@ def test_disconnect_automatch(db, socket):
 
 def test_disconnect_automatch_correspondence(db, socket):
     user = UserFactory()
-    AutomatchFactory(user=user, preset='slow')
+    AutomatchFactory(user=user, preset='fast')
     AutomatchFactory(user=user, preset='correspondence')
 
     svc = ConnectionService(db, socket, user)
