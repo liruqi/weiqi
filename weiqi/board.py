@@ -506,33 +506,27 @@ class Board:
         self._rebuild_pos()
 
     def edit_cycle(self, coord):
+        """Cycles through BLACK, WHITE, EMPTY as edits on the given coordinate."""
         if not self.current_node or self.current_node.action != NODE_EDIT:
-         self.add_edits([], [], [])
+            self.add_edits([], [], [])
 
         node = self.current_node
-
         current_color = self.at(coord)
-        new_color = self._cycle_color(current_color)
 
-        # In edit-mode we allow to play on ko points and non-empty points, but don't allow suicide.
-        if self.is_suicide(coord, new_color):
+        if current_color == BLACK:
+            new_color = WHITE if not self.is_suicide(coord, WHITE) else EMPTY
+        elif current_color == WHITE:
             new_color = EMPTY
+        else:
+            new_color = BLACK if not self.is_suicide(coord, BLACK) else WHITE
+
+        if new_color != EMPTY:
+            for c in self._find_captures(coord, new_color):
+                node.edits[str(c)] = EMPTY
 
         node.edits[str(coord)] = new_color
 
-        if new_color != EMPTY:
-         for c in self._find_captures(coord, new_color):
-            node.edits[str(c)] = EMPTY
-
         self._rebuild_pos()
-
-    def _cycle_color(self, color):
-        if color == BLACK:
-            return WHITE
-        elif color == WHITE:
-            return EMPTY
-
-        return BLACK
 
 
 def board_from_string(pos, size=9) -> Board:
