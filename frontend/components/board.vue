@@ -116,6 +116,7 @@
                 event.preventDefault();
 
                 var coord;
+                var color;
 
                 this.confirm_coord = null;
                 this.click_event = null;
@@ -130,7 +131,8 @@
                 } else {
                     coord = this.get_mouse_coord(event);
                     if(coord !== null) {
-                        this.$dispatch('board-click', coord, event);
+                        color = this.pos[coord];
+                        this.$dispatch('board-click', coord, event, color, false);
                     }
                 }
             },

@@ -294,17 +294,23 @@
         },
 
         events: {
-            'board-click': function(coord, event) {
+            'board-click': function(coord, event, color, touch) {
                 if(this.game.is_demo && this.has_control) {
                     switch(this.demo_tool) {
                         case 'move':
                             socket.send('games/move', {game_id: this.game_id, move: coord});
                             break;
                         case 'edit':
-                            if(event.shiftKey) {
-                                socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'o'});
-                            } else {
-                                socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'x'});
+                            if(touch){
+                                var new_color = this.cycle_colors(color);
+                                socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: new_color});
+                            }
+                            else {
+                                if(event.shiftKey) {
+                                    socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'o'});
+                                } else {
+                                    socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'x'});
+                                }
                             }
                             break;
                         case 'triangle':
@@ -416,6 +422,17 @@
 
             confirm_score() {
                 socket.send('games/confirm_score', {'game_id': this.game_id, 'result': this.game.result});
+            },
+
+            cycle_colors(color) {
+                if(color == 'x'){
+                  return 'o';
+                }
+                else if(color == 'o'){
+                  return '';
+                }
+
+                return 'x';
             },
 
             current_color() {
