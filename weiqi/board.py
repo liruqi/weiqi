@@ -518,11 +518,11 @@ class Board:
         if self.is_suicide(coord, new_color):
             new_color = EMPTY
 
-        node.edits[str(coord)] = new_color
-
         if new_color != EMPTY:
          for c in self._find_captures(coord, new_color):
             node.edits[str(c)] = EMPTY
+
+        node.edits[str(coord)] = new_color
 
         self._rebuild_pos()
 

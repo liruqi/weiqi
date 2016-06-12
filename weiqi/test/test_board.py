@@ -575,3 +575,21 @@ def test_edit_cycle():
     assert board.at(10) == WHITE
     assert board.at(11) == EMPTY
     assert board.at(12) == BLACK
+
+
+def test_edit_cycle_boxes():
+    pos =  ('.........'
+            '.........'
+            '..ooo....'
+            '..oxo....'
+            '..oxo....'
+            '.........'
+            '.........'
+            '.........'
+            '.........')
+
+    board = board_from_string(pos)
+    board.edit_cycle(39)
+
+    assert board.at(39) == WHITE
+    assert board.at(30) == EMPTY
