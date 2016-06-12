@@ -483,6 +483,35 @@ class Board:
 
         self.add_edits(handicap_coords(self.size, hc), [], [])
 
+    def _toggle_color(self, color):
+         if color == BLACK:
+             return WHITE
+         elif color == WHITE:
+             return EMPTY
+
+         return BLACK
+
+    def toggle_edit_cycle(self, coord):
+         if not self.current_node or self.current_node.action != NODE_EDIT:
+             self.add_edits([], [], [])
+
+         node = self.current_node
+
+         current_color = self.at(coord)
+         new_color = self._toggle_color(current_color)
+
+         # In edit-mode we allow to play on ko points and non-empty points, but don't allow suicide.
+         if self.is_suicide(coord, new_color):
+             new_color = EMPTY
+
+         node.edits[str(coord)] = new_color
+
+         if new_color != EMPTY:
+             for c in self._find_captures(coord, new_color):
+                 node.edits[str(c)] = EMPTY
+
+         self._rebuild_pos()
+
     def toggle_edit(self, coord, color):
         if color == EMPTY:
             return

@@ -131,14 +131,13 @@
                 } else {
                     coord = this.get_mouse_coord(event);
                     if(coord !== null) {
-                        color = this.pos[coord];
-                        this.$dispatch('board-click', coord, event, color, false);
+                        this.$dispatch('board-click', coord, event, false);
                     }
                 }
             },
 
             confirm_click() {
-                this.$dispatch('board-click', this.confirm_coord, this.click_event);
+                this.$dispatch('board-click', this.confirm_coord, this.click_event, true);
                 this.confirm_coord = null;
                 this.click_event = null;
             },

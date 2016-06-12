@@ -294,16 +294,15 @@
         },
 
         events: {
-            'board-click': function(coord, event, color, touch) {
+            'board-click': function(coord, event, is_touch) {
                 if(this.game.is_demo && this.has_control) {
                     switch(this.demo_tool) {
                         case 'move':
                             socket.send('games/move', {game_id: this.game_id, move: coord});
                             break;
                         case 'edit':
-                            if(touch){
-                                var new_color = this.cycle_colors(color);
-                                socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: new_color});
+                            if(is_touch){
+                                socket.send('games/demo_tool_edit_cycle', {game_id: this.game_id, coord: coord});
                             }
                             else {
                                 if(event.shiftKey) {
@@ -422,17 +421,6 @@
 
             confirm_score() {
                 socket.send('games/confirm_score', {'game_id': this.game_id, 'result': this.game.result});
-            },
-
-            cycle_colors(color) {
-                if(color == 'x'){
-                  return 'o';
-                }
-                else if(color == 'o'){
-                  return '';
-                }
-
-                return 'x';
             },
 
             current_color() {

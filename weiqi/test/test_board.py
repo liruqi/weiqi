@@ -561,3 +561,17 @@ def test_toggle_edit_remove():
 
     board.toggle_edit(10, BLACK)
     assert board.at(10) == EMPTY
+
+
+def test_toggle_edit_cycle():
+    board = Board(9)
+    board.toggle_edit(10, BLACK)
+    board.toggle_edit(11, WHITE)
+
+    board.toggle_edit_cycle(10)
+    board.toggle_edit_cycle(11)
+    board.toggle_edit_cycle(12)
+
+    assert board.at(10) == WHITE
+    assert board.at(11) == EMPTY
+    assert board.at(12) == BLACK
