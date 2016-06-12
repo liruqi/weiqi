@@ -6,6 +6,7 @@ import configRouter from './router';
 import configLocale from './locale';
 import configWebsocket from './socket';
 import configValidator from './validator';
+import { fix_dropdowns } from './fixed_dropdowns';
 
 // TODO: move to gulpfile
 window.jQuery = require('jquery');
@@ -31,6 +32,8 @@ bootbox.setDefaults({
 
 toastr.options.newestOnTop = true;
 toastr.options.positionClass = 'toast-top-center';
+
+fix_dropdowns();
 
 Vue.component('qi-header', require('./components/header.vue'));
 Vue.component('qi-sidebar', require('./components/sidebar.vue'));

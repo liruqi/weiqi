@@ -1,5 +1,5 @@
 <template>
-    <div class="panel panel-default flex-column room-logs">
+    <div class="panel panel-default flex-column room-logs fixed-dropdowns">
         <div class="panel-heading flex-fixed">
             <h3 class="panel-title">
                 <i class="fa fa-comments-o"></i>

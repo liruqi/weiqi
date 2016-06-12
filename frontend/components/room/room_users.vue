@@ -1,5 +1,5 @@
 <template>
-    <div class="panel panel-default flex-column room-users">
+    <div class="panel panel-default room-users fixed-dropdowns">
         <table class="table table-hover table-striped table-condensed flex-auto">
             <thead>
                 <tr>
@@ -8,6 +8,18 @@
                 </tr>
             </thead>
             <tbody>
+                <tr v-for="user in users">
+                    <td><qi-user-context :user_id="user.user_id" :display="user.user_display"></qi-user-context></td>
+                    <td><qi-rating-rank :rating="user.user_rating"></qi-rating-rank></td>
+                </tr>
+                <tr v-for="user in users">
+                    <td><qi-user-context :user_id="user.user_id" :display="user.user_display"></qi-user-context></td>
+                    <td><qi-rating-rank :rating="user.user_rating"></qi-rating-rank></td>
+                </tr>
+                <tr v-for="user in users">
+                    <td><qi-user-context :user_id="user.user_id" :display="user.user_display"></qi-user-context></td>
+                    <td><qi-rating-rank :rating="user.user_rating"></qi-rating-rank></td>
+                </tr>
                 <tr v-for="user in users">
                     <td><qi-user-context :user_id="user.user_id" :display="user.user_display"></qi-user-context></td>
                     <td><qi-rating-rank :rating="user.user_rating"></qi-rating-rank></td>
