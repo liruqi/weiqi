@@ -82,7 +82,7 @@ AUTOMATCH_PRESETS = {
     'correspondence': {
         'capped': True,
         'main': timedelta(days=3),
-        'overtime': timedelta(hours=26),
+        'overtime': timedelta(hours=24),
     }
 }
 

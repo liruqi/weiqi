@@ -178,7 +178,7 @@
     "corr": {
       "header": "Correspondence",
       "l1": "Several weeks or months playtime",
-      "l2": "3d + 26h/move with a max maintime of 6 days"
+      "l2": "3d + 1d/move with a max time of 6 days"
     },
 
     "options": {
