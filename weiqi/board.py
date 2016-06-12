@@ -501,7 +501,7 @@ class Board:
         else:
             # Setting to EMPTY is necessary to find the correct captures
             node.edits[str(coord)] = EMPTY
-            self._rebuild_pos()
+            self._pos[coord] = EMPTY
 
             for c in self._find_captures(coord, color):
                 node.edits[str(c)] = EMPTY
@@ -528,7 +528,7 @@ class Board:
         if new_color != EMPTY:
             # Setting to EMPTY is necessary to find the correct captures
             node.edits[str(coord)] = EMPTY
-            self._rebuild_pos()
+            self._pos[coord] = EMPTY
 
             for c in self._find_captures(coord, new_color):
                 node.edits[str(c)] = EMPTY
