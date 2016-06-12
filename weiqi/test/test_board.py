@@ -584,14 +584,18 @@ def test_edit_cycle_boxes():
             '..oxo....'
             '..oxo....'
             '.........'
-            '.........'
-            '.........'
-            '.........')
+            '..ooo....'
+            '..o.o....'
+            '..ooo....')
 
     board = board_from_string(pos)
     middle_black_stone = coord2d(4, 4)
     lower_black_stone = coord2d(4, 5)
+    middle_empty = coord2d(4, 8)
+
     board.edit_cycle(lower_black_stone)
+    board.edit_cycle(middle_empty)
 
     assert board.at(lower_black_stone) == WHITE
     assert board.at(middle_black_stone) == EMPTY
+    assert board.at(middle_empty) == EMPTY
