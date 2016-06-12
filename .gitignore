@@ -9,5 +9,6 @@ __pycache__
 settings_local.py
 .cache
 .coverage
-/*.db
+*.db
+*.db-journal
 .benchmarks
