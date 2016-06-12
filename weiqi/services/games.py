@@ -337,7 +337,7 @@ class GameService(BaseService):
     @BaseService.register
     def demo_tool_edit_cycle(self, game_id, coord):
         with self._demo_tool(game_id) as (game, node):
-            game.board.toggle_edit_cycle(coord)
+            game.board.edit_cycle(coord)
 
     @contextmanager
     def _demo_tool(self, game_id):

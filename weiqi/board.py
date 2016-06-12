@@ -505,14 +505,14 @@ class Board:
 
         self._rebuild_pos()
 
-    def toggle_edit_cycle(self, coord):
+    def edit_cycle(self, coord):
         if not self.current_node or self.current_node.action != NODE_EDIT:
          self.add_edits([], [], [])
 
         node = self.current_node
 
         current_color = self.at(coord)
-        new_color = self._toggle_color(current_color)
+        new_color = self._cycle_color(current_color)
 
         # In edit-mode we allow to play on ko points and non-empty points, but don't allow suicide.
         if self.is_suicide(coord, new_color):
@@ -526,7 +526,7 @@ class Board:
 
         self._rebuild_pos()
 
-    def _toggle_color(self, color):
+    def _cycle_color(self, color):
         if color == BLACK:
             return WHITE
         elif color == WHITE:
