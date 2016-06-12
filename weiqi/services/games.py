@@ -49,9 +49,7 @@ class GameService(BaseService):
 
     @BaseService.register
     def open_game(self, game_id):
-        game = self.db.query(Game).get(game_id)
-        if not game:
-            return
+        game = self.db.query(Game).filter_by(id=game_id).one()
 
         if game.is_private and game.black_user != self.user and game.white_user != self.user:
             raise NotAllowedError('this game is private')
@@ -66,9 +64,7 @@ class GameService(BaseService):
 
     @BaseService.register
     def close_game(self, game_id):
-        game = self.db.query(Game).get(game_id)
-        if not game:
-            return
+        game = self.db.query(Game).filter_by(id=game_id).one()
 
         self.unsubscribe(game.id)
         RoomService(self.db, self.socket, self.user).leave_room(game.room_id)
