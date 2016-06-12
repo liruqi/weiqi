@@ -8,7 +8,7 @@
             <template v-else>
                 <p v-if="game.is_demo" class="text-center">
                     <span v-if="game.title">{{game.title}}</span>
-                    <select v-if="has_control" v-model="demo_tool" class="pull-right">
+                    <select v-if="has_control" v-model="demo_tool" class="pull-right form-control game-demo-tools">
                         <option value="move">{{$t('demo.tool.move')}}</option>
                         <option value="edit">{{$t('demo.tool.edit')}}</option>
                         <option value="triangle">{{$t('demo.tool.triangle')}}</option>
