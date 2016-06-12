@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueValidator from 'vue-validator';
 
-export default function configValidator() {
+export function config_validator() {
     Vue.use(VueValidator);
     
     Vue.validator('display_name', function(val) {

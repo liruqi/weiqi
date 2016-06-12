@@ -6,11 +6,7 @@ var connected = false;
 var message_counter = 0;
 var request_handler = {};
 
-export default function configWebsocket() {
-    connect();
-}
-
-function connect() {
+export function connect() {
     var proto = (window.location.protocol == 'https:' ? 'wss' : 'ws');
     
     socket = new WebSocket(proto + '://' + window.location.host + '/api/socket');

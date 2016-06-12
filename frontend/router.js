@@ -3,7 +3,7 @@ import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
 
-export default function configRouter() {
+export function config_router() {
     var router = new VueRouter({
         history: true,
         saveScrollPosition: true,

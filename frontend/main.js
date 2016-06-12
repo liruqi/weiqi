@@ -2,15 +2,14 @@ import Vue from 'vue';
 import VueResource from 'vue-resource';
 import bootbox from 'bootbox';
 import toastr from 'toastr';
-import configRouter from './router';
-import configLocale from './locale';
-import configWebsocket from './socket';
-import configValidator from './validator';
+import { config_router } from './router';
+import { config_locale } from './locale';
+import { connect } from './socket';
+import { config_validator } from './validator';
 import { fix_dropdowns } from './fixed_dropdowns';
 
-// TODO: move to gulpfile
 window.jQuery = require('jquery');
-//require('bootstrap-sass');
+require('bootstrap-sass');
 require('select2');
 require('babel-polyfill');
 
@@ -21,10 +20,10 @@ Vue.http.options.emulateJSON = true;
 
 Vue.config.debug = true;
 
-configWebsocket();
-configLocale();
-configValidator();
-const router = configRouter();
+connect();
+config_locale();
+config_validator();
+const router = config_router();
 
 bootbox.setDefaults({
     size: 'small'
