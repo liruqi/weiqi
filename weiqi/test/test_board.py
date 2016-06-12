@@ -577,25 +577,48 @@ def test_edit_cycle():
     assert board.at(12) == BLACK
 
 
-def test_edit_cycle_boxes():
-    pos =  ('.........'
-            '.........'
-            '..ooo....'
-            '..oxo....'
-            '..oxo....'
-            '.........'
-            '..ooo....'
-            '..o.o....'
-            '..ooo....')
+def test_edit_cycle_capture():
+    pos = ('.........'
+           '.........'
+           '..ooo....'
+           '..oxo....'
+           '..oxo....'
+           '.........'
+           '.........'
+           '.........'
+           '.........')
 
     board = board_from_string(pos)
-    middle_black_stone = coord2d(4, 4)
-    lower_black_stone = coord2d(4, 5)
-    middle_empty = coord2d(4, 8)
+    center = coord2d(4, 4)
+    lower = coord2d(4, 5)
 
-    board.edit_cycle(lower_black_stone)
-    board.edit_cycle(middle_empty)
+    board.edit_cycle(lower)
 
-    assert board.at(lower_black_stone) == WHITE
-    assert board.at(middle_black_stone) == EMPTY
-    assert board.at(middle_empty) == WHITE
+    assert board.at(lower) == WHITE
+    assert board.at(center) == EMPTY
+
+
+def test_edit_cycle_suicide():
+    board = board_from_string(
+        '.........'
+        '.........'
+        '..ooo....'
+        '..o.o....'
+        '..ooo....'
+        '.........'
+        '..xxx....'
+        '..x.x....'
+        '..xxx....')
+
+    upper = coord2d(4, 4)
+    lower = coord2d(4, 8)
+
+    board.edit_cycle(upper)
+    board.edit_cycle(lower)
+    assert board.at(upper) == WHITE
+    assert board.at(lower) == BLACK
+
+    board.edit_cycle(upper)
+    board.edit_cycle(lower)
+    assert board.at(upper) == EMPTY
+    assert board.at(lower) == EMPTY
