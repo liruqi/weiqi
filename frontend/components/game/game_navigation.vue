@@ -1,6 +1,6 @@
 <template>
     <div v-if="is_visible">
-        <div class="game-navigation">
+        <div class="game-navigation" v-if="game.is_demo">
             <qi-game-tree :game="game"
                           :move_tree="move_tree"
                           :active_node="current_node">
