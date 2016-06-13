@@ -74,6 +74,8 @@ export const mutations = {
         state.room_logs[data.room_id].push(data);
 
         Vue.set(state.room_has_update, data.room_id, true);
+        
+        publish_event('room_message', data);
     },
 
     MSG_ROOM_LOGS(state, data) {

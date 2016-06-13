@@ -6,12 +6,14 @@ export default {
     vuex: {
         getters: {
             user: function(state) { return state.auth.user; },
-            challenges: function(state) { return state.challenges; }
+            challenges: function(state) { return state.challenges; },
+            rooms: function(state) { return state.rooms; }
         }
     },
 
     ready() {
         add_event_listener('game_update', this.handle_game_update);
+        add_event_listener('room_message', this.handle_room_message);
     },
 
     watch: {
@@ -50,6 +52,26 @@ export default {
             notify(msg, function() {
                 this.$router.go({name: 'game', params: {game_id: game.id}});
             }.bind(this));
+        },
+
+        handle_room_message(msg) {
+            if(!this.user.logged_in) {
+                return;
+            }
+
+            if(msg.message.indexOf(this.user.user_display) !== -1) {
+                var room = this.rooms.find(function(room) {
+                    return room.id == msg.room_id;
+                });
+
+                if(!room || room.type != 'main') {
+                    return;
+                }
+
+                notify(msg.user_display + ': ' + msg.message, function() {
+                    this.$router.go({name: 'room', params: {room_id: room.id}});
+                }.bind(this));
+            }
         }
     }
 }
