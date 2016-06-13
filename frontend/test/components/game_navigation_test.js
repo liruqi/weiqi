@@ -24,7 +24,8 @@ describe('game_navigation.vue', function() {
 
     describe('back-to-game button', function() {
         var tests = [
-            ['normal game', false, false, false, true],
+            // Name of test, is_demo, is_player, has_control, show_button
+            ['normal game', false, false, false, false],
             ['demo spectator', true, false, false, true],
             ['demo controller', true, false, true, false]
         ];
