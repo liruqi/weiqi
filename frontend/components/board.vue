@@ -6,6 +6,8 @@
 </template>
 
 <script>
+    import { construct_pos, coord_to_2d } from '../board';
+
     export default {
         props: ['board', 'current_node_id', 'coordinates', 'mouse_shadow', 'allow_shadow_move', 'current'],
 
@@ -183,12 +185,11 @@
                     return;
                 }
 
-                var pos = this.construct_pos();
+                var pos = construct_pos(this.board, this.current_node_id);
                 var node = this.board.tree[this.current_node_id];
 
                 pos.forEach(function(color, coord) {
-                    var xy = this.coord_to_2d(coord);
-                    var params = {x: xy[0], y: xy[1]};
+                    var params = coord_to_2d(this.board, coord);
 
                     if(color == 'B') {
                         params.c = WGo.B;
@@ -228,9 +229,8 @@
 
             draw_touch_shadow() {
                 if(this.confirm_coord !== null) {
-                    console.log(this.confirm_coord);
-                    var xy = this.coord_to_2d(this.confirm_coord);
-                    this.wgo.addObject({x: xy[0], y: xy[1], c: WGo.B, type: 'outline'});
+                    var coord = coord_to_2d(this.board, this.confirm_coord);
+                    this.wgo.addObject({x: coord.x, y: coord.y, c: WGo.B, type: 'outline'});
                 }
             },
 
@@ -242,14 +242,14 @@
                 }
 
                 Object.keys(node.symbols).forEach(function(coord) {
-                    var xy = this.coord_to_2d(+coord);
+                    var xy = coord_to_2d(this.board, +coord);
                     var symbols = ['TR', 'SQ', 'CR'];
 
                     if(symbols.indexOf(node.symbols[coord]) === -1) {
                         return;
                     }
 
-                    this.wgo.addObject({x: xy[0], y: xy[1], type: node.symbols[coord]})
+                    this.wgo.addObject({x: xy.x, y: xy.y, type: node.symbols[coord]})
                 }.bind(this));
             },
 
@@ -261,9 +261,9 @@
                 }
 
                 Object.keys(node.labels).forEach(function(coord) {
-                    var xy = this.coord_to_2d(+coord);
+                    var xy = coord_to_2d(this.board, +coord);
                     var label = node.labels[coord];
-                    this.wgo.addObject({x: xy[0], y: xy[1], type: 'LB', text: label})
+                    this.wgo.addObject({x: xy.x, y: xy.y, type: 'LB', text: label})
                 }.bind(this));
             },
 
@@ -272,9 +272,9 @@
 
                 if(node && (node.action == 'B' || node.action == 'W') && node.move >= 0) {
                     var coord = node.move;
-                    var xy = this.coord_to_2d(coord);
+                    var xy = coord_to_2d(this.board, coord);
 
-                    this.wgo.addObject({x: xy[0], y: xy[1], type: "CR"})
+                    this.wgo.addObject({x: xy.x, y: xy.y, type: "CR"})
                 }
             },
 
@@ -351,85 +351,17 @@
                 }
 
                 if(this.mouse_coord !== null) {
-                    var xy = this.coord_to_2d(this.mouse_coord);
+                    var xy = coord_to_2d(this.board, this.mouse_coord);
                     var color = (this.current == 'o' ? WGo.W : WGo.B);
-                    this.wgo.addObject({x: xy[0], y: xy[1], c: color, type: "outline"});
+                    this.wgo.addObject({x: xy.x, y: xy.y, c: color, type: "outline"});
                 }
             },
 
             remove_mouse_shadow() {
                 if(this.mouse_coord !== null) {
-                    var old_xy = this.coord_to_2d(this.mouse_coord);
-                    this.wgo.removeObject({x: old_xy[0], y: old_xy[1], type: "outline"});
+                    var old_xy = coord_to_2d(this.board, this.mouse_coord);
+                    this.wgo.removeObject({x: old_xy.x, y: old_xy.y, type: "outline"});
                 }
-            },
-
-            construct_pos() {
-                var pos = this.empty_pos(this.board.size);
-                var nodes = this.current_node_path();
-
-                nodes.forEach(function(node) { this.apply_node(pos, node) }.bind(this));
-
-                return pos;
-            },
-
-            empty_pos(size) {
-                var pos = [];
-
-                for(var i=0; i<size*size; i++) {
-                    pos.push('.');
-                }
-
-                return pos;
-            },
-
-            current_node_path() {
-                if((this.board.tree || []).length < 1) {
-                    return [];
-                }
-
-                var nodes = [];
-                var cur_node = this.board.tree[this.current_node_id];
-
-                while(cur_node) {
-                    nodes.unshift(cur_node);
-                    cur_node = this.board.tree[cur_node.parent_id];
-                }
-
-                return nodes;
-            },
-
-            apply_node(pos, node) {
-                var colors = {'x': 'B', 'o': 'W', '.': '.'};
-
-                switch(node.action) {
-                    case 'B':
-                    case 'W':
-                        if(node.move >= 0) {
-                            pos[node.move] = node.action;
-                        }
-                        break;
-
-                    case 'E':
-                        if(node.edits) {
-                            Object.keys(node.edits).forEach(function (key) {
-                                pos[+key] = colors[node.edits[key]];
-                            });
-                        }
-                        break;
-                }
-
-                if(node.captures) {
-                    node.captures.forEach(function (coord) {
-                        pos[coord] = '.';
-                    });
-                }
-            },
-
-            coord_to_2d(coord) {
-                var y = Math.floor(coord/this.board.size);
-                var x = coord - y*this.board.size;
-                return [x, y];
             },
 
             toggle_coordinates() {

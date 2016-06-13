@@ -23,6 +23,7 @@
 
 <script>
     import * as socket from '../../socket';
+    import { generate_move_tree } from '../../board';
 
     export default {
         props: ['game', 'is_player', 'has_control', 'force_node_id'],
@@ -87,33 +88,7 @@
             },
 
             move_tree() {
-                if(!this.has_nodes) {
-                    return [];
-                }
-
-                var tree = [];
-                var node = this.game.board.tree[0];
-
-                this.add_moves_to_tree(tree, node);
-
-                return tree;
-            },
-
-            mainline() {
-                var main = [];
-                var node = this.game.board.tree[0];
-
-                while(node) {
-                    main.push(node.id);
-
-                    if(node.children.length > 0) {
-                        node = this.game.board.tree[node.children[0]];
-                    } else {
-                        break;
-                    }
-                }
-
-                return main;
+                return generate_move_tree(this.game.board);
             }
         },
 
@@ -208,63 +183,6 @@
                     scrollTop: nav[0].scrollTop + (el.offset().top - nav.offset().top) - nav.height() / 2 + labelH / 2
                 });
             },
-
-            is_mainline(node_id) {
-                return this.mainline.indexOf(node_id) !== -1;
-            },
-
-            is_single(node_id) {
-                var node = this.game.board.tree[node_id];
-
-                if(node.parent_id === null) {
-                    return true;
-                }
-
-                var siblings = this.game.board.tree[node.parent_id].children.length - 1;
-                return siblings < 2;
-            },
-
-            can_collapse(node_id, level) {
-                var node = this.game.board.tree[node_id];
-
-                if(level == 0) {
-                    return node.children.length > 1;
-                } else {
-                    return node.children.length > 1 || (!this.is_single(node_id) && node.children.length >= 1);
-                }
-            },
-
-            add_moves_to_tree(tree, node, level, move) {
-                level = level || 0;
-                move = move || 1;
-                var can_collapse = this.can_collapse(node.id, level);
-                var is_main = (level == 0);
-
-                tree.push({type: 'node', node_id: node.id, can_collapse: can_collapse, move: move});
-                move += 1;
-
-                if(can_collapse) {
-                    var vars = [];
-
-                    node.children.forEach(function(child, idx) {
-                        if(is_main && idx == 0) {
-                            return;
-                        }
-
-                        var subtree = [];
-                        this.add_moves_to_tree(subtree, this.game.board.tree[child], level+1, move);
-                        vars.push(subtree);
-                    }.bind(this));
-
-                    tree.push({type: 'variations', vars: vars, parent_id: node.id, move: move});
-
-                    if(is_main) {
-                        this.add_moves_to_tree(tree, this.game.board.tree[node.children[0]], level, move);
-                    }
-                } else if(node.children.length == 1) {
-                    this.add_moves_to_tree(tree, this.game.board.tree[node.children[0]], level, move);
-                }
-            }
         }
     }
 </script>

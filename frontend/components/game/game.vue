@@ -90,6 +90,7 @@
     import { open_game, update_game_time, clear_game_update } from './../../vuex/actions';
     import * as socket from '../../socket';
     import { play_sound } from '../../sounds';
+    import { current_color } from '../../board';
 
     export default {
         mixins: [require('./../../mixins/title.vue')],
@@ -170,7 +171,7 @@
             },
 
             current() {
-                var color = this.current_color();
+                var color = current_color(this.game.board, this.current_node_id);
 
                 if(this.game.is_demo && this.demo_tool == 'edit') {
                     color = 'x';
@@ -421,29 +422,6 @@
 
             confirm_score() {
                 socket.send('games/confirm_score', {'game_id': this.game_id, 'result': this.game.result});
-            },
-
-            current_color() {
-                if (this.game.board.tree.length == 0) {
-                    return 'x';
-                }
-
-                var node = this.game.board.tree[this.current_node_id];
-
-                while (node) {
-                    if (node.action == 'B') {
-                        return 'o';
-                    } else if (node.action == 'W') {
-                        return 'x';
-                    }
-
-                    if (node.parent_id === null) {
-                        // Handicap game
-                        return 'o';
-                    }
-
-                    node = this.game.board.tree[node.parent_id];
-                }
             },
 
             keydown_handler(ev) {
