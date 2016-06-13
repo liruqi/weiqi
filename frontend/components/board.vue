@@ -68,8 +68,12 @@
                 deep: true
             },
 
-            'coordinates': function() {
+            'coordinates': function(val) {
                 this.draw();
+
+                if(val) {
+                    this.draw_coordinates();
+                }
             },
 
             'mouse_shadow': function() {
