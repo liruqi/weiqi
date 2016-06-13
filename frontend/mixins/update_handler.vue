@@ -19,22 +19,18 @@ export default {
     },
 
     watch: {
-        'room_updates': function() {
-            this.clear_current_room_updates();
+        'room_has_update': {
+            handler: function () {
+                this.clear_current_room_updates();
+            },
+            deep: true
         },
 
-        'route_data': function() {
-            this.clear_current_room_updates();
-        }
-    },
-
-    computed: {
-        room_updates() {
-            return JSON.stringify(this.room_has_update);
-        },
-
-        route_data() {
-            return JSON.stringify(this.$route);
+        '$route': {
+            handler: function() {
+                this.clear_current_room_updates();
+            },
+            deep: true
         }
     },
 

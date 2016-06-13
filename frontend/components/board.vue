@@ -60,9 +60,12 @@
         },
 
         watch: {
-            'current_node_hash': function() {
-                this.draw();
-                this.$dispatch('board-update');
+            'board.tree[current_node_id]': {
+                handler: function() {
+                    this.draw();
+                    this.$dispatch('board-update');
+                },
+                deep: true
             },
 
             'coordinates': function() {
@@ -75,17 +78,6 @@
 
             'current': function() {
                 this.draw_mouse_shadow();
-            }
-        },
-
-        computed: {
-            current_node_hash() {
-                if((this.board.tree || []).length < 1) {
-                    return null;
-                }
-
-                var node = this.board.tree[this.current_node_id];
-                return JSON.stringify(node);
             }
         },
 

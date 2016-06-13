@@ -10,9 +10,12 @@
         props: ['game', 'move_tree', 'active_node'],
 
         watch: {
-            'move_tree_hash': function() {
-                this.render_tree();
-                this.expand_active_node();
+            'move_tree': {
+                handler: function() {
+                    this.render_tree();
+                    this.expand_active_node();
+                },
+                deep: true
             },
 
             'active_node': function(node) {
@@ -44,12 +47,6 @@
                 this.toggle_node(this.element_node_id(ev.target));
                 return false;
             }.bind(this));
-        },
-
-        computed: {
-            move_tree_hash() {
-                return JSON.stringify(this.move_tree);
-            }
         },
 
         methods: {
