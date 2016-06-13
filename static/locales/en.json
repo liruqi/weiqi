@@ -360,6 +360,7 @@
   },
 
   "notify": {
+    "challenge": "New challenge from {opponent}",
     "move_played": "Move played in game against {opponent}"
   }
 }
