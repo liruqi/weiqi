@@ -155,7 +155,7 @@
                     }
                 };
 
-                return this.open_games.find(function(game) { return game.id == this.game_id; }.bind(this)) || empty;
+                return this.open_games[this.game_id] || empty;
             },
 
             is_player() {

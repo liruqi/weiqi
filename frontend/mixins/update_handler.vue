@@ -59,7 +59,7 @@ export default {
 
             if(this.$route.name == 'game' && is_tab_visible()) {
                 var game_id = this.$route.params.game_id;
-                var game = this.open_games.find(function(game) { return game.id == game_id; }) || {};
+                var game = this.open_games[game_id] || {};
 
                 if(game.room_id) {
                     this.clear_room_update(game.room_id);

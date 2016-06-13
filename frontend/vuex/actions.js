@@ -39,9 +39,7 @@ export const update_game_time = make_action('UPDATE_GAME_TIME');
 export const clear_game_update = make_action('CLEAR_GAME_UPDATE');
 
 export function open_game({dispatch, state}, game_id) {
-    var game = state.open_games.find(function(game) {
-        return game.id == game_id;
-    });
+    var game = state.open_games[game_id];
 
     if(game && game.board) {
         return;

@@ -119,7 +119,7 @@
                 </li>
             </template>
 
-            <li v-if="open_games.length == 0">
+            <li v-if="open_games_list.length == 0">
                 <span class="sidebar-text">{{$t('sidebar.no_games')}}</span>
             </li>
         </ul>
@@ -208,8 +208,14 @@
                 });
             },
 
+            open_games_list() {
+                return Object.keys(this.open_games).map(function(key) {
+                    return this.open_games[key];
+                }.bind(this));
+            },
+
             sorted_games() {
-                return this.open_games.sort(function(g1, g2) {
+                return this.open_games_list.sort(function(g1, g2) {
                     return g1.id < g2.id;
                 });
             },
@@ -239,9 +245,7 @@
             },
 
             can_close_game(game_id) {
-                var game = this.open_games.find(function(game) {
-                    return game.id == game_id;
-                });
+                var game = this.open_games[game_id];
 
                 if(!game) {
                     return true;

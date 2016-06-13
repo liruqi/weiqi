@@ -28,7 +28,7 @@ export function default_state() {
         rooms: [],
         room_logs: {},
         room_users: {},
-        open_games: [],
+        open_games: {},
         active_games: [],
         direct_rooms: {},
 
@@ -52,9 +52,12 @@ export const mutations = {
 
         Vue.set(state, 'rooms', data.rooms);
         Vue.set(state, 'room_logs', data.room_logs);
-        Vue.set(state, 'open_games', data.open_games || []);
         Vue.set(state, 'active_games', data.active_games || []);
         Vue.set(state, 'challenges', data.challenges || []);
+        
+        (data.open_games || []).forEach(function(game) {
+            Vue.set(state.open_games, game.id, game);
+        });
 
         (data.direct_rooms || []).forEach(function(direct) {
             mutations.MSG_LOAD_DIRECT_ROOM(state, direct);
@@ -128,9 +131,7 @@ export const mutations = {
     },
 
     MSG_GAME_FINISHED(state, data) {
-        var game = state.open_games.find(function(game) {
-            return game.id == data.id;
-        });
+        var game = state.open_games[data.id];
 
         if(game) {
             game.stage = 'finished';
@@ -143,21 +144,13 @@ export const mutations = {
     },
 
     MSG_GAME_DATA(state, data) {
-        state.open_games = state.open_games.filter(function(game) {
-            return game.id != data.id;
-        });
-
-        state.open_games.push(data);
-
+        Vue.set(state.open_games, data.id, data);
         Vue.set(state.game_has_update, data.id, true);
-
         mutations.UPDATE_GAME_TIME(state, data.id);
     },
 
     MSG_GAME_UPDATE(state, data) {
-        var game = state.open_games.find(function(game) {
-            return game.id == data.game_id;
-        });
+        var game = state.open_games[data.game_id];
 
         if(!game) {
             return;
@@ -201,9 +194,7 @@ export const mutations = {
     },
     
     MSG_GAME_INFO(state, data) {
-        var game = state.open_games.find(function(game) {
-            return game.id == data.game_id;
-        });
+        var game = state.open_games[data.game_id];
 
         if(game) {
             game.title = data.title;
@@ -248,9 +239,7 @@ export const mutations = {
     },
     
     MSG_DEMO_CURRENT_NODE_ID(state, data) {
-        var game = state.open_games.find(function(game) {
-            return game.id == data.game_id;
-        });
+        var game = state.open_games[data.game_id];
 
         if(!game) {
             return;
@@ -272,15 +261,13 @@ export const mutations = {
     },
     
     UPDATE_GAME_TIME(state, id) {
-        var game = state.open_games.find(function(game) {
-            return game.id == id;
-        });
+        var game = state.open_games[id];
 
-        if(!game.timing) {
+        if(!game || !game.timing) {
             return;
         }
 
-        if(!game || game.is_demo || !game.board.tree || (!game.is_demo && game.stage == 'finished') ||
+        if(game.is_demo || !game.board.tree || (!game.is_demo && game.stage == 'finished') ||
             moment.utc(game.timing.start_at).diff(moment.utc()) > 0) {
             return;
         }
@@ -299,17 +286,12 @@ export const mutations = {
     },
 
     CLOSE_GAME(state, game_id) {
-        var game = state.open_games.find(function(game) {
-            return game.id == game_id;
-        });
+        var game = state.open_games[game_id];
 
         if(game) {
             Vue.delete(state.room_logs, game.room_id);
             Vue.delete(state.room_has_update, game.room_id);
-
-            state.open_games = state.open_games.filter(function (game) {
-                return game.id != game_id;
-            });
+            Vue.delete(state.open_games, game_id);
         }
 
         Vue.delete(state.game_has_update, game_id);
