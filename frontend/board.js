@@ -90,8 +90,7 @@ export function is_single_node(board, node_id) {
         return true;
     }
 
-    var siblings = board.tree[node.parent_id].children.length - 1;
-    return siblings < 2;
+    return (board.tree[node.parent_id].children.length - 1) < 1;
 }
 
 export function can_collapse_node(board, node_id, level) {
