@@ -21,7 +21,7 @@ echo "Deploying weiqi.gs ..."
 /usr/bin/ssh -t ${HOST} <<EOF
 cd ${PATH}
 git fetch --all
-git reset --hard origin/master
+git reset --hard origin/prod
 
 python3 -m venv venv
 source venv/bin/activate
