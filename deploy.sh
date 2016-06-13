@@ -10,6 +10,12 @@ fi
 HOST=$1
 PATH=$2
 
+echo "Merging to production branch ..."
+git checkout prod
+git merge master
+git push
+git checkout master
+
 echo "Deploying weiqi.gs ..."
 
 /usr/bin/ssh -t ${HOST} <<EOF
