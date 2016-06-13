@@ -11,10 +11,10 @@ HOST=$1
 PATH=$2
 
 echo "Merging to production branch ..."
-git checkout prod
-git merge master
-git push
-git checkout master
+/usr/bin/git checkout prod
+/usr/bin/git merge master
+/usr/bin/git push
+/usr/bin/git checkout master
 
 echo "Deploying weiqi.gs ..."
 
