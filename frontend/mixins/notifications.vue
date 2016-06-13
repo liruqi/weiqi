@@ -26,7 +26,10 @@ export default {
                 });
 
                 if(!old_challenge) {
-                    notify(this.$t('notify.challenge', {opponent: challenge.owner_display}));
+                    var msg = this.$t('notify.challenge', {opponent: challenge.owner_display});
+                    notify(msg, function() {
+                        this.$router.go({name: 'challenge', params: {challenge_id: challenge.id}});
+                    }.bind(this));
                 }
             }.bind(this));
         }
@@ -43,7 +46,10 @@ export default {
             }
 
             var other = (this.user.user_id == game.black_user_id ? game.white_display : game.black_display);
-            notify(this.$t('notify.move_played', {opponent: other}));
+            var msg = this.$t('notify.move_played', {opponent: other});
+            notify(msg, function() {
+                this.$router.go({name: 'game', params: {game_id: game.id}});
+            }.bind(this));
         }
     }
 }

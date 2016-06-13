@@ -4,7 +4,7 @@ export function request_notify_permission() {
     Notification.requestPermission();
 }
 
-export function notify(message) {
+export function notify(message, onclick) {
     if(is_tab_visible()) {
         return;
     }
@@ -19,5 +19,14 @@ export function notify(message) {
     };
 
     var n = new Notification('weiqi.gs', options);
+
     setTimeout(n.close.bind(n), 10000);
+
+    n.onclick = function(ev) {
+        window.focus();
+        
+        if(onclick) {
+            onclick(ev);
+        }
+    }
 }
