@@ -22,7 +22,9 @@ BASE_URL = 'http://localhost:8000'
 
 DEBUG = True
 
+# Secret key is used for signing. Change this in production.
 SECRET = b'j$\x1eM\xe2K\xda\xc0zndD\x80\x10\xc0\x8c\xba\xa1\xaeC\x01y\xe7\xe1'
+
 COOKIE_NAME = 'weiqi'
 
 TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
@@ -42,6 +44,8 @@ MESSAGE_BROKER = 'dummy'
 RECAPTCHA = {
     'backend': 'dummy',
     'secret': '',
+
+    # For development we still need a valid recaptcha public key.
     'public': '6LdrkiATAAAAAGL1iWz14Nu7-VigpAtqpYWmpD0y',
 }
 
@@ -54,9 +58,14 @@ MAILER = {
     'smtp_password': '',
 }
 
+# The number of messages to load from the room history after connecting.
 ROOM_MESSAGES_LIMIT = 30
 
+# The rating-period duration for the rating system (Glicko2).
+# In production this should be a value of several days or even weeks.
 RATING_PERIOD_DURATION = timedelta(days=1)
+
+# The time before a game starts. This can be seen as the countdown before a game.
 GAME_START_DELAY = timedelta(seconds=10)
 
 DEFAULT_KOMI = 7.5
@@ -86,6 +95,7 @@ AUTOMATCH_PRESETS = {
     }
 }
 
+# The duration after which a correspondence automatch entry expires if the user hasn't been online.
 AUTOMATCH_EXPIRE_CORRESPONDENCE = timedelta(days=3)
 
 DASHBOARD_POPULAR_GAMES = 5
@@ -101,4 +111,5 @@ METRICS_COLLECTION_INTERVAL = timedelta(seconds=10)
 
 MAX_USER_INFO_TEXT_LENGTH = 10000
 
+# When timings are capped the cap will be calculated as the initial main time * this value.
 TIMING_MAIN_CAP_MULTIPLIER = 2
