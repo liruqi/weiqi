@@ -46,12 +46,12 @@ class PlayService(BaseService):
             query = self.db.query(Automatch).with_for_update()
 
             # We want to avoid matching against a user if there is already a game running between these two.
-            query = query.outerjoin(Game, (
-                (Game.is_demo.is_(False)) &
-                (Game.stage == 'playing') &
-                (((Game.black_user_id == self.user.id) & (Game.white_user_id == Automatch.user_id)) |
-                 ((Game.black_user_id == Automatch.user_id) & (Game.white_user_id == self.user.id)))))
-            query = query.filter(Game.id.is_(None))
+            sub = self.db.query(Game).filter(
+                Game.is_demo.is_(False),
+                Game.stage == 'playing',
+                ((Game.black_user_id == self.user.id) & (Game.white_user_id == Automatch.user_id)) |
+                ((Game.black_user_id == Automatch.user_id) & (Game.white_user_id == self.user.id)))
+            query = query.filter(~sub.exists())
 
             query = query.filter(Automatch.min_rating <= self.user.rating,
                                  Automatch.max_rating >= self.user.rating,
@@ -59,7 +59,6 @@ class PlayService(BaseService):
                                  Automatch.user_rating <= end,
                                  Automatch.preset == preset)
             query = query.order_by(Automatch.created_at)
-
             other = query.first()
 
             if other:
