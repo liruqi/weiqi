@@ -59,7 +59,7 @@ export default {
                 return;
             }
 
-            if(msg.message.indexOf(this.user.user_display) !== -1) {
+            if(msg.message.toLowerCase().indexOf(this.user.user_display.toLowerCase()) !== -1) {
                 var room = this.rooms.find(function(room) {
                     return room.id == msg.room_id;
                 });
