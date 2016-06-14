@@ -195,7 +195,7 @@
             },
 
             has_control() {
-                return this.user.user_id == this.game.demo_control_id;
+                return this.game.is_demo && this.user.user_id == this.game.demo_control_id;
             },
 
             black_time() {
