@@ -129,6 +129,9 @@ class RoomService(BaseService):
             if self.db.query(RoomUser).filter_by(room_id=room_id, user=self.user).count() == 0:
                 ru = RoomUser(room_id=room_id, user=self.user)
                 self.db.add(ru)
+
+                self._update_users_max(room_id)
+
                 self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
 
         if send_logs:
@@ -137,8 +140,6 @@ class RoomService(BaseService):
                 'room_id': room_id,
                 'logs': [m.to_frontend() for m in room.recent_messages(self.db)],
             })
-
-        self._update_users_max(room_id)
 
     def leave_room(self, room_id):
         self._unsubscribe(room_id)
