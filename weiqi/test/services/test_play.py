@@ -151,6 +151,22 @@ def test_automatch_correspondence(db, socket, mails):
     assert {mails[0]['to'], mails[1]['to']} == {user.email, other.email}
 
 
+def test_automatch_same_user_twice(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+    GameFactory(black_user=user, white_user=other)
+
+    AutomatchFactory(user=other, preset='correspondence',
+                     user_rating=1500, user__rating=1500,
+                     min_rating=1500, max_rating=1500)
+
+    svc = PlayService(db, socket, user)
+    svc.execute('automatch', {'preset': 'correspondence', 'max_hc': 0})
+
+    assert db.query(Automatch).count() == 2
+    assert db.query(Game).count() == 1
+
+
 def test_game_players_handicap():
     svc = PlayService()
 
