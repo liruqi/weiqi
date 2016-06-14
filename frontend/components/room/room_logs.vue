@@ -122,13 +122,15 @@
             },
 
             scroll_bottom(force) {
-                var el = jQuery(this.$el).find('.panel-body');
-                var innerHeight = el.innerHeight();
-                var scrollHeight = el.prop("scrollHeight");
+                this.$nextTick(function() {
+                    var el = jQuery(this.$el).find('.panel-body');
+                    var innerHeight = el.innerHeight();
+                    var scrollHeight = el.prop("scrollHeight");
 
-                if(force || el.scrollTop() + innerHeight > scrollHeight - 200) {
-                    el.scrollTop(scrollHeight);
-                }
+                    if(force || el.scrollTop() + innerHeight > scrollHeight - 200) {
+                        el.scrollTop(scrollHeight);
+                    }
+                });
             },
 
             linkify_logs(logs) {
