@@ -26,8 +26,9 @@ from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN, SYMBOL_TRIANGLE
 
 def test_open(db, socket):
     game = GameFactory()
+    user = UserFactory()
 
-    svc = GameService(db, socket, game.black_user)
+    svc = GameService(db, socket, user)
     svc.execute('open_game', {'game_id': game.id})
 
     assert socket.is_subscribed('game_data/'+str(game.id))
@@ -40,10 +41,31 @@ def test_open(db, socket):
     assert socket.is_subscribed('room_user_left/'+str(game.room_id))
 
 
-def test_close(db, socket):
+def test_open_room(db, socket):
+    game = GameFactory()
+    user = UserFactory()
+
+    svc = GameService(db, socket, user)
+    svc.execute('open_game', {'game_id': game.id})
+
+    assert len(user.rooms) == 1
+    assert user.rooms[0].room.game == game
+
+
+def test_open_room_logs(db, socket):
     game = GameFactory()
 
-    svc = GameService(db, socket, game.black_user)
+    svc = GameService(db, socket)
+    svc.execute('open_game', {'game_id': game.id})
+
+    assert len(list(filter(lambda l: l['method'] == 'room_logs', socket.sent_messages))) == 1
+
+
+def test_close(db, socket):
+    game = GameFactory()
+    user = UserFactory()
+
+    svc = GameService(db, socket, user)
     svc.execute('open_game', {'game_id': game.id})
     svc.execute('close_game', {'game_id': game.id})
 

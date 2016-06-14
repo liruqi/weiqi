@@ -131,12 +131,12 @@ class RoomService(BaseService):
                 self.db.add(ru)
                 self.socket.publish('room_user/'+str(ru.room_id), ru.to_frontend())
 
-            if send_logs:
-                room = self.db.query(Room).get(room_id)
-                self.socket.send('room_logs', {
-                    'room_id': room_id,
-                    'logs': [m.to_frontend() for m in room.recent_messages(self.db)],
-                })
+        if send_logs:
+            room = self.db.query(Room).get(room_id)
+            self.socket.send('room_logs', {
+                'room_id': room_id,
+                'logs': [m.to_frontend() for m in room.recent_messages(self.db)],
+            })
 
         self._update_users_max(room_id)
 
