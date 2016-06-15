@@ -14,11 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from tornado import gen
 from datetime import datetime, timedelta
 import random
 from weiqi import settings
-from weiqi.db import session
+from weiqi.db import transaction
 from weiqi.services import BaseService, ServiceError, CorrespondenceService
 from weiqi.rating import rating_range, rank_diff
 from weiqi.models import Automatch, Room, RoomUser, Game, Timing, User, Challenge
@@ -40,7 +39,7 @@ class PlayService(BaseService):
         start, end = rating_range(self.user.rating, max_hc)
         game = None
 
-        try:
+        with transaction(self.db):
             self.db.query(Automatch).filter_by(user=self.user).delete()
 
             query = self.db.query(Automatch).with_for_update()
@@ -71,11 +70,6 @@ class PlayService(BaseService):
                                  min_rating=start,
                                  max_rating=end)
                 self.db.add(item)
-
-            self.db.commit()
-        except:
-            self.db.rollback()
-            raise
 
         if game:
             self._publish_game_started(game)
