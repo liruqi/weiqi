@@ -62,69 +62,71 @@
                 <h3 class="panel-title">{{$t('user_detail.games')}}</h3>
             </div>
 
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th>{{$t('game.white')}}</th>
-                        <th>{{$t('game.black')}}</th>
-                        <th>{{$t('game.result')}}</th>
-                        <th>{{$t('game.type')}}</th>
-                        <th>{{$t('game.speed')}}</th>
-                        <th>{{$t('game.date')}}</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="game in games">
-                        <template v-if="game.is_demo">
-                            <td>{{$t('game.demo')}}</td>
-                            <td>{{game.demo_title}}</td>
-                        </template>
-                        <template v-else>
-                            <td :class="{winner: game.result.startsWith('W+')}">
-                                <qi-user-context :user_id="game.white_user_id" :display="game.white_display" :rating="game.white_rating"></qi-user-context>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>{{$t('game.white')}}</th>
+                            <th>{{$t('game.black')}}</th>
+                            <th>{{$t('game.result')}}</th>
+                            <th>{{$t('game.type')}}</th>
+                            <th>{{$t('game.speed')}}</th>
+                            <th>{{$t('game.date')}}</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="game in games">
+                            <template v-if="game.is_demo">
+                                <td>{{$t('game.demo')}}</td>
+                                <td>{{game.demo_title}}</td>
+                            </template>
+                            <template v-else>
+                                <td :class="{winner: game.result.startsWith('W+')}">
+                                    <qi-user-context :user_id="game.white_user_id" :display="game.white_display" :rating="game.white_rating"></qi-user-context>
+                                </td>
+                                <td :class="{winner: game.result.startsWith('B+')}">
+                                    <qi-user-context :user_id="game.black_user_id" :display="game.black_display" :rating="game.black_rating"></qi-user-context>
+                                </td>
+                            </template>
+                            <td>{{game.result || '-'}}</td>
+                            <td>
+                                <qi-game-type :game="game"></qi-game-type>
                             </td>
-                            <td :class="{winner: game.result.startsWith('B+')}">
-                                <qi-user-context :user_id="game.black_user_id" :display="game.black_display" :rating="game.black_rating"></qi-user-context>
+                            <td>
+                                <qi-game-speed :game="game"></qi-game-speed>
                             </td>
-                        </template>
-                        <td>{{game.result || '-'}}</td>
-                        <td>
-                            <qi-game-type :game="game"></qi-game-type>
-                        </td>
-                        <td>
-                            <qi-game-speed :game="game"></qi-game-speed>
-                        </td>
-                        <td>{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</td>
-                        <td class="text-right">
-                            <div class="btn-group">
-                                <a v-link="{name:'game', params:{game_id:game.id}}" class="btn btn-default btn-xs">
-                                    <i class="fa fa-fw fa-file"></i>
-                                    {{$t('game.open')}}
-                                </a>
+                            <td>{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</td>
+                            <td class="text-right">
+                                <div class="btn-group">
+                                    <a v-link="{name:'game', params:{game_id:game.id}}" class="btn btn-default btn-xs">
+                                        <i class="fa fa-fw fa-file"></i>
+                                        {{$t('game.open')}}
+                                    </a>
 
-                                <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-right">
-                                    <li v-if="!is_self || !game.is_demo">
-                                        <a href="javascript:void(0)" @click="create_demo(game.id)">
-                                            <i class="fa fa-fw fa-desktop"></i>
-                                            {{$t('game.clone_demo')}}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a :href="'/api/games/'+game.id+'/sgf'" target="_blank">
-                                            <i class="fa fa-fw fa-download"></i>
-                                            {{$t('game.download_sgf')}}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li v-if="!is_self || !game.is_demo">
+                                            <a href="javascript:void(0)" @click="create_demo(game.id)">
+                                                <i class="fa fa-fw fa-desktop"></i>
+                                                {{$t('game.clone_demo')}}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a :href="'/api/games/'+game.id+'/sgf'" target="_blank">
+                                                <i class="fa fa-fw fa-download"></i>
+                                                {{$t('game.download_sgf')}}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </template>

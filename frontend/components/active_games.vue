@@ -7,47 +7,49 @@
             </h1>
         </div>
 
-        <table class="table table-hover table-striped table-condensed gamelist">
-            <thead>
-                <tr>
-                    <th>{{$t('game.white')}}</th>
-                    <th>{{$t('game.black')}}</th>
-                    <th>{{$t('game.type')}}</th>
-                    <th>{{$t('game.speed')}}</th>
-                    <th>{{$t('game.started')}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="game in sorted_games" v-link="{name:'game', params:{game_id: game.id}}">
-                    <template v-if="game.is_demo">
-                        <td colspan="2">
-                            <qi-username-rank :display="game.demo_owner_display" :rating="game.demo_owner_rating"></qi-username-rank>
-                            <span v-if="game.demo_title">&mdash; {{game.demo_title}}</span>
-                        </td>
-                    </template>
-                    <template v-else>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped table-condensed gamelist">
+                <thead>
+                    <tr>
+                        <th>{{$t('game.white')}}</th>
+                        <th>{{$t('game.black')}}</th>
+                        <th>{{$t('game.type')}}</th>
+                        <th>{{$t('game.speed')}}</th>
+                        <th>{{$t('game.started')}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="game in sorted_games" v-link="{name:'game', params:{game_id: game.id}}">
+                        <template v-if="game.is_demo">
+                            <td colspan="2">
+                                <qi-username-rank :display="game.demo_owner_display" :rating="game.demo_owner_rating"></qi-username-rank>
+                                <span v-if="game.demo_title">&mdash; {{game.demo_title}}</span>
+                            </td>
+                        </template>
+                        <template v-else>
+                            <td>
+                                <qi-username-rank :display="game.white_display" :rating="game.white_rating"></qi-username-rank>
+                            </td>
+                            <td>
+                                <qi-username-rank :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
+                            </td>
+                        </template>
                         <td>
-                            <qi-username-rank :display="game.white_display" :rating="game.white_rating"></qi-username-rank>
+                            <qi-game-type :game="game"></qi-game-type>
                         </td>
                         <td>
-                            <qi-username-rank :display="game.black_display" :rating="game.black_rating"></qi-username-rank>
+                            <qi-game-speed :game="game"></qi-game-speed>
                         </td>
-                    </template>
-                    <td>
-                        <qi-game-type :game="game"></qi-game-type>
-                    </td>
-                    <td>
-                        <qi-game-speed :game="game"></qi-game-speed>
-                    </td>
-                    <td>{{started[game.id]}}</td>
-                </tr>
-                <tr v-if="sorted_games.length == 0">
-                    <td colspan="5" class="text-center">
-                        <em>{{$t('gamelist.no_games')}}</em>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        <td>{{started[game.id]}}</td>
+                    </tr>
+                    <tr v-if="sorted_games.length == 0">
+                        <td colspan="5" class="text-center">
+                            <em>{{$t('gamelist.no_games')}}</em>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </template>
 

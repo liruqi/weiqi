@@ -1,0 +1,4 @@
+// This fixes wrapping of btn-group elements whithin tables
+.table .btn-group {
+  display: flex;
+}
