@@ -41,19 +41,24 @@ def socket():
 
 
 @pytest.fixture
-def db():
+def db(request):
     session.rollback()
-    session.query(User).delete()
     session.query(RoomUser).delete()
     session.query(RoomMessage).delete()
     session.query(Connection).delete()
-    session.query(Room).delete()
     session.query(DirectRoom).delete()
-    session.query(User).delete()
     session.query(Automatch).delete()
-    session.query(Game).delete()
     session.query(Timing).delete()
+    session.query(Game).delete()
+    session.query(Room).delete()
     session.query(Challenge).delete()
+    session.query(User).delete()
+
+    def fin():
+        session.rollback()
+
+    request.addfinalizer(fin)
+
     return session
 
 

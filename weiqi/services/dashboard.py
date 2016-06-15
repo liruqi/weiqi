@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
-from sqlalchemy import case, desc
 from weiqi import settings
 from weiqi.services import BaseService
 from weiqi.models import Game, Room, User
@@ -31,12 +30,6 @@ class DashboardService(BaseService):
                  .filter(Game.created_at >= datetime.utcnow() - settings.DASHBOARD_POPULAR_GAMES_MAX_AGE)
                  .filter(Game.is_private.is_(False))
                  .order_by(Room.users_max.desc())
-                 .order_by(desc(
-                    case([
-                        (((Game.black_rating >= Game.white_rating) & (Game.black_rating >= Game.white_rating)), Game.black_rating),
-                        (((Game.white_rating >= Game.black_rating) & (Game.white_rating >= Game.black_rating)), Game.white_rating),
-                        (((Game.demo_owner_rating >= Game.black_rating) & (Game.demo_owner_rating >= Game.white_rating)), Game.demo_owner_rating),
-                    ])))
                  .limit(settings.DASHBOARD_POPULAR_GAMES))
 
         return [g.to_frontend() for g in games]

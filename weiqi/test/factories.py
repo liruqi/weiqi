@@ -29,7 +29,6 @@ class UserFactory(SQLAlchemyModelFactory):
         model = User
         sqlalchemy_session = session
 
-    id = factory.Sequence(lambda n: n)
     last_activity_at = datetime.utcnow()
     email = FuzzyText(suffix='@test.test')
     password = ''
@@ -51,7 +50,6 @@ class RoomFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = session
         force_flush = True
 
-    id = factory.Sequence(lambda n: n)
     name = FuzzyText()
     type = 'main'
     is_default = True
