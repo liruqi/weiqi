@@ -14,16 +14,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from tornado.websocket import WebSocketHandler
 import json
-import uuid
 import logging
-from datetime import datetime
+import uuid
+
+from tornado import gen
+from tornado.ioloop import IOLoop
+from tornado.websocket import WebSocketHandler
 from weiqi import settings, metrics
 from weiqi.db import session
-from weiqi.services import (ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService,
-                            DashboardService)
 from weiqi.models import User
+from weiqi.services import ConnectionService, execute_service
 
 
 class SocketMixin:
@@ -31,8 +32,6 @@ class SocketMixin:
         self.id = str(uuid.uuid4())
         self.pubsub = pubsub
         self._subs = set()
-        self._services = [ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService,
-                          DashboardService]
 
     def get_compression_options(self):
         return {}
@@ -49,11 +48,7 @@ class SocketMixin:
         service, method = msg.get('method').split('/', 1)
 
         with metrics.REQUEST_TIME.labels(msg.get('method')).time():
-            res = self._execute_service(service, method, msg.get('data'))
-
-        if msg.get('id') is not None:
-            self._send_data({'method': 'response', 'id': msg.get('id'), 'data': res},
-                            response_to=msg.get('method'))
+            IOLoop.current().add_callback(self._execute_service, service, method, msg.get('data'), msg.get('id'))
 
     def on_close(self):
         for topic in self._subs:
@@ -96,22 +91,14 @@ class SocketMixin:
         topic = topic.split('/')[0]
         self.send(topic, data)
 
-    def _execute_service(self, service, method, data=None):
-        with metrics.EXCEPTIONS.labels(service+'/'+method).count_exceptions():
-            service_names = {s.__service_name__: s for s in self._services}
-            service_class = service_names.get(service)
+    @gen.coroutine
+    def _execute_service(self, service, method, data=None, id=None):
+        user_id = self.get_secure_cookie(settings.COOKIE_NAME)
+        user_id = int(user_id) if user_id is not None else None
+        res = yield execute_service(self, user_id, service, method, data)
 
-            if not service_class:
-                raise ValueError('service "{}" not found'.format(service))
-
-            with session() as db:
-                user = self._get_user(db)
-
-                if user and method != 'ping':
-                    user.last_activity_at = datetime.utcnow()
-
-                svc = service_class(db, self, user)
-                return svc.execute(method, data)
+        if id is not None:
+            self._send_data({'method': 'response', 'id': id, 'data': res}, response_to=service + '/' + method)
 
     def _get_user(self, db):
         user_id = self.get_secure_cookie(settings.COOKIE_NAME)
