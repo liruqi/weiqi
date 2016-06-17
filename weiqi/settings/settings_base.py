@@ -58,6 +58,9 @@ MAILER = {
     'smtp_password': '',
 }
 
+# The number of threads to use for services
+SERVICE_THREADS = 10
+
 # The number of messages to load from the room history after connecting.
 ROOM_MESSAGES_LIMIT = 30
 

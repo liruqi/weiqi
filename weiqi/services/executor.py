@@ -17,13 +17,13 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
-from weiqi import metrics
+from weiqi import metrics, settings
 from weiqi.db import session
 from weiqi.models import User
 from weiqi.services import (ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService,
                             DashboardService)
 
-_executor = ThreadPoolExecutor(10)
+_executor = ThreadPoolExecutor(settings.SERVICE_THREADS)
 _services = [ConnectionService, RoomService, GameService, PlayService, UserService, SettingsService, DashboardService]
 _service_names = {s.__service_name__: s for s in _services}
 
