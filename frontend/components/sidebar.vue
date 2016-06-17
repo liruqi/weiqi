@@ -105,8 +105,8 @@
             <template v-for="game in sorted_games">
                 <li v-link-active>
                     <a v-link="{name: 'game', params:{game_id: game.id}}">
-                        <i :class="{'text-info': game.stage!='finished' && !game_has_update[game.id],
-                            'text-warning': game.stage!='finished' && game_has_update[game.id]}"
+                        <i :class="{'text-info': game.stage!='finished' && !is_my_turn[game.id],
+                            'text-warning': game.stage!='finished' && is_my_turn[game.id]}"
                             class="fa fa-circle"></i>
 
                         <span v-if="game.is_demo" class="sidebar-item-text">{{game.demo_owner_display}}</span>
@@ -185,6 +185,7 @@
 
 <script>
     import { close_game, close_direct_room } from '../vuex/actions';
+    import { is_current_player } from '../game';
     import * as socket from '../socket';
 
     export default {
@@ -196,7 +197,6 @@
                 direct_rooms: function(state) { return state.direct_rooms; },
                 open_games: function(state) { return state.open_games; },
                 room_has_update: function(state) { return state.room_has_update; },
-                game_has_update: function(state) { return state.game_has_update; },
                 challenges: function(state) { return state.challenges; }
             },
 
@@ -241,6 +241,20 @@
 
             no_direct_rooms() {
                 return !this.direct_rooms || Object.keys(this.direct_rooms).length==0
+            },
+
+            is_my_turn() {
+                var my_turn = {};
+
+                if(!this.user.logged_in) {
+                    return my_turn;
+                }
+
+                this.open_games_list.forEach(function(game) {
+                    my_turn[game.id] = is_current_player(game, game.board.current_node_id, this.user.user_id);
+                }.bind(this));
+
+                return my_turn;
             }
         },
 
