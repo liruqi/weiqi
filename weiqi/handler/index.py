@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from tornado.web import HTTPError
 from sqlalchemy.orm import undefer
+from tornado.web import HTTPError
 from weiqi import settings
 from weiqi.handler.base import BaseHandler
-from weiqi.models import User, Game
 from weiqi.identicon import generate_identicon
+from weiqi.models import User, Game
 from weiqi.sgf import game_to_sgf
 
 

@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pytest
-from weiqi.test.factories import RoomFactory, RoomUserFactory, UserFactory
-from weiqi.services import RoomService, ServiceError
 from weiqi.models import RoomMessage, Room, RoomUser, DirectRoom
+from weiqi.services import RoomService, ServiceError
+from weiqi.test.factories import RoomFactory, RoomUserFactory, UserFactory
 
 
 def test_room_users(db, socket):

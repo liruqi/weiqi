@@ -14,12 +14,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from tornado.options import define, options
 from tornado.autoreload import add_reload_hook
+from tornado.options import define, options
 from weiqi import settings
+from weiqi.application import run_app
 from weiqi.db import create_db, session
 from weiqi.prepare_startup import prepare_startup
-from weiqi.application import run_app
 from weiqi.services import RoomService
 
 

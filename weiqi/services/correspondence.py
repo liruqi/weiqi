@@ -15,8 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from weiqi import settings
-from weiqi.services import BaseService
 from weiqi.mailer import send_mail
+from weiqi.services import BaseService
 
 
 class CorrespondenceService(BaseService):

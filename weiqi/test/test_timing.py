@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime, timedelta
+
 from weiqi.models import Timing
 from weiqi.timing import update_timing, update_timing_after_move
 

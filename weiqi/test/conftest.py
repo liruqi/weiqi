@@ -14,16 +14,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pytest
 import json
+
+import pytest
 from tornado.httputil import HTTPServerRequest
-from weiqi.message.pubsub import PubSub
-from weiqi.message.broker import DummyBroker
-from weiqi.handler.socket import SocketMixin
-from weiqi.test import session
 from weiqi.board import Board
-from weiqi.models import User, Room, RoomMessage, RoomUser, DirectRoom, Connection, Automatch, Game, Timing, Challenge
+from weiqi.handler.socket import SocketMixin
 from weiqi.mailer import console_mails
+from weiqi.message.broker import DummyBroker
+from weiqi.message.pubsub import PubSub
+from weiqi.models import User, Room, RoomMessage, RoomUser, DirectRoom, Connection, Automatch, Game, Timing, Challenge
+from weiqi.test import session
 
 
 @pytest.fixture

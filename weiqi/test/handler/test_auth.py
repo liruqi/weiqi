@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.test.base import BaseAsyncHTTPTestCase
-from weiqi.test import session
-from weiqi.test.factories import RoomFactory, UserFactory
 from weiqi.models import User
 from weiqi.rating import min_rating
+from weiqi.test import session
+from weiqi.test.base import BaseAsyncHTTPTestCase
+from weiqi.test.factories import RoomFactory, UserFactory
 
 
 class TestSignUp(BaseAsyncHTTPTestCase):

@@ -15,8 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import namedtuple
-from weiqi.board import EMPTY, BLACK, WHITE, neighbors, opposite
 
+from weiqi.board import EMPTY, BLACK, WHITE, neighbors, opposite
 
 Score = namedtuple('Score', ['white', 'black', 'komi', 'handicap', 'winner', 'win_by', 'result', 'points'])
 

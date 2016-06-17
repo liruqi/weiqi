@@ -14,9 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.services import BaseService, UserService, GameService, RoomService
 from weiqi.models import Game, Room, RoomUser, DirectRoom, Connection, Automatch, Challenge
-from weiqi import settings
+from weiqi.services import BaseService, UserService, GameService, RoomService
 
 
 class ConnectionService(BaseService):

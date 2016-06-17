@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime, timedelta
+
 from weiqi.services import DashboardService
 from weiqi.test.factories import GameFactory, DemoGameFactory
 

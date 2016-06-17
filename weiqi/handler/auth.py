@@ -16,12 +16,12 @@
 
 from tornado.web import HTTPError
 from weiqi import settings, metrics
+from weiqi.glicko2 import Player
 from weiqi.handler.base import BaseHandler
+from weiqi.mailer import send_mail
 from weiqi.models import User, RoomUser, Room
 from weiqi.rating import min_rating
-from weiqi.glicko2 import Player
 from weiqi.recaptcha import validate_recaptcha
-from weiqi.mailer import send_mail
 
 
 class SignUpHandler(BaseHandler):

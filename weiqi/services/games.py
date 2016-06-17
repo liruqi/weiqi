@@ -14,17 +14,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from sqlalchemy.orm import undefer
 from contextlib import contextmanager
-import random
 from datetime import datetime
-from tornado import gen
+
+from sqlalchemy.orm import undefer
 from weiqi import settings
-from weiqi.db import transaction, session
-from weiqi.services import BaseService, ServiceError, UserService, RatingService, RoomService, CorrespondenceService
-from weiqi.models import Game, Timing
 from weiqi.board import RESIGN, BLACK, SYMBOL_TRIANGLE, SYMBOL_CIRCLE, SYMBOL_SQUARE
+from weiqi.db import transaction
+from weiqi.models import Game, Timing
 from weiqi.scoring import count_score
+from weiqi.services import BaseService, ServiceError, UserService, RatingService, RoomService, CorrespondenceService
 from weiqi.timing import update_timing, update_timing_after_move
 
 

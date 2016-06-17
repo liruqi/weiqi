@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from binascii import a2b_base64
-from PIL import Image
 from io import BytesIO
+
+from PIL import Image
 from weiqi.services import BaseService, ServiceError
 
 

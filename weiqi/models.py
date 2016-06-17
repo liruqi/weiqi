@@ -14,19 +14,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timedelta
-import re
-import bcrypt
-import json
 import hmac
+import json
+import re
+from datetime import datetime, timedelta
+
+import bcrypt
 from sqlalchemy import (Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Enum, TypeDecorator, Text,
                         CheckConstraint, Binary, Interval, UniqueConstraint)
 from sqlalchemy.orm import validates, relationship, deferred
 from sqlalchemy.orm.attributes import flag_modified
 from weiqi import settings
+from weiqi.board import board_from_dict, BLACK
 from weiqi.db import Base
 from weiqi.glicko2 import player_from_dict, RatingEncoder
-from weiqi.board import board_from_dict, BLACK, WHITE
 from weiqi.markdown import markdown_to_html
 
 

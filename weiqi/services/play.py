@@ -14,14 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timedelta
 import random
+from datetime import datetime, timedelta
+
 from weiqi import settings
-from weiqi.db import transaction
-from weiqi.services import BaseService, ServiceError, CorrespondenceService
-from weiqi.rating import rating_range, rank_diff
-from weiqi.models import Automatch, Room, RoomUser, Game, Timing, User, Challenge
 from weiqi.board import Board
+from weiqi.db import transaction
+from weiqi.models import Automatch, Room, RoomUser, Game, Timing, User, Challenge
+from weiqi.rating import rating_range, rank_diff
+from weiqi.services import BaseService, ServiceError, CorrespondenceService
 from weiqi.sgf import game_from_sgf
 
 

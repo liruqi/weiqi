@@ -14,10 +14,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PIL import Image, ImageDraw
-from io import BytesIO
 import hashlib
 import struct
+from io import BytesIO
+
+from PIL import Image, ImageDraw
 
 
 def generate_identicon(data, size=256, cells=9):

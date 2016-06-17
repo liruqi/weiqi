@@ -15,10 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
-from weiqi.sgf import (Reader, parse_property_name, parse_property_value, parse_sgf, game_from_sgf, game_to_sgf,
-                       sgf_part_from_node)
+
 from weiqi.board import coord_from_sgf, coord2d, Board, BLACK, WHITE
 from weiqi.models import Game
+from weiqi.sgf import (Reader, parse_property_name, parse_property_value, parse_sgf, game_from_sgf, game_to_sgf,
+                       sgf_part_from_node)
 
 
 def test_property_name():

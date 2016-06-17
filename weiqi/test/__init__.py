@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+
 from sqlalchemy.orm import scoped_session
 from weiqi import settings
 from weiqi.db import Session, create_db, create_schema

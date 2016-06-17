@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from unittest import TestCase
-from tornado.testing import AsyncHTTPTestCase
 import urllib.parse
-from weiqi.test import session
+from unittest import TestCase
+
+from tornado.testing import AsyncHTTPTestCase
 from weiqi.application import create_app
 from weiqi.models import User, RoomMessage, RoomUser, Room, DirectRoom, Connection, Automatch, Game, Timing, Challenge
+from weiqi.test import session
 
 
 class BaseTestCase(TestCase):

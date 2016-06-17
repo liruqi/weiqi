@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.prepare_startup import prepare_startup
 from weiqi.models import Automatch
+from weiqi.prepare_startup import prepare_startup
 from weiqi.test.factories import AutomatchFactory
 
 

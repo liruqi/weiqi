@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from weiqi.models import User, Game
 from weiqi.services import BaseService
-from weiqi.models import Connection, User, Game
 
 
 class UserService(BaseService):

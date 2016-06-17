@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from weiqi.services import BaseService, ServiceError
 from weiqi.models import Room, RoomMessage, RoomUser, DirectRoom, User
+from weiqi.services import BaseService, ServiceError
 
 
 class RoomService(BaseService):

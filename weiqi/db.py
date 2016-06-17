@@ -14,13 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import uuid
 from contextlib import contextmanager
+
 from sqlalchemy import create_engine
+from sqlalchemy.dialects.postgres import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.types import TypeDecorator, CHAR
-from sqlalchemy.dialects.postgres import UUID
-import uuid
 from weiqi import settings
 
 Base = declarative_base()

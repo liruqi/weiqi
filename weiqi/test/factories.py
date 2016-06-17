@@ -14,14 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime, timedelta
+
 import factory
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy import FuzzyText
-from datetime import datetime, timedelta
-from weiqi.models import User, Room, RoomUser, RoomMessage, Automatch, Game, Timing, Challenge
 from weiqi.board import Board
-from weiqi.test import session
 from weiqi.glicko2 import Player
+from weiqi.models import User, Room, RoomUser, RoomMessage, Automatch, Game, Timing, Challenge
+from weiqi.test import session
 
 
 class UserFactory(SQLAlchemyModelFactory):

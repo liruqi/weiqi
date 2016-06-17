@@ -15,10 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
+
 from weiqi import settings
+from weiqi.glicko2 import WIN, LOSS, Player, Result
 from weiqi.services import RatingService
 from weiqi.test.factories import GameFactory
-from weiqi.glicko2 import WIN, LOSS, Player, Result
 
 
 def test_update_ratings(db):

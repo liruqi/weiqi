@@ -15,9 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import defaultdict
-from weiqi.models import Game
+
 from weiqi.board import (Board, coord_from_sgf, coord_to_sgf, BLACK, WHITE, EMPTY, NODE_WHITE, NODE_BLACK, NODE_EDIT,
                          SYMBOL_TRIANGLE, SYMBOL_SQUARE, SYMBOL_CIRCLE)
+from weiqi.models import Game
 from weiqi.sgf import parse_sgf
 
 

@@ -17,6 +17,7 @@
 import os.path
 import smtplib
 from email.mime.text import MIMEText
+
 from tornado.template import Loader
 from weiqi import settings
 

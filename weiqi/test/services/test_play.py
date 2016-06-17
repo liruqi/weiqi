@@ -15,11 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime, timedelta
+
 import pytest
 from weiqi import settings
+from weiqi.models import Automatch, Game, Challenge
 from weiqi.services import PlayService
 from weiqi.services.play import ChallengeExpiredError
-from weiqi.models import Automatch, Game, Challenge
 from weiqi.test.factories import UserFactory, AutomatchFactory, GameFactory, ChallengeFactory
 
 

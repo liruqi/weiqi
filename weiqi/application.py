@@ -17,17 +17,18 @@
 import logging
 import random
 from datetime import timedelta
-from tornado import gen
-import tornado.web
-import tornado.options
+
 import tornado.httpserver
+import tornado.options
+import tornado.web
+from tornado import gen
 from weiqi import settings
+from weiqi.db import session
 from weiqi.handler import auth, socket, index, metrics
 from weiqi.handler.socket import SocketMixin
-from weiqi.message.pubsub import PubSub
 from weiqi.message.broker import create_message_broker
+from weiqi.message.pubsub import PubSub
 from weiqi.services import GameService, PlayService
-from weiqi.db import session
 
 
 class Application(tornado.web.Application):

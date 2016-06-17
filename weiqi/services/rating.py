@@ -14,13 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from sqlalchemy.orm import undefer
-from weiqi.services import BaseService
-from weiqi.models import User
-from weiqi.glicko2 import Result, WIN, LOSS
-from weiqi.rating import RATING_PER_RANK, RATING_START
-from weiqi import settings
 from datetime import datetime
+
+from sqlalchemy.orm import undefer
+from weiqi import settings
+from weiqi.glicko2 import Result, WIN, LOSS
+from weiqi.models import User
+from weiqi.rating import RATING_PER_RANK, RATING_START
+from weiqi.services import BaseService
 
 
 class RatingService(BaseService):

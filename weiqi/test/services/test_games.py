@@ -14,14 +14,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pytest
 from datetime import datetime, timedelta
+
+import pytest
 from weiqi import settings
+from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN, SYMBOL_TRIANGLE
+from weiqi.models import Timing
 from weiqi.services import GameService, ServiceError
 from weiqi.services.games import InvalidPlayerError, InvalidStageError, GameHasNotStartedError, NotAllowedError
-from weiqi.models import Timing
 from weiqi.test.factories import GameFactory, DemoGameFactory, UserFactory
-from weiqi.board import BLACK, WHITE, EMPTY, PASS, RESIGN, SYMBOL_TRIANGLE
 
 
 def test_open(db, socket):

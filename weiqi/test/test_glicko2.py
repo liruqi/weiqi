@@ -17,9 +17,10 @@
 http://www.glicko.net/glicko/glicko2.pdf
 """
 
-import pytest
-import math
 import json
+import math
+
+import pytest
 from weiqi.glicko2 import (Player, Rating, Result, rating_from_glicko2, DEFAULT_VOLATILITY, WIN, LOSS, calc_g, calc_e,
                            estimate_variance, estimate_improvement_partial, new_volatility, new_deviation,
                            new_rating, player_from_dict, RatingEncoder)
