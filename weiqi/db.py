@@ -43,10 +43,11 @@ def create_schema():
 def session():
     sess = Session()
 
-    with transaction(sess):
-        yield sess
-
-    sess.close()
+    try:
+        with transaction(sess):
+            yield sess
+    finally:
+        sess.close()
 
 
 @contextmanager
