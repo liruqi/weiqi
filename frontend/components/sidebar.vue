@@ -105,7 +105,7 @@
             <template v-for="game in sorted_games">
                 <li v-link-active>
                     <a v-link="{name: 'game', params:{game_id: game.id}}">
-                        <i :class="{'text-info': game.stage!='finished' && !is_my_turn[game.id],
+                        <i :class="{'text-info': game.is_demo || (game.stage!='finished' && !is_my_turn[game.id]),
                             'text-warning': game.stage!='finished' && is_my_turn[game.id]}"
                             class="fa fa-circle"></i>
 
@@ -221,8 +221,14 @@
 
             sorted_games() {
                 return this.open_games_list.sort(function(g1, g2) {
-                    return g1.id < g2.id;
-                });
+                    var g1_active = (g1.is_demo ? true : g1.stage == 'playing');
+                    var g2_active = (g2.is_demo ? true : g2.stage == 'playing');
+                    if(g1_active != g2_active) {
+                        return g2_active - g1_active;
+                    }
+
+                    return g2.id - g1.id;
+                }.bind(this));
             },
 
             sorted_direct_rooms() {
@@ -232,7 +238,7 @@
 
                 return direct.sort(function(d1, d2) {
                     if(d1.is_online != d2.is_online) {
-                        return d2.is_online;
+                        return d2.is_online - d1.is_online;
                     }
 
                     return (''+d1.other_display).localeCompare(d2.other_display);
