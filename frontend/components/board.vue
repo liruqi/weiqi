@@ -9,7 +9,7 @@
     import { construct_pos, coord_to_2d } from '../board';
 
     export default {
-        props: ['board', 'current_node_id', 'coordinates', 'mouse_shadow', 'allow_shadow_move', 'current'],
+        props: ['board', 'current_node_id', 'coordinates', 'can_click', 'mouse_shadow', 'allow_shadow_move', 'current'],
 
         data() {
             return {
@@ -112,6 +112,10 @@
                 // Stopping the event is required because we are listening to both touchstart and click.
                 event.stopPropagation();
                 event.preventDefault();
+
+                if(!this.can_click) {
+                    return;
+                }
 
                 var coord;
 

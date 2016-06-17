@@ -17,12 +17,13 @@
                         <option value="label">{{$t('demo.tool.label')}}</option>
                         <option value="number">{{$t('demo.tool.number')}}</option>
                     </select>
-                <div class="clearfix"></div>
+                    <div class="clearfix"></div>
                 </p>
                 <qi-board v-if="game.board"
                           :board="game.board"
                           :current_node_id="current_node_id"
                           :coordinates="coordinates"
+                          :can_click="can_edit_board"
                           :mouse_shadow="show_mouse_shadow"
                           :allow_shadow_move="demo_tool == 'edit'"
                           :current="current"></qi-board>
@@ -91,6 +92,7 @@
     import * as socket from '../../socket';
     import { play_sound } from '../../sounds';
     import { current_color } from '../../board';
+    import { is_current_player } from '../../game';
 
     export default {
         mixins: [require('./../../mixins/title.vue')],
@@ -226,21 +228,10 @@
             },
 
             can_edit_board() {
-                if(this.has_control) {
-                    return true;
-                }
+                var has_control = this.has_control;
+                var is_current = is_current_player(this.game, this.current_node_id, this.user.user_id);
 
-                if(this.game.stage == 'playing' && this.is_player) {
-                    if(this.current == 'x' && this.user.user_id == this.game.black_user_id) {
-                        return true;
-                    }
-
-                    if(this.current == 'o' && this.user.user_id == this.game.white_user_id) {
-                        return true;
-                    }
-                }
-
-                return false;
+                return has_control || is_current;
             },
 
             show_mouse_shadow() {
