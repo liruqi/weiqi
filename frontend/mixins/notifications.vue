@@ -59,17 +59,24 @@ export default {
                 return;
             }
 
-            if(msg.message.toLowerCase().indexOf(this.user.user_display.toLowerCase()) !== -1) {
-                var room = this.rooms.find(function(room) {
-                    return room.id == msg.room_id;
-                });
+            var room = this.rooms.find(function(room) {
+                return room.id == msg.room_id;
+            });
 
-                if(!room || room.type != 'main') {
-                    return;
-                }
+            if(!room) {
+                return;
+            }
 
-                notify(msg.user_display + ': ' + msg.message, function() {
+            var notify_msg = msg.user_display + ': ' + msg.message;
+            var mentioned = msg.message.toLowerCase().indexOf(this.user.user_display.toLowerCase()) !== -1;
+
+            if(room.type == 'main' && mentioned) {
+                notify(notify_msg, function() {
                     this.$router.go({name: 'room', params: {room_id: room.id}});
+                }.bind(this));
+            } else if(room.type == 'direct') {
+                notify(notify_msg, function() {
+                    this.$router.go({name: 'user_message', params: {user_id: msg.user_id}});
                 }.bind(this));
             }
         }
