@@ -36,6 +36,7 @@ server_messages.direct_message = function({dispatch, state}, data) {
 export const update_route = make_action('UPDATE_ROUTE');
 export const toggle_sidebar = make_action('TOGGLE_SIDEBAR');
 export const update_game_time = make_action('UPDATE_GAME_TIME');
+export const clear_game_update = make_action('CLEAR_GAME_UPDATE');
 
 export function open_game({dispatch, state}, game_id) {
     var game = state.open_games[game_id];

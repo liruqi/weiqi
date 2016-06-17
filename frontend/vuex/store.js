@@ -33,6 +33,7 @@ export function default_state() {
         direct_rooms: {},
 
         room_has_update: {},
+        game_has_update: {},
         
         challenges: []
     };
@@ -146,6 +147,7 @@ export const mutations = {
 
     MSG_GAME_DATA(state, data) {
         Vue.set(state.open_games, data.id, data);
+        Vue.set(state.game_has_update, data.id, true);
         mutations.UPDATE_GAME_TIME(state, data.id);
     },
 
@@ -187,6 +189,7 @@ export const mutations = {
             }
         }
 
+        Vue.set(state.game_has_update, data.game_id, true);
         publish_event('game_update', game);
 
         mutations.UPDATE_GAME_TIME(state, data.game_id);
@@ -293,6 +296,8 @@ export const mutations = {
             Vue.delete(state.open_games, game_id);
         }
 
+        Vue.delete(state.game_has_update, game_id);
+
         if(state.route.name == "game" && state.route.params.game_id == game_id) {
             state.route.router.go({name: 'root'});
         }
@@ -319,6 +324,10 @@ export const mutations = {
     
     CLEAR_ROOM_UPDATE(state, room_id) {
         Vue.set(state.room_has_update, room_id, false);
+    },
+    
+    CLEAR_GAME_UPDATE(state, game_id) {
+        Vue.set(state.game_has_update, game_id, false);
     }
 };
 

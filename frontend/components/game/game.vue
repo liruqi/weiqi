@@ -89,7 +89,7 @@
 <script>
     import bootbox from 'bootbox';
     import moment from 'moment';
-    import { open_game, update_game_time } from './../../vuex/actions';
+    import { open_game, update_game_time, clear_game_update } from './../../vuex/actions';
     import * as socket from '../../socket';
     import { play_sound } from '../../sounds';
     import { current_color } from '../../board';
@@ -108,10 +108,12 @@
             getters: {
                 open_games: function(state) { return state.open_games },
                 user: function(state) { return state.auth.user },
+                game_has_update: function(state) { return state.game_has_update; }
             },
             actions: {
                 open_game,
-                update_game_time
+                update_game_time,
+                clear_game_update
             }
         },
 
@@ -261,11 +263,16 @@
                 } else if(node.action == 'W') {
                     play_sound('white_stone');
                 }
+            },
+
+            'game_has_update[game_id]': function() {
+                this.clear_update();
             }
         },
 
         ready() {
             this.open_game(this.game_id);
+            this.clear_update();
             this.timer = setInterval(this.update_timer, 200);
             this.update_timer();
 
@@ -337,6 +344,10 @@
         },
 
         methods: {
+            clear_update() {
+                this.clear_game_update(this.game_id);
+            },
+
             update_timer() {
                 if(this.game.id === false) {
                     return;

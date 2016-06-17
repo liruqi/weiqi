@@ -105,8 +105,8 @@
             <template v-for="game in sorted_games">
                 <li v-link-active>
                     <a v-link="{name: 'game', params:{game_id: game.id}}">
-                        <i :class="{'text-info': game.is_demo || (game.stage!='finished' && !is_my_turn[game.id]),
-                            'text-warning': game.stage!='finished' && is_my_turn[game.id]}"
+                        <i :class="{'text-info': game.is_demo || (game.stage!='finished' && !game_has_warning[game.id]),
+                            'text-warning': game.stage!='finished' && game_has_warning[game.id]}"
                             class="fa fa-circle"></i>
 
                         <span v-if="game.is_demo" class="sidebar-item-text">{{game.demo_owner_display}}</span>
@@ -197,6 +197,7 @@
                 direct_rooms: function(state) { return state.direct_rooms; },
                 open_games: function(state) { return state.open_games; },
                 room_has_update: function(state) { return state.room_has_update; },
+                game_has_update: function(state) { return state.game_has_update; },
                 challenges: function(state) { return state.challenges; }
             },
 
@@ -249,18 +250,18 @@
                 return !this.direct_rooms || Object.keys(this.direct_rooms).length==0
             },
 
-            is_my_turn() {
-                var my_turn = {};
-
-                if(!this.user.logged_in) {
-                    return my_turn;
-                }
+            game_has_warning() {
+                var warnings = {};
 
                 this.open_games_list.forEach(function(game) {
-                    my_turn[game.id] = is_current_player(game, game.board.current_node_id, this.user.user_id);
+                    if (is_current_player(game, game.board.current_node_id, this.user.user_id)) {
+                        warnings[game.id] = true;
+                    } else {
+                        warnings[game.id] = this.game_has_update[game.id];
+                    }
                 }.bind(this));
 
-                return my_turn;
+                return warnings;
             }
         },
 
