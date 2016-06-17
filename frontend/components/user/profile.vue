@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
+        <div class="panel panel-default fixed-dropdowns">
             <div class="panel-heading">
                 <h3 class="panel-title">{{$t('user_detail.games')}}</h3>
             </div>
