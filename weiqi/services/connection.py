@@ -22,7 +22,6 @@ from weiqi import settings
 class ConnectionService(BaseService):
     __service_name__ = 'connection'
 
-    @BaseService.register
     def connect(self):
         self.socket.send('connection_data', self._connection_data())
 
@@ -43,7 +42,6 @@ class ConnectionService(BaseService):
         RoomService(self.db, self.socket, self.user).publish_user_rooms()
         GameService(self.db, self.socket, self.user).publish_demos()
 
-    @BaseService.register
     def disconnect(self):
         self._delete_connection()
         self._check_is_online()

@@ -38,7 +38,10 @@ class SocketMixin:
         return {}
 
     def open(self):
-        self._execute_service('connection', 'connect')
+        with session() as db:
+            user = self._get_user(db)
+            ConnectionService(db, self, user).connect()
+
         metrics.CONNECTED_SOCKETS.inc()
 
     def on_message(self, data):
@@ -56,7 +59,10 @@ class SocketMixin:
         for topic in self._subs:
             self.pubsub.unsubscribe(topic, self._on_pubsub)
 
-        self._execute_service('connection', 'disconnect')
+        with session() as db:
+            user = self._get_user(db)
+            ConnectionService(db, self, user).disconnect()
+
         metrics.CONNECTED_SOCKETS.dec()
 
     def subscribe(self, topic):
@@ -99,17 +105,18 @@ class SocketMixin:
                 raise ValueError('service "{}" not found'.format(service))
 
             with session() as db:
-                user = None
-                user_id = self.get_secure_cookie(settings.COOKIE_NAME)
-
-                if user_id:
-                    user = db.query(User).get(int(user_id))
+                user = self._get_user(db)
 
                 if user and method != 'ping':
                     user.last_activity_at = datetime.utcnow()
 
                 svc = service_class(db, self, user)
                 return svc.execute(method, data)
+
+    def _get_user(self, db):
+        user_id = self.get_secure_cookie(settings.COOKIE_NAME)
+        user = db.query(User).get(int(user_id)) if user_id else None
+        return user
 
 
 class SocketHandler(SocketMixin, WebSocketHandler):
