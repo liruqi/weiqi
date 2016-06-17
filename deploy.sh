@@ -11,6 +11,7 @@ HOST=$1
 PATH=$2
 
 echo "Merging to production branch ..."
+export GIT_SSH=/usr/bin/ssh
 /usr/bin/git checkout prod
 /usr/bin/git merge master
 /usr/bin/git push
