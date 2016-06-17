@@ -9,7 +9,8 @@
     import { construct_pos, coord_to_2d } from '../board';
 
     export default {
-        props: ['board', 'current_node_id', 'coordinates', 'can_click', 'mouse_shadow', 'allow_shadow_move', 'current'],
+        props: ['board', 'current_node_id', 'current_color', 'coordinates', 'can_click', 'mouse_shadow',
+            'allow_shadow_move', 'current'],
 
         data() {
             return {
@@ -230,7 +231,8 @@
             draw_touch_shadow() {
                 if(this.confirm_coord !== null) {
                     var coord = coord_to_2d(this.board, this.confirm_coord);
-                    this.wgo.addObject({x: coord.x, y: coord.y, c: WGo.B, type: 'outline'});
+                    var color = (this.current_color == 'o' ? WGo.W : WGo.B);
+                    this.wgo.addObject({x: coord.x, y: coord.y, c: color, type: 'outline'});
                 }
             },
 

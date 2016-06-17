@@ -22,6 +22,7 @@
                 <qi-board v-if="game.board"
                           :board="game.board"
                           :current_node_id="current_node_id"
+                          :current_color="current"
                           :coordinates="coordinates"
                           :can_click="can_edit_board"
                           :mouse_shadow="show_mouse_shadow"
