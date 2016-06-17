@@ -76,4 +76,7 @@ class SgfHandler(BaseHandler):
 
         self.set_header('Content-Type', 'application/x-go-sgf; charset=utf-8')
         self.set_header('Content-Disposition', 'attachment; filename="%s"' % filename)
+
+        self.enable_cors()
+
         self.write(game_to_sgf(game))

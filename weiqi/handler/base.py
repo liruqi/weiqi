@@ -38,6 +38,10 @@ class BaseHandler(RequestHandler):
     def query_current_user(self):
         return self.db.query(User).get(self.current_user)
 
+    def enable_cors(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Methods", 'GET')
+
     def _execute(self, *args, **kwargs):
         with session() as db:
             self.db = db
