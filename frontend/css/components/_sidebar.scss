@@ -1,3 +1,6 @@
+$sidebar-item-icon-width: 25px;
+$sidebar-item-padding-left: 15px;
+
 .sidebar {
     background: $sidebar-background;
     color: $sidebar-color;
@@ -98,10 +101,12 @@
 
             > a {
                 display: block;
-                padding: 12px 5px 12px 15px;
+                padding: 12px 5px 12px $sidebar-item-padding-left;
 
                 > .fa {
-                    width: 20px;
+                    width: $sidebar-item-icon-width;
+                    float: left;
+                    line-height: $line-height-computed;
                 }
             }
 
@@ -136,6 +141,15 @@
     &::-webkit-scrollbar {
         background-color: rgba(255,255,255,0.5);
     }
+}
+
+.sidebar-item-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: $sidebar-width - ($sidebar-item-padding-left + $sidebar-item-icon-width + 25px);
+    display: inline-block;
+    float: left;
 }
 
 .sidebar-item-action {

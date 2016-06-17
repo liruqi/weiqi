@@ -109,12 +109,14 @@
                             'text-warning': game.stage!='finished' && game_has_update[game.id]}"
                             class="fa fa-circle"></i>
 
-                        <span v-if="game.is_demo">{{game.demo_owner_display}}</span>
-                        <span v-else>{{game.white_display}} &mdash; {{game.black_display}}</span>
+                        <span v-if="game.is_demo" class="sidebar-item-text">{{game.demo_owner_display}}</span>
+                        <span v-else class="sidebar-item-text">{{game.white_display}} &mdash; {{game.black_display}}</span>
 
                         <span class="sidebar-item-action pull-right" v-if="can_close_game(game.id)" @click.prevent="close_game(game.id)">
                             <i class="fa fa-times-circle"></i>
                         </span>
+
+                        <div class="clearfix"></div>
                     </a>
                 </li>
             </template>
@@ -130,7 +132,8 @@
                 <li v-if="room.type=='main'" v-link-active :class="{highlight: room_has_update[room.id]}">
                     <a v-link="{name:'room', params:{room_id: room.id}}">
                         <i :class="{'text-info': room_has_update[room.id]}" class="fa fa-users"></i>
-                        {{room.name}}
+                        <span class="sidebar-item-text">{{room.name}}</span>
+                        <div class="clearfix"></div>
                     </a>
                 </li>
             </template>
@@ -143,11 +146,13 @@
                 <li v-link-active :class="{highlight: room_has_update[room.room_id]}">
                     <a v-link="{name:'user_message', params:{user_id:room.other_user_id}}">
                         <i :class="{'text-success': room.is_online, 'text-info': room_has_update[room.room_id]}" class="fa fa-user"></i>
-                        {{room.other_display}}
+                        <span class="sidebar-item-text">{{room.other_display}}</span>
 
                         <span class="sidebar-item-action pull-right" @click.prevent="close_direct_room(room.other_user_id)">
                             <i class="fa fa-times-circle"></i>
                         </span>
+
+                        <div class="clearfix"></div>
                     </a>
                 </li>
             </template>
