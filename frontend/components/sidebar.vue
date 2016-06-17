@@ -228,6 +228,12 @@
                         return g2_active - g1_active;
                     }
 
+                    var g1_player = this.is_player(g1) || this.is_owner(g1);
+                    var g2_player = this.is_player(g2) || this.is_owner(g2);
+                    if(g1_player != g2_player) {
+                        return g2_player - g1_player;
+                    }
+
                     return g2.id - g1.id;
                 }.bind(this));
             },
@@ -290,6 +296,10 @@
                 }
 
                 return (this.user.user_id == game.black_user_id || this.user.user_id == game.white_user_id);
+            },
+
+            is_owner(game) {
+                return (game.is_demo && game.demo_owner_id == this.user.user_id);
             }
         }
     }
