@@ -22,8 +22,7 @@ from weiqi.test.factories import UserFactory, AutomatchFactory, RoomFactory, Roo
 def test_connect_subs(db, socket):
     user = UserFactory()
 
-    svc = ConnectionService(db, socket, user)
-    svc.execute('connect')
+    ConnectionService(db, socket, user).connect()
 
     assert socket.is_subscribed('game_started')
     assert socket.is_subscribed('game_finished')
@@ -37,8 +36,7 @@ def test_connection_data_rooms(db, socket):
     ru = RoomUserFactory(room=room)
     socket.subscribe('connection_data')
 
-    svc = ConnectionService(db, socket, ru.user)
-    svc.execute('connect')
+    ConnectionService(db, socket, ru.user).connect()
 
     data = socket.sent_messages[0]['data']
 
@@ -50,11 +48,9 @@ def test_connection_data_automatch(db, socket):
     match = AutomatchFactory()
     socket.subscribe('connection_data')
 
-    svc = ConnectionService(db, socket, match.user)
-    svc.execute('connect')
+    ConnectionService(db, socket, match.user).connect()
 
     data = socket.sent_messages[0]['data']
-
     assert data['automatch']
 
 
@@ -64,8 +60,7 @@ def test_disconnect_automatch(db, socket):
     AutomatchFactory(user=user, preset='normal')
     AutomatchFactory(user=user, preset='slow')
 
-    svc = ConnectionService(db, socket, user)
-    svc.execute('disconnect')
+    ConnectionService(db, socket, user).disconnect()
 
     assert db.query(Automatch).count() == 0
 
@@ -75,8 +70,7 @@ def test_disconnect_automatch_correspondence(db, socket):
     AutomatchFactory(user=user, preset='fast')
     AutomatchFactory(user=user, preset='correspondence')
 
-    svc = ConnectionService(db, socket, user)
-    svc.execute('disconnect')
+    ConnectionService(db, socket, user).disconnect()
 
     assert db.query(Automatch).count() == 1
     assert db.query(Automatch).filter_by(preset='correspondence').count() == 1
