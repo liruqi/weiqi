@@ -52,6 +52,16 @@ def test_users_display_name(db, socket):
     assert data['results'][1]['display'] == user.display
 
 
+def test_new_users(db, socket):
+    user = UserFactory(display='test', last_activity_at=None)
+
+    svc = SearchService(db, socket)
+    data = svc.execute('users', {'query': 'test'})
+
+    assert len(data['results']) == 1
+    assert data['results'][0]['id'] == user.id
+
+
 def test_games_display_names(db, socket):
     black = GameFactory(black_display='TestUser')
     white = GameFactory(white_display='ATestUser2')

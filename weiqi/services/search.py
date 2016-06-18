@@ -41,7 +41,7 @@ class SearchService(BaseService):
                        'display': u.display,
                        'rating': u.rating,
                        'is_online': u.is_online,
-                       'last_activity_at': u.last_activity_at.isoformat(),
+                       'last_activity_at': u.last_activity_at.isoformat() if u.last_activity_at else None,
                    } for u in page_info['query']]
 
         return {
