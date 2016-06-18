@@ -18,6 +18,21 @@ from weiqi.services import SearchService
 from weiqi.test.factories import UserFactory, GameFactory
 
 
+def test_no_results(db, socket):
+    svc = SearchService(db, socket)
+    data = svc.execute('all', {'query': 'test'})
+
+    users = data.get('users')
+    assert users.get('page') == 1
+    assert users.get('total_pages') == 1
+    assert users.get('total_results') == 0
+
+    games = data.get('users')
+    assert games.get('page') == 1
+    assert games.get('total_pages') == 1
+    assert games.get('total_results') == 0
+
+
 def test_users_display_name(db, socket):
     user = UserFactory(display='TestUser')
     other = UserFactory(display='ATestUser2')

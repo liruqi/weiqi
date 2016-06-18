@@ -372,6 +372,7 @@
     "users": "Users",
     "games": "Games",
     "prev": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "no_results": "No results found for \"{query}\""
   }
 }
