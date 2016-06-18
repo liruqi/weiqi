@@ -64,10 +64,16 @@
   "user": {
     "view_profile": "View profile",
     "send_message": "Send message",
-    "challenge": "Challenge"
+    "challenge": "Challenge",
+    "display": "Name",
+    "rank": "Rank",
+    "member_since": "Member since",
+    "last_activity": "Last activity",
+    "online": "Online now"
   },
 
   "header": {
+    "search": "Search ...",
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout",
@@ -248,9 +254,6 @@
   },
 
   "user_detail": {
-    "member_since": "Member since",
-    "last_activity": "Last activity",
-    "online": "Online now",
     "rank": "Rank",
     "games": "Games"
   },
@@ -362,5 +365,13 @@
   "notify": {
     "challenge": "New challenge from {opponent}",
     "move_played": "Move played in game against {opponent}"
+  },
+
+  "search": {
+    "header": "Search results",
+    "users": "Users",
+    "games": "Games",
+    "prev": "Previous",
+    "next": "Next"
   }
 }

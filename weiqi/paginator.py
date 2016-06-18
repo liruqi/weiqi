@@ -14,16 +14,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from .base import BaseService, ServiceError
-from .rating import RatingService
-from .rooms import RoomService
-from .users import UserService
-from .correspondence import CorrespondenceService
-from .games import GameService
-from .connection import ConnectionService
-from .play import PlayService
-from .settings import SettingsService
-from .dashboard import DashboardService
-from .search import SearchService
+import math
 
-from .executor import execute_service
+
+def paginate(query, limit, page=1):
+    total_results = query.count()
+    total_pages = math.ceil(total_results / limit)
+    page = max(1, page)
+    page = min(total_pages, page)
+
+    return {
+        'query': query.limit(limit).offset((page-1)*limit),
+        'page': page,
+        'total_pages': total_pages,
+        'total_results': total_results
+    }

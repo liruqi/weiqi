@@ -12,7 +12,7 @@
                     </a>
                 </div>
 
-                <ul class="nav navbar-dropdown navbar-right pull-right">
+                <ul class="nav navbar-dropdown pull-right">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <i class="fa fa-cog fa-fw"></i>
@@ -60,9 +60,25 @@
                     </li>
                 </ul>
 
+                <ul class="nav navbar-nav navbar-right pull-right">
+                    <li class="visible-xs">
+                        <a href="javascript:void(0)" @click="toggle_search"><i class="fa fa-search"></i></a>
+                    </li>
+                </ul>
+
                 <p class="navbar-text navbar-right pull-right">
                     <qi-connectivity></qi-connectivity>
                 </p>
+
+                <form class="navbar-form navbar-right main-search pull-right" @submit.prevent="submit_search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="{{$t('header.search')}}" autocomplete="off"
+                               v-model="search_query">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </nav>
     </div>
@@ -72,6 +88,12 @@
     import { toggle_sidebar } from './../vuex/actions';
 
     export default {
+        data() {
+            return {
+                search_query: ''
+            }
+        },
+
         vuex: {
             getters: {
                 user: function(state) { return state.auth.user; }
@@ -83,6 +105,20 @@
 
         components: {
             'qi-connectivity': require('./connectivity.vue')
+        },
+
+        methods: {
+            toggle_search() {
+                jQuery('.main-search').slideToggle(300);
+            },
+
+            submit_search() {
+                if(this.search_query != '') {
+                    this.$router.go({name: 'search', params: {query: this.search_query}});
+                    this.search_query = '';
+                    jQuery('.main-search').slideUp(300);
+                }
+            }
         }
     }
 </script>

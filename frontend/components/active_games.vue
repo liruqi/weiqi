@@ -40,7 +40,7 @@
                         <td>
                             <qi-game-speed :game="game"></qi-game-speed>
                         </td>
-                        <td>{{started[game.id]}}</td>
+                        <td><span :title="format_datetime(game.created_at)">{{started[game.id]}}</span></td>
                     </tr>
                     <tr v-if="sorted_games.length == 0">
                         <td colspan="5" class="text-center">
@@ -55,7 +55,7 @@
 
 <script>
     import Vue from 'vue';
-    import moment from 'moment';
+    import { format_datetime, format_from_now } from '../format';
 
     export default {
         mixins: [require('./../mixins/title.vue')],
@@ -102,9 +102,11 @@
         },
 
         methods: {
+            format_datetime: format_datetime,
+
             update_timing() {
                 this.active_games.forEach(function(game) {
-                    Vue.set(this.started, game.id, moment.utc(game.created_at).fromNow());
+                    Vue.set(this.started, game.id, format_from_now(game.created_at));
                 }.bind(this));
             }
         }

@@ -116,3 +116,5 @@ MAX_USER_INFO_TEXT_LENGTH = 10000
 
 # When timings are capped the cap will be calculated as the initial main time * this value.
 TIMING_MAIN_CAP_MULTIPLIER = 2
+
+SEARCH_RESULTS_PER_PAGE = 10

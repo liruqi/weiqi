@@ -46,6 +46,10 @@ export function config_router() {
         '/challenges/:challenge_id': {
             name: 'challenge',
             component: require('./components/challenge/view_challenge.vue')
+        },
+        '/search/:query': {
+            name: 'search',
+            component: require('./components/search.vue')
         }
     });
 

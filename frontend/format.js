@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export function pad(n) {
     return (n < 10) ? ("0" + n) : n;
 }
@@ -31,4 +33,12 @@ export function format_duration(seconds) {
     }
     
     return duration;
+}
+
+export function format_datetime(ts) {
+    return moment.utc(ts).local().format('YYYY-MM-DD HH:mm')
+}
+
+export function format_from_now(ts) {
+    return moment.utc(ts).fromNow();
 }

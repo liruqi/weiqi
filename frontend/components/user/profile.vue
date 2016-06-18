@@ -22,22 +22,13 @@
 
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-xs-6">{{$t('user_detail.member_since')}}</div>
-                            <div class="col-xs-6">{{moment(user.created_at).local().format('YYYY-MM-DD HH:mm')}}</div>
+                            <div class="col-xs-6">{{$t('user.member_since')}}</div>
+                            <div class="col-xs-6">{{format_datetime(user.created_at)}}</div>
                         </div>
 
                         <div class="row">
-                            <div class="col-xs-6">{{$t('user_detail.last_activity')}}</div>
-                            <div class="col-xs-6">
-                                <span v-if="user.is_online" class="text-success">{{$t('user_detail.online')}}</span>
-                                <span v-else>
-                                    <span v-if="user.last_activity_at"
-                                          title="{{moment(user.last_activity_at).local().format('YYYY-MM-DD HH:mm')}}">
-                                        {{moment(user.last_activity_at).fromNow()}}
-                                    </span>
-                                    <span v-else>-</span>
-                                </span>
-                            </div>
+                            <div class="col-xs-6">{{$t('user.last_activity')}}</div>
+                            <div class="col-xs-6"> <qi-user-last-activity :user="user"></qi-user-last-activity></div>
                         </div>
 
                         <div class="row">
@@ -96,7 +87,7 @@
                             <td>
                                 <qi-game-speed :game="game"></qi-game-speed>
                             </td>
-                            <td>{{moment(game.created_at).local().format('YYYY-MM-DD HH:mm')}}</td>
+                            <td>{{format_datetime(game.created_at)}}</td>
                             <td class="text-right">
                                 <div class="btn-group">
                                     <a v-link="{name:'game', params:{game_id:game.id}}" class="btn btn-default btn-xs">
@@ -132,8 +123,8 @@
 </template>
 
 <script>
-    import moment from 'moment';
     import { create_demo } from '../../vuex/actions';
+    import { format_datetime } from '../../format';
     import * as socket from '../../socket';
 
     export default {
@@ -187,7 +178,7 @@
         },
 
         methods: {
-            'moment': moment.utc
+            format_datetime: format_datetime
         }
     }
 </script>
