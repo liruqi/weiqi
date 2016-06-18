@@ -31,7 +31,8 @@ class BaseService:
 
     @classmethod
     def register(cls, func):
-        cls._methods[func.__name__] = func
+        """Registers a method to be used via the `execute` method."""
+        cls._methods[func.__qualname__] = func
         return func
 
     @classmethod
@@ -43,6 +44,12 @@ class BaseService:
         return inner
 
     def execute(self, method, data=None):
+        """Executes the given method on this class.
+
+        The method name has to be registered via the `register` decorator.
+        """
+        method = self.__class__.__name__ + '.' + method
+
         if method not in self._methods:
             raise ServiceError('invalid method "{}"'.format(method))
 
