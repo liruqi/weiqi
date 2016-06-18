@@ -10,6 +10,9 @@ fi
 HOST=$1
 PATH=$2
 
+echo "Runnng tests ..."
+py.test --benchmark-skip -n8 weiqi || exit 1
+
 echo "Merging to production branch ..."
 export GIT_SSH=/usr/bin/ssh
 /usr/bin/git checkout prod
