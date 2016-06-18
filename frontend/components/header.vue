@@ -61,7 +61,7 @@
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right pull-right">
-                    <li class="visible-xs">
+                    <li class="search-toggle visible-xs">
                         <a href="javascript:void(0)" @click="toggle_search"><i class="fa fa-search"></i></a>
                     </li>
                 </ul>
@@ -116,7 +116,10 @@
                 if(this.search_query != '') {
                     this.$router.go({name: 'search', params: {query: this.search_query}});
                     this.search_query = '';
-                    jQuery('.main-search').slideUp(300);
+
+                    if(jQuery('.search-toggle').is(':visible')) {
+                        jQuery('.main-search').slideUp(300);
+                    }
                 }
             }
         }
