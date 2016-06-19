@@ -12,7 +12,7 @@ Backend is written in python3.5, frontend in [Vue.js](https://vuejs.org/):
 
 Besides the dependencies in `requirements.txt` and `package.json` you may also need to install some additional libraries first:
 ```bash
-$ sudo apt-get install python3-dev libpq-dev libffi-dev libjpeg-dev
+$ sudo apt-get install python3-dev libpq-dev libjpeg-dev
 ```
 
 Before you can run the development server you will need to migrate the database. This step also needs to be run every time new DB migrations are created:
