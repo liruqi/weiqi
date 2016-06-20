@@ -34,7 +34,7 @@
       // This way the image layout will already have the correct size even before the img is loaded. This will prevent
       // other elements on the page from resizing after loading the image.
       display: block;
-      position:relative;
+      position: relative;
       width: 100%;
       height: 0;
 
