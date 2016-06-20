@@ -11,7 +11,9 @@
 
         <template v-else>
             <p class="text-center">
-                <img :src="'/api/users/' + user_id + '/avatar?size=large'" class="avatar">
+                <span class="avatar-wrapper">
+                    <img :src="'/api/users/' + user_id + '/avatar?size=large'" class="avatar">
+                </span>
             </p>
             <p class="text-center">
                 <i v-if="color=='white'" class="fa fa-circle-thin"></i>
