@@ -557,7 +557,7 @@ def board_from_string(pos, size=9) -> Board:
 
 def board_from_dict(data) -> Board:
     board = Board(data['size'])
-    board.handicap = data['handicap']
+    board.handicap = data.get('handicap', 0)
     board.current_node_id = data['current_node_id']
     board.tree = [node_from_dict(n) for n in data['tree']]
     return board
