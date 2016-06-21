@@ -196,6 +196,7 @@ class Board:
     def to_dict(self):
         return {
             'size': self.size,
+            'handicap': self.handicap,
             'current': self.current,
             'tree': [n.to_dict() for n in self.tree],
             'current_node_id': self.current_node_id,
@@ -556,6 +557,7 @@ def board_from_string(pos, size=9) -> Board:
 
 def board_from_dict(data) -> Board:
     board = Board(data['size'])
+    board.handicap = data['handicap']
     board.current_node_id = data['current_node_id']
     board.tree = [node_from_dict(n) for n in data['tree']]
     return board

@@ -119,8 +119,12 @@ def test_board_from_dict():
         '.........'
         '..x....o.'
         '.........')
+    board.handicap = 1
 
-    assert str(board_from_dict(board.to_dict())) == str(board)
+    from_dict = board_from_dict(board.to_dict())
+
+    assert str(from_dict) == str(board)
+    assert from_dict.handicap == 1
 
 
 def test_play():
