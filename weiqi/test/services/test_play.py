@@ -111,7 +111,19 @@ def test_automatch_create_game(db, socket):
     assert not socket.sent_messages[2]['data']['in_queue']
 
 
-def test_automatch_handicap(db, socket):
+def test_automatch_handicap_one(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1600)
+    AutomatchFactory(user=other, user_rating=1600, user__rating=1600, min_rating=1400, max_rating=1700)
+
+    svc = PlayService(db, socket, user)
+    svc.execute('automatch', {'preset': 'fast', 'max_hc': 2})
+
+    game = db.query(Game).first()
+    assert game.board.handicap == 1
+
+
+def test_automatch_handicap_two(db, socket):
     user = UserFactory(rating=1400)
     other = UserFactory(rating=1600)
     AutomatchFactory(user=other, user_rating=1600, user__rating=1600, min_rating=1400, max_rating=1700)
