@@ -31,6 +31,8 @@ class IndexHandler(BaseHandler):
             'HANDICAP_KOMI': settings.HANDICAP_KOMI,
         }
 
+        self.set_secure_cookie(settings.COOKIE_NAME, self.get_secure_cookie(settings.COOKIE_NAME) or '')
+
         self.set_header('Cache-control', 'no-cache, no-store, must-revalidate')
         self.set_header('Pragma', 'no-cache')
         self.set_header('Expires', '0')
