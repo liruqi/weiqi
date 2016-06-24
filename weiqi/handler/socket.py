@@ -94,7 +94,7 @@ class SocketMixin:
     @gen.coroutine
     def _execute_service(self, service, method, data=None, id=None):
         user_id = self.get_secure_cookie(settings.COOKIE_NAME)
-        user_id = int(user_id) if user_id is not None else None
+        user_id = int(user_id) if user_id else None
         res = yield execute_service(self, user_id, service, method, data)
 
         if id is not None:
