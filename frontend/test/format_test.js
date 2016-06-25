@@ -1,7 +1,7 @@
 import { assert } from 'chai';
-import { format_duration } from '../format';
+import { format_duration, format_coordinates } from '../format';
 
-describe('time formating', function() {
+describe('format_duration', function() {
     it('should format days', function() {
         assert.equal(format_duration(3600 * 24), '1d 00:00');
     });
@@ -28,5 +28,20 @@ describe('time formating', function() {
     
     it('should not display below-zero values', function() {
         assert.equal(format_duration(-5), '00:00');
+    });
+});
+
+describe('format_coordinates', function() {
+    it('should wrap coordinates in a <span>', function() {
+        assert.equal(format_coordinates('Test text a1 h10 t19 more text.'),
+            'Test text <span>a1</span> <span>h10</span> <span>t19</span> more text.')
+    });
+    
+    it('should add css classes', function() {
+        assert.equal(format_coordinates('a1', 'coord'), '<span class="coord">a1</span>');
+    });
+    
+    it('should not format invalid coordinates', function() {
+        assert.equal(format_coordinates('a0 j10 k1', 'coord', 9), 'a0 j10 k1');
     });
 });

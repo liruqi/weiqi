@@ -172,3 +172,27 @@ export function coord_to_2d(board, coord) {
     var x = coord - y*board.size;
     return {x: x, y: y};
 }
+
+export function parse_coord(coord, size) {
+    var x = coord[0].toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0);
+    var y = size - parseInt(coord.slice(1));
+    
+    // There is no 'i' on the board.
+    if(coord[0] == 'i') {
+        return null;
+    }
+    
+    if(x >= 8) {
+        x -= 1;
+    }
+    
+    if(x < 0 || x >= size || y < 0 || y >= size) {
+        return null;
+    }
+    
+    return x + y*size;
+}
+
+export function is_valid_coord(coord, size) {
+    return parse_coord(coord, size) !== null;
+}

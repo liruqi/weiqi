@@ -1,5 +1,6 @@
 import moment from 'moment';
 var link_html = require('linkifyjs/html');
+import { is_valid_coord } from './board';
 
 export function pad(n) {
     return (n < 10) ? ("0" + n) : n;
@@ -57,4 +58,28 @@ export function linkify(text) {
             return '_blank';
         }
     });
+}
+
+// Parses all coordinates from a text and wraps them in a <span> tag with the given css class.
+export function format_coordinates(text, css_class, size) {
+    var parts = text.split(' ');
+    var output = [];
+    
+    parts.forEach(function(part) {
+        if(/^[a-zA-Z][0-9]{1,2}$/.test(part) && (!size || is_valid_coord(part, size))) {
+            var span = jQuery('<div><span></span></div>');
+            var inner = span.find('span');
+            inner.text(part);
+            
+            if(css_class) {
+                inner.addClass(css_class);
+            }
+            
+            output.push(span.html());
+        } else {
+            output.push(part);
+        }
+    });
+    
+    return output.join(' ');
 }

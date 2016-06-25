@@ -1,5 +1,5 @@
 <template>
-    <div class="row" v-if="timer_started">
+    <div class="row" v-if="timer_started" v-el:game>
         <div class="col-sm-9 game-detail-left">
             <template v-if="!has_started">
                 <h1 class="text-center">{{$t('game.will_start_in')}}</h1>
@@ -29,7 +29,8 @@
                           :can_click="can_edit_board"
                           :mouse_shadow="show_mouse_shadow"
                           :allow_shadow_move="demo_tool == 'edit'"
-                          :current="current"></qi-board>
+                          :current="current"
+                          :highlight_coord="highlight_coord"></qi-board>
             </template>
         </div>
 
@@ -80,7 +81,11 @@
             </div>
 
             <qi-room-users :room_id="game.room_id"></qi-room-users>
-            <qi-room-logs :room_id="game.room_id" :show_only_user_ids="room_logs_show_only" layout="narrow"></qi-room-logs>
+            <qi-room-logs :room_id="game.room_id"
+                          :show_only_user_ids="room_logs_show_only"
+                          layout="narrow"
+                          :format_coords="true"
+                          :board_size="game.board.size"></qi-room-logs>
         </div>
     </div>
     <div v-else>
@@ -94,7 +99,7 @@
     import { open_game, update_game_time, clear_game_update } from './../../vuex/actions';
     import * as socket from '../../socket';
     import { play_sound } from '../../sounds';
-    import { current_color } from '../../board';
+    import { current_color, parse_coord } from '../../board';
     import { is_current_player } from '../../game';
 
     export default {
@@ -130,7 +135,8 @@
                 timer_started: false,
                 demo_tool: 'move',
                 shift_down: false,
-                ctrl_down: false
+                ctrl_down: false,
+                highlight_coord: null
             }
         },
 
@@ -269,6 +275,16 @@
 
             'game_has_update[game_id]': function() {
                 this.clear_update();
+            },
+
+            'timer_started': function(started) {
+                if(started) {
+                    jQuery(this.$els.game).on('mouseover', '.room-logs .coord', function(ev) {
+                        this.highlight_coord = parse_coord(jQuery(ev.target).text(), this.game.board.size);
+                    }.bind(this)).on('mouseout', '.room-logs .coord', function() {
+                        this.highlight_coord = null;
+                    }.bind(this));
+                }
             }
         },
 

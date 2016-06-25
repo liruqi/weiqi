@@ -53,11 +53,11 @@
 </template>
 
 <script>
-    import { format_datetime, format_time, linkify } from '../../format';
+    import { format_datetime, format_time, linkify, format_coordinates } from '../../format';
     import * as socket from '../../socket';
 
     export default {
-        props: ['room_id', 'title', 'show_only_user_ids', 'layout'],
+        props: ['room_id', 'title', 'show_only_user_ids', 'layout', 'format_coords', 'board_size'],
 
         data() {
             return {
@@ -88,7 +88,7 @@
                     }.bind(this))
                 }
 
-                logs = this.linkify_logs(logs);
+                logs = this.format_logs(logs);
 
                 return logs;
             },
@@ -131,7 +131,7 @@
                 }
             },
 
-            linkify_logs(logs) {
+            format_logs(logs) {
                 return logs.map(function(original) {
                     // Clone to avoid double-linking
                     var log = JSON.parse(JSON.stringify(original));
@@ -139,8 +139,12 @@
                     log.message = jQuery('<div>').text(log.message).html();
                     log.message = linkify(log.message);
 
+                    if(this.format_coords) {
+                        log.message = format_coordinates(log.message, 'coord', this.board_size);
+                    }
+
                     return log;
-                });
+                }.bind(this));
             }
         }
     }

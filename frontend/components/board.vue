@@ -10,7 +10,7 @@
 
     export default {
         props: ['board', 'current_node_id', 'current_color', 'coordinates', 'can_click', 'mouse_shadow',
-            'allow_shadow_move', 'current'],
+            'allow_shadow_move', 'current', 'highlight_coord'],
 
         data() {
             return {
@@ -83,6 +83,14 @@
 
             'current': function() {
                 this.draw_mouse_shadow();
+            },
+
+            'highlight_coord': function(hi) {
+                if(hi) {
+                    this.draw_coord_highlighting();
+                } else {
+                    this.draw();
+                }
             }
         },
 
@@ -370,6 +378,13 @@
                 this.coordinates = !this.coordinates;
                 this.draw();
             },
+
+            draw_coord_highlighting() {
+                if(this.highlight_coord !== null) {
+                    var xy = coord_to_2d(this.board, this.highlight_coord);
+                    this.wgo.addObject({x: xy.x, y: xy.y, c: 'red', type: 'CR'});
+                }
+            }
         }
     }
 </script>

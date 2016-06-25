@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { current_color } from '../board';
+import { current_color, parse_coord, is_valid_coord } from '../board';
 
 describe('current_color', function() {
     it('should handle empty boards', function () {
@@ -30,5 +30,27 @@ describe('current_color', function() {
         };
 
         assert.equal(current_color(board, board.tree.length-1), 'o');
+    });
+});
+
+describe('parse_coord', function() {
+    it('should parse coordinates', function() {
+        assert.equal(parse_coord('a9', 9), 0);
+        assert.equal(parse_coord('h9', 9), 7);
+        assert.equal(parse_coord('j9', 9), 8);
+        assert.equal(parse_coord('a1', 9), 72);
+        assert.equal(parse_coord('j1', 9), 80);
+    });
+});
+
+describe('is_valid_coord', function() {
+    it('should respect board sizes', function() {
+        assert.isTrue(is_valid_coord('a1', 9));
+        assert.isTrue(is_valid_coord('j1', 9));
+        assert.isTrue(is_valid_coord('a9', 9));
+        assert.isTrue(is_valid_coord('j9', 9));
+        
+        assert.isFalse(is_valid_coord('i1', 9));
+        assert.isFalse(is_valid_coord('k1', 9));
     });
 });

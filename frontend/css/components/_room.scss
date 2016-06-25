@@ -49,3 +49,8 @@
     }
   }
 }
+
+.room-logs .message .coord {
+  color: $link-color;
+  cursor: pointer;
+}
