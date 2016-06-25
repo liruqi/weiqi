@@ -83,6 +83,10 @@
                                         <th>{{$t('game.speed')}}</th>
                                         <td><qi-game-speed :game="game"></qi-game-speed></td>
                                     </tr>
+                                    <tr>
+                                        <th>{{$t('game.komi')}}</th>
+                                        <td>{{game.komi.toFixed(1)}}</td>
+                                    </tr>
                                     <!-- TODO: No other timings implemented
                                     <tr>
                                         <th>{{$t('game.timing')}}</th>
