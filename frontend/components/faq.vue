@@ -71,6 +71,10 @@
             window_title() {
                 return this.$t('faq.header');
             }
+        },
+
+        ready() {
+
         }
     }
 </script>

@@ -47,15 +47,30 @@
         watch: {
             '$route.path': function() {
                 this.update_route(this.$route);
+                this.scroll_to_anchor();
             },
 
             'loaded': function() {
                 request_notify_permission();
+                this.scroll_to_anchor();
             }
         },
 
         ready() {
             this.update_route(this.$route);
+        },
+
+        methods: {
+            scroll_to_anchor() {
+                if(window.location.hash != '') {
+                    this.$nextTick(function() {
+                        var el = jQuery(window.location.hash);
+                        if (el.length > 0) {
+                            jQuery('.main-wrapper').scrollTop(el.offset().top - jQuery('.main-header .navbar').height() - 10);
+                        }
+                    });
+                }
+            }
         }
     }
 </script>

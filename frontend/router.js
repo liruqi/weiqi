@@ -6,8 +6,19 @@ Vue.use(VueRouter);
 export function config_router() {
     var router = new VueRouter({
         history: true,
-        saveScrollPosition: true,
+        saveScrollPosition: false,
         linkActiveClass: 'active'
+    });
+
+    // The router does not automatically scroll to top on route change.
+    router.beforeEach(function(transition) {
+        if(window.location.hash == '') {
+            var wrapper = jQuery('.main-wrapper');
+            wrapper.scrollTop(0);
+            wrapper.scrollLeft(0);
+        }
+        
+        transition.next();
     });
     
     router.map({
