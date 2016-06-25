@@ -19,9 +19,9 @@
                     <span class="name">
                         <qi-user-context :user_id="log.user_id" :display="log.user_display" :rating="log.user_rating"></qi-user-context>
 
-                        <small class="text-muted pull-right" title="{{moment(log.created_at).local().format('YYYY-MM-DD HH:mm:ss')}}">
+                        <small class="text-muted pull-right" title="{{format_datetime(log.created_at)}}">
                             <i class="fa fa-clock-o"></i>
-                            {{moment(log.created_at).local().format('HH:mm')}}
+                            {{format_time(log.created_at)}}
                         </small>
                     </span>
 
@@ -53,8 +53,7 @@
 </template>
 
 <script>
-    import moment from 'moment';
-    var link_html = require('linkifyjs/html');
+    import { format_datetime, format_time, linkify } from '../../format';
     import * as socket from '../../socket';
 
     export default {
@@ -62,7 +61,7 @@
 
         data() {
             return {
-                message: '',
+                message: ''
             }
         },
 
@@ -114,7 +113,8 @@
         },
 
         methods: {
-            moment: moment.utc,
+            format_datetime: format_datetime,
+            format_time: format_time,
 
             send_message() {
                 socket.send('rooms/message', {'room_id': this.room_id, 'message': this.message});
@@ -137,14 +137,7 @@
                     var log = JSON.parse(JSON.stringify(original));
 
                     log.message = jQuery('<div>').text(log.message).html();
-                    log.message = link_html(log.message, {
-                        target: function(href, type) {
-                            if(type != 'url' || /(https?:\/\/)(www\.)?weiqi\.gs/.test(href)) {
-                                return null;
-                            }
-                            return '_blank';
-                        }
-                    });
+                    log.message = linkify(log.message);
 
                     return log;
                 });
