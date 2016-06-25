@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { current_color, parse_coord, is_valid_coord } from '../board';
+import { current_color, coord_to_str, parse_coord, is_valid_coord } from '../board';
 
 describe('current_color', function() {
     it('should handle empty boards', function () {
@@ -30,6 +30,15 @@ describe('current_color', function() {
         };
 
         assert.equal(current_color(board, board.tree.length-1), 'o');
+    });
+});
+
+describe('coord_to_str', function() {
+    it('should convert coordinates to strings', function() {
+        assert.equal(coord_to_str(0, 9), 'A9');
+        assert.equal(coord_to_str(8, 9), 'J9');
+        assert.equal(coord_to_str(72, 9), 'A1');
+        assert.equal(coord_to_str(80, 9), 'J1');
     });
 });
 

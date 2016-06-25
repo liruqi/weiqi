@@ -57,12 +57,10 @@
     import * as socket from '../../socket';
 
     export default {
-        props: ['room_id', 'title', 'show_only_user_ids', 'layout', 'format_coords', 'board_size'],
+        props: ['room_id', 'title', 'show_only_user_ids', 'layout', 'format_coords', 'board_size', 'message'],
 
         data() {
-            return {
-                message: ''
-            }
+            return {}
         },
 
         vuex: {

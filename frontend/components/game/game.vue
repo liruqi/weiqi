@@ -26,7 +26,7 @@
                           :current_node_id="current_node_id"
                           :current_color="current"
                           :coordinates="coordinates"
-                          :can_click="can_edit_board"
+                          :can_click="true"
                           :mouse_shadow="show_mouse_shadow"
                           :allow_shadow_move="demo_tool == 'edit'"
                           :current="current"
@@ -85,7 +85,8 @@
                           :show_only_user_ids="room_logs_show_only"
                           layout="narrow"
                           :format_coords="true"
-                          :board_size="game.board.size"></qi-room-logs>
+                          :board_size="game.board.size"
+                          :message.sync="room_message"></qi-room-logs>
         </div>
     </div>
     <div v-else>
@@ -99,7 +100,7 @@
     import { open_game, update_game_time, clear_game_update } from './../../vuex/actions';
     import * as socket from '../../socket';
     import { play_sound } from '../../sounds';
-    import { current_color, parse_coord } from '../../board';
+    import { current_color, parse_coord, coord_to_str } from '../../board';
     import { is_current_player } from '../../game';
 
     export default {
@@ -136,7 +137,8 @@
                 demo_tool: 'move',
                 shift_down: false,
                 ctrl_down: false,
-                highlight_coord: null
+                highlight_coord: null,
+                room_message: '',
             }
         },
 
@@ -306,46 +308,7 @@
 
         events: {
             'board-click': function(coord, event, is_touch) {
-                if(this.game.is_demo && this.has_control) {
-                    switch(this.demo_tool) {
-                        case 'move':
-                            socket.send('games/move', {game_id: this.game_id, move: coord});
-                            break;
-                        case 'edit':
-                            if(is_touch){
-                                socket.send('games/demo_tool_edit_cycle', {game_id: this.game_id, coord: coord});
-                            }
-                            else {
-                                if(event.shiftKey) {
-                                    socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'o'});
-                                } else {
-                                    socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'x'});
-                                }
-                            }
-                            break;
-                        case 'triangle':
-                            socket.send('games/demo_tool_triangle', {game_id: this.game_id, coord: coord});
-                            break;
-                        case 'square':
-                            socket.send('games/demo_tool_square', {game_id: this.game_id, coord: coord});
-                            break;
-                        case 'circle':
-                            socket.send('games/demo_tool_circle', {game_id: this.game_id, coord: coord});
-                            break;
-                        case 'label':
-                            socket.send('games/demo_tool_label', {game_id: this.game_id, coord: coord});
-                            break;
-                        case 'number':
-                            socket.send('games/demo_tool_number', {game_id: this.game_id, coord: coord});
-                            break;
-                    }
-                } else if(!this.game.is_demo && this.is_player) {
-                    if (this.game.stage == 'counting') {
-                        socket.send('games/toggle_marked_dead', {'game_id': this.game_id, 'coord': coord});
-                    } else if (this.game.stage != 'finished') {
-                        socket.send('games/move', {'game_id': this.game_id, 'move': coord});
-                    }
-                }
+                this.handle_board_click(coord, event, is_touch);
             },
 
             'board-scroll': function(scroll) {
@@ -466,6 +429,72 @@
                     case 'a': this.demo_tool = 'label'; break;
                     case '1': this.demo_tool = 'number'; break;
                 }
+            },
+
+            handle_board_click(coord, event, is_touch) {
+                if (event.ctrlKey) {
+                    this.share_coord(coord);
+                } else if(this.can_edit_board) {
+                    if (this.game.is_demo && this.has_control) {
+                        this.handle_demo_click(coord, event, is_touch);
+                    } else if (!this.game.is_demo && this.is_player) {
+                        this.handle_player_click(coord, event, is_touch);
+                    }
+                }
+            },
+
+            handle_demo_click(coord, event, is_touch) {
+                switch(this.demo_tool) {
+                    case 'move':
+                        socket.send('games/move', {game_id: this.game_id, move: coord});
+                        break;
+                    case 'edit':
+                        if(is_touch){
+                            socket.send('games/demo_tool_edit_cycle', {game_id: this.game_id, coord: coord});
+                        } else {
+                            if(event.shiftKey) {
+                                socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'o'});
+                            } else {
+                                socket.send('games/demo_tool_edit', {game_id: this.game_id, coord: coord, color: 'x'});
+                            }
+                        }
+                        break;
+                    case 'triangle':
+                        socket.send('games/demo_tool_triangle', {game_id: this.game_id, coord: coord});
+                        break;
+                    case 'square':
+                        socket.send('games/demo_tool_square', {game_id: this.game_id, coord: coord});
+                        break;
+                    case 'circle':
+                        socket.send('games/demo_tool_circle', {game_id: this.game_id, coord: coord});
+                        break;
+                    case 'label':
+                        socket.send('games/demo_tool_label', {game_id: this.game_id, coord: coord});
+                        break;
+                    case 'number':
+                        socket.send('games/demo_tool_number', {game_id: this.game_id, coord: coord});
+                        break;
+                }
+            },
+
+            handle_player_click(coord, event, is_touch) {
+                if (this.game.stage == 'counting') {
+                    socket.send('games/toggle_marked_dead', {'game_id': this.game_id, 'coord': coord});
+                } else if (this.game.stage != 'finished') {
+                    socket.send('games/move', {'game_id': this.game_id, 'move': coord});
+                }
+            },
+
+            share_coord(coord) {
+                var coord_str = coord_to_str(coord, this.game.board.size);
+
+                if(this.room_message.length > 0 && this.room_message[this.room_message.length-1] != ' ') {
+                    this.room_message += ' ';
+                }
+
+                this.room_message += coord_str + ' ';
+
+                jQuery(this.$els.game).find('.room-logs input[name=message]').focus();
             }
         }
     }

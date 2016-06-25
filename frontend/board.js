@@ -167,10 +167,22 @@ function apply_node(pos, node) {
     }
 }
 
-export function coord_to_2d(board, coord) {
-    var y = Math.floor(coord/board.size);
-    var x = coord - y*board.size;
+export function coord_to_2d(coord, size) {
+    var y = Math.floor(coord/size);
+    var x = coord - y*size;
     return {x: x, y: y};
+}
+
+export function coord_to_str(coord, size) {
+    var xy = coord_to_2d(coord, size);
+    var x = xy.x;
+    var y = size - xy.y;
+    
+    if(x >= 8) {
+        x += 1;
+    }
+    
+    return String.fromCharCode('A'.charCodeAt(0) + x) + y;
 }
 
 export function parse_coord(coord, size) {

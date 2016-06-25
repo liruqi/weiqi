@@ -198,7 +198,7 @@
                 var node = this.board.tree[this.current_node_id];
 
                 pos.forEach(function(color, coord) {
-                    var params = coord_to_2d(this.board, coord);
+                    var params = coord_to_2d(coord, this.board.size);
 
                     if(color == 'B') {
                         params.c = WGo.B;
@@ -238,7 +238,7 @@
 
             draw_touch_shadow() {
                 if(this.confirm_coord !== null) {
-                    var coord = coord_to_2d(this.board, this.confirm_coord);
+                    var coord = coord_to_2d(this.confirm_coord, this.board.size);
                     var color = (this.current_color == 'o' ? WGo.W : WGo.B);
                     this.wgo.addObject({x: coord.x, y: coord.y, c: color, type: 'outline'});
                 }
@@ -252,7 +252,7 @@
                 }
 
                 Object.keys(node.symbols).forEach(function(coord) {
-                    var xy = coord_to_2d(this.board, +coord);
+                    var xy = coord_to_2d(+coord, this.board.size);
                     var symbols = ['TR', 'SQ', 'CR'];
 
                     if(symbols.indexOf(node.symbols[coord]) === -1) {
@@ -271,7 +271,7 @@
                 }
 
                 Object.keys(node.labels).forEach(function(coord) {
-                    var xy = coord_to_2d(this.board, +coord);
+                    var xy = coord_to_2d(+coord, this.board.size);
                     var label = node.labels[coord];
                     this.wgo.addObject({x: xy.x, y: xy.y, type: 'LB', text: label})
                 }.bind(this));
@@ -282,7 +282,7 @@
 
                 if(node && (node.action == 'B' || node.action == 'W') && node.move >= 0) {
                     var coord = node.move;
-                    var xy = coord_to_2d(this.board, coord);
+                    var xy = coord_to_2d(coord, this.board.size);
 
                     this.wgo.addObject({x: xy.x, y: xy.y, type: "CR"})
                 }
@@ -361,7 +361,7 @@
                 }
 
                 if(this.mouse_coord !== null) {
-                    var xy = coord_to_2d(this.board, this.mouse_coord);
+                    var xy = coord_to_2d(this.mouse_coord, this.board.size);
                     var color = (this.current == 'o' ? WGo.W : WGo.B);
                     this.wgo.addObject({x: xy.x, y: xy.y, c: color, type: "outline"});
                 }
@@ -369,7 +369,7 @@
 
             remove_mouse_shadow() {
                 if(this.mouse_coord !== null) {
-                    var old_xy = coord_to_2d(this.board, this.mouse_coord);
+                    var old_xy = coord_to_2d(this.mouse_coord, this.board.size);
                     this.wgo.removeObject({x: old_xy.x, y: old_xy.y, type: "outline"});
                 }
             },
@@ -381,7 +381,7 @@
 
             draw_coord_highlighting() {
                 if(this.highlight_coord !== null) {
-                    var xy = coord_to_2d(this.board, this.highlight_coord);
+                    var xy = coord_to_2d(this.highlight_coord, this.board.size);
                     this.wgo.addObject({x: xy.x, y: xy.y, c: 'red', type: 'CR'});
                 }
             }
