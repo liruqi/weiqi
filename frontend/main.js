@@ -54,4 +54,23 @@ Vue.component('qi-game-type', require('./components/game/game_type.vue'));
 Vue.component('qi-game-speed', require('./components/game/game_speed.vue'));
 Vue.component('qi-user-last-activity', require('./components/user/last_activity.vue'));
 
-router.start(App, 'body > app');
+//router.start(App, 'body > app');
+
+import m from 'mithril';
+import * as Layout from './components/layout';
+
+m.route.mode = 'pathname';
+
+function wrap_layout(comp) {
+    return {
+        controller: comp.controller,
+        
+        view: function(ctrl, args) {
+            return m(Layout, {}, comp.view(ctrl, args));
+        }
+    }
+}
+
+m.route(document.body, '/', {
+    '/': wrap_layout(require('./components/dashboard.js'))
+});
