@@ -1,3 +1,4 @@
+import m from 'mithril';
 import store from './vuex/store';
 import { server_messages } from './vuex/actions';
 
@@ -45,6 +46,8 @@ export function connect() {
                 handler(store, msg.data);
             }
         }
+        
+        m.redraw();
     };
 
     socket.onclose = function() {

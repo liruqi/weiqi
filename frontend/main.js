@@ -58,19 +58,26 @@ Vue.component('qi-user-last-activity', require('./components/user/last_activity.
 
 import m from 'mithril';
 import * as Layout from './components/layout';
+import { state } from './vuex/store';
 
+window.mithril = m;
 m.route.mode = 'pathname';
 
 function wrap_layout(comp) {
     return {
-        controller: comp.controller,
-        
-        view: function(ctrl, args) {
+        controller() {
+            return new comp.controller({state: state});
+        },
+
+        view(ctrl, args) {
             return m(Layout, {}, comp.view(ctrl, args));
         }
     }
 }
 
-m.route(document.body, '/', {
-    '/': wrap_layout(require('./components/dashboard.js'))
-});
+setTimeout(function() {
+    m.route(document.body, '/', {
+        '/': wrap_layout(require('./components/dashboard')),
+        '/rooms/:room_id': wrap_layout(require('./components/room/room'))
+    });
+}, 100);

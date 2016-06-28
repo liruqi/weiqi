@@ -39,7 +39,7 @@ export function default_state() {
     };
 }
 
-const state = default_state();
+export const state = default_state();
 
 export const mutations = {
     MSG_CONNECTION_DATA(state, data) {
