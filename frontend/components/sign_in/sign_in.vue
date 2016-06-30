@@ -17,13 +17,13 @@
 
                         <form @submit.prevent="sign_in" novalidate>
                             <div class="form-group has-feedback" :class="{'has-error': loginFailed}">
-                                <input class="form-control input-lg" type="text" v-model="email" required autofocus
+                                <input class="form-control input-lg" type="text" name="email" v-model="email" required autofocus
                                     placeholder="{{$t('sign_in.email')}}">
                                 <span class="fa fa-user form-control-feedback"></span>
                             </div>
 
                             <div class="form-group has-feedback" :class="{'has-error': loginFailed}">
-                                <input class="form-control input-lg" type="password" v-model="password" required
+                                <input class="form-control input-lg" type="password" name="password" v-model="password" required
                                     placeholder="{{$t('sign_in.password')}}">
                                 <span class="fa fa-lock form-control-feedback"></span>
                             </div>

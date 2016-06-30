@@ -17,7 +17,9 @@
 import multiprocessing
 import os.path
 import tempfile
+import time
 
+import pytest
 from selenium import webdriver
 from tornado.testing import get_unused_port
 from weiqi import settings
@@ -38,35 +40,63 @@ def _run_integration(port):
         create_db()
         create_schema()
 
-        with session() as db:
-            user = User(display='test', email='test@test.test')
-            user.set_password('test')
-
-            user2 = User(display='test', email='test2@test.test')
-            user2.set_password('test2')
-
-            db.add(user)
-            db.add(user2)
-
-            RoomService(db).create_default_room('Main')
+        _prepare_integration_db()
 
         app = create_app()
         run_app(app, port)
 
 
-def test_chat():
+def _prepare_integration_db():
+    with session() as db:
+        user = User(display='test', email='test@test.test')
+        user.set_password('test')
+
+        user2 = User(display='test', email='test2@test.test')
+        user2.set_password('test2')
+
+        db.add(user)
+        db.add(user2)
+
+        RoomService(db).create_default_room('Main')
+
+
+@pytest.fixture
+def driver(request):
     port = get_unused_port()
 
-    try:
-        proc = multiprocessing.Process(target=_run_integration, args=(port,))
-        proc.start()
+    proc = multiprocessing.Process(target=_run_integration, args=(port,))
+    proc.start()
 
-        driver = webdriver.Chrome()
+    driver = webdriver.Chrome()
 
-        host = 'http://localhost:' + str(port)
-        driver.get(host)
+    host = 'http://localhost:' + str(port)
+    driver.get(host)
 
-        print(driver.find_element_by_xpath("//*[contains(text(), 'Sign in')]"))
-    finally:
+    def fin():
         proc.terminate()
         driver.close()
+
+    request.addfinalizer(fin)
+
+    return driver
+
+
+def test_login(driver):
+    _login(driver, 'test@test.test', 'test')
+    assert not driver.find_elements_by_css_selector("button[data-target='#qi-sign-in']")
+
+
+def test_chat(driver):
+    _login(driver, 'test@test.test', 'test')
+    assert not driver.find_elements_by_css_selector("button[data-target='#qi-sign-in']")
+
+
+def _login(driver, user, password):
+    driver.find_element_by_css_selector("button[data-target='#qi-sign-in']").click()
+    time.sleep(0.5)
+
+    dialog = driver.find_element_by_css_selector('#qi-sign-in')
+    dialog.find_element_by_css_selector("input[name='email']").send_keys(user)
+    dialog.find_element_by_css_selector("input[name='password']").send_keys(password)
+    dialog.find_element_by_css_selector("button[type='submit']").click()
+    time.sleep(1)
