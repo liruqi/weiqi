@@ -18,6 +18,7 @@ import multiprocessing
 import os.path
 import tempfile
 import time
+from collections import namedtuple
 
 import pytest
 from selenium import webdriver
@@ -27,6 +28,12 @@ from weiqi.application import create_app, run_app
 from weiqi.db import create_db, create_schema, session
 from weiqi.models import User
 from weiqi.services import RoomService
+
+IntegrationUser = namedtuple('IntegrationUser', ['display', 'email', 'password'])
+
+USER_ONE = IntegrationUser('test', 'test@test.test', 'test')
+USER_TWO = IntegrationUser('test2', 'test2@test.test', 'test2')
+USER_THREE = IntegrationUser('test3', 'test3@test.test', 'test3')
 
 
 def _run_integration(port):
@@ -48,14 +55,10 @@ def _run_integration(port):
 
 def _prepare_integration_db():
     with session() as db:
-        user = User(display='test', email='test@test.test')
-        user.set_password('test')
-
-        user2 = User(display='test', email='test2@test.test')
-        user2.set_password('test2')
-
-        db.add(user)
-        db.add(user2)
+        for info in [USER_ONE, USER_TWO, USER_THREE]:
+            user = User(display=info.display, email=info.email)
+            user.set_password(info.password)
+            db.add(user)
 
         RoomService(db).create_default_room('Main')
 
@@ -82,12 +85,12 @@ def driver(request):
 
 
 def test_login(driver):
-    _login(driver, 'test@test.test', 'test')
+    _login(driver, USER_ONE.email, USER_ONE.password)
     assert not driver.find_elements_by_css_selector("button[data-target='#qi-sign-in']")
 
 
 def test_chat(driver):
-    _login(driver, 'test@test.test', 'test')
+    _login(driver, USER_ONE.email, USER_ONE.password)
     assert not driver.find_elements_by_css_selector("button[data-target='#qi-sign-in']")
 
 
