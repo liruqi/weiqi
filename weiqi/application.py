@@ -66,12 +66,11 @@ class Application(tornado.web.Application):
             static_path=settings.STATIC_PATH)
 
 
-def run_app():
+def run_app(app, port):
     logging.info("Starting application ...")
-    app = create_app()
 
-    logging.info("Listening on :{}".format(settings.LISTEN_PORT))
-    app.listen(settings.LISTEN_PORT, xheaders=True)
+    logging.info("Listening on :{}".format(port))
+    app.listen(port, xheaders=True)
 
     spawn_cb = tornado.ioloop.IOLoop.current().spawn_callback
     spawn_cb(app.broker.run)
