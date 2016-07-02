@@ -30,6 +30,14 @@ class ChallengeExpiredError(ServiceError):
     pass
 
 
+class InvalidBoardSizeError(ServiceError):
+    pass
+
+
+class ChallengePrivateCannotBeRankedError(ServiceError):
+    pass
+
+
 class PlayService(BaseService):
     """Service which handles the creation of games."""
     __service_name__ = 'play'
@@ -201,7 +209,8 @@ class PlayService(BaseService):
 
     @BaseService.authenticated
     @BaseService.register
-    def challenge(self, user_id, size, handicap, komi, owner_is_black, speed, timing, maintime, overtime, overtime_count, private):
+    def challenge(self, user_id, size, handicap, komi, owner_is_black, speed, timing, maintime, overtime,
+                  overtime_count, private=False, ranked=False):
         other = self.db.query(User).filter_by(id=user_id).one()
         correspondence = (speed == 'correspondence')
 
@@ -211,8 +220,8 @@ class PlayService(BaseService):
         if (handicap is not None and handicap != 0) and owner_is_black is None:
             raise ServiceError('handicap defined but not black/white')
 
-        if size not in [9, 13, 19]:
-            raise ServiceError('invalid board size')
+        if (ranked and size != 19) or size not in [9, 13, 19]:
+            raise InvalidBoardSizeError()
 
         if correspondence:
             if not 24 <= maintime <= 24*5:
@@ -227,9 +236,13 @@ class PlayService(BaseService):
             if not 0 <= overtime <= 60:
                 raise ServiceError('invalid overtime')
 
-        if handicap is None:
+        if private and ranked:
+            raise ChallengePrivateCannotBeRankedError()
+
+        if handicap is None or ranked:
             black, white, handicap = self.game_players_handicap(self.user, other)
             owner_is_black = (black == self.user)
+            komi = (settings.DEFAULT_KOMI if handicap == 0 else settings.HANDICAP_KOMI)
 
         if owner_is_black is None:
             owner_is_black = (random.choice([0, 1]) == 0)
@@ -257,7 +270,8 @@ class PlayService(BaseService):
                               maintime=maintime,
                               overtime=overtime,
                               overtime_count=overtime_count,
-                              is_private=private)
+                              is_private=private,
+                              is_ranked=ranked)
 
         self.db.add(challenge)
         self.db.commit()
@@ -293,9 +307,10 @@ class PlayService(BaseService):
         else:
             black, white = challenge.challengee, challenge.owner
 
-        game = self._create_game(False, challenge.is_correspondence, black, white, challenge.handicap, challenge.komi,
-                                 challenge.board_size, challenge.timing_system, challenge.is_correspondence,
-                                 challenge.maintime, challenge.overtime, challenge.overtime_count, challenge.is_private)
+        game = self._create_game(challenge.is_ranked, challenge.is_correspondence, black, white, challenge.handicap,
+                                 challenge.komi, challenge.board_size, challenge.timing_system,
+                                 challenge.is_correspondence, challenge.maintime, challenge.overtime,
+                                 challenge.overtime_count, challenge.is_private)
 
         self.db.commit()
 

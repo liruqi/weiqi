@@ -38,8 +38,9 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="2" class="text-center">
-                    <em>{{$t('challenge.view.free_game')}}</em>
+                <th>{{$t('game.type')}}</th>
+                <td>
+                    <qi-game-type :game="challenge"></qi-game-type>
                 </td>
             </tr>
             <tr>

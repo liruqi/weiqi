@@ -16,8 +16,22 @@
                     </div>
 
                     <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-model="private"> {{$t('challenge.dialog.private')}}
+                            </label>
+
+                            &nbsp;&nbsp;&nbsp;
+
+                            <label>
+                                <input type="checkbox" v-model="ranked" :disabled="private"> {{$t('challenge.dialog.ranked')}}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="challenge-board-size">{{$t('game.board_size')}}</label>
-                        <select class="form-control" id="challenge-board-size" v-model="size">
+                        <select class="form-control" id="challenge-board-size" v-model="size" :disabled="ranked">
                             <option :value="19">19x19</option>
                             <option :value="13">13x13</option>
                             <option :value="9">9x9</option>
@@ -26,7 +40,7 @@
 
                     <div class="form-group">
                         <label for="challenge-handicap">{{$t('game.handicap')}}</label>
-                        <select class="form-control" id="challenge-handicap" v-model="handicap">
+                        <select class="form-control" id="challenge-handicap" v-model="handicap" :disabled="ranked">
                             <option value="auto">{{$t('challenge.dialog.handicap.auto')}}</option>
                             <option value="0">{{$t('challenge.dialog.handicap.none')}}</option>
                             <option value="1">{{$t('challenge.dialog.handicap.no_komi')}}</option>
@@ -47,21 +61,23 @@
                         <div class="radio">
                             <label :class="{'text-muted': !can_auto_black_white}">
                                 <input type="radio" name="black_white" v-model="black_white" value="auto"
-                                       :disabled="!can_auto_black_white">
+                                       :disabled="ranked || !can_auto_black_white">
                                 {{$t('challenge.dialog.bw.auto')}}
                             </label>
 
                             &nbsp;&nbsp;&nbsp;
 
                             <label>
-                                <input type="radio" name="black_white" v-model="black_white" value="black">
+                                <input type="radio" name="black_white" v-model="black_white" value="black"
+                                       :disabled="ranked">
                                 {{$t('challenge.dialog.bw.black')}}
                             </label>
 
                             &nbsp;&nbsp;&nbsp;
 
                             <label>
-                                <input type="radio" name="black_white" v-model="black_white" value="white">
+                                <input type="radio" name="black_white" v-model="black_white" value="white"
+                                       :disabled="ranked">
                                 {{$t('challenge.dialog.bw.white')}}
                             </label>
                         </div>
@@ -70,7 +86,7 @@
                     <div class="form-group">
                         <label for="challenge-komi">{{$t('game.komi')}}</label>
                         <input type="number" step="0.5" class="form-control" id="challenge-komi" v-model="komi"
-                               :disabled="black_white == 'auto'">
+                               :disabled="ranked || black_white == 'auto'">
                     </div>
 
                     <div class="form-group">
@@ -116,14 +132,6 @@
                             </option>
                         </select>
                     </div>
-
-                    <div class="form-group">
-                      <div class="checkbox">
-                          <label>
-                              <input type="checkbox" v-model="private"> {{$t('challenge.dialog.private')}}
-                          </label>
-                      </div>
-                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -145,6 +153,8 @@
     export default {
         data() {
             return {
+                suggestions: {},
+
                 size: 19,
                 timing: 'fischer',
                 handicap: 'auto',
@@ -153,7 +163,8 @@
                 speed: 'live',
                 maintime: 10,
                 overtime: 20,
-                private: false
+                private: false,
+                ranked: false
             }
         },
 
@@ -216,13 +227,15 @@
                     select.select2('data')[0].rating = data.other_rating;
                     select.trigger('change');
 
-                    this.setup_suggestions(data);
+                    this.suggestions = data;
+                    this.setup_suggestions();
                 }.bind(this));
             }.bind(this));
 
             select.change(function() {
                 socket.send('play/challenge_setup_suggestion', {user_id: select.val()}, function(data) {
-                    this.setup_suggestions(data);
+                    this.suggestions = data;
+                    this.setup_suggestions();
                 }.bind(this));
             }.bind(this));
         },
@@ -288,6 +301,18 @@
         },
 
         watch: {
+            'private': function(val) {
+                if(val) {
+                    this.ranked = false;
+                }
+            },
+
+            'ranked': function(val) {
+                if(val) {
+                    this.setup_suggestions();
+                }
+            },
+
             'can_auto_black_white': function(val) {
                 if(!val && this.black_white == 'auto') {
                     var selected = this.selected_user();
@@ -330,22 +355,22 @@
                 return display + ' (' + rating_to_rank(rating) + ')';
             },
 
-            setup_suggestions(data) {
-                if(data.handicap === null) {
+            setup_suggestions() {
+                if(this.suggestions.handicap === null) {
                     this.handicap = 'auto';
                 } else {
-                    this.handicap = ''+data.handicap;
+                    this.handicap = ''+this.suggestions.handicap;
                 }
 
-                if(data.owner_is_black === null) {
+                if(this.suggestions.owner_is_black === null) {
                     this.black_white = 'auto';
-                } else if(data.owner_is_black) {
+                } else if(this.suggestions.owner_is_black) {
                     this.black_white = 'black';
                 } else {
                     this.black_white = 'white';
                 }
 
-                this.komi = data.komi;
+                this.komi = this.suggestions.komi;
             },
 
             submit() {
@@ -360,7 +385,8 @@
                     maintime: this.maintime,
                     overtime: this.overtime,
                     overtime_count: 1,
-                    private: this.private
+                    private: this.private,
+                    ranked: this.ranked
                 };
 
                 if(this.handicap != 'auto') {

@@ -240,13 +240,6 @@
         "p1": "All games are played with chinese rules. This means you should fill all dame (neutral) points at the end of the game."
       }
     },
-    "ranked_free": {
-      "header": "Which games are ranked/free?",
-      "text": {
-        "p1": "Automatch games are always ranked.",
-        "p2": "Direct-Challenge games are always free."
-      }
-    },
     "avatar": {
       "header": "Why do I have this profile picture?",
       "text": "For every user a unique <em>Identicon</em> is generated. If the user has not uploaded his or her own profile picture the identicon will be displayed instead."
@@ -330,7 +323,7 @@
 
     "dialog": {
       "header": "Challenge",
-      "subheader": "to a free game",
+      "subheader": "another user",
       "user": "User",
 
       "handicap": {
@@ -347,6 +340,7 @@
         "white": "I play white"
       },
       "private": "Private",
+      "ranked": "Ranked",
       "submit": "Challenge",
       "cancel": "Cancel"
     },

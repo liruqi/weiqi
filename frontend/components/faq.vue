@@ -44,15 +44,6 @@
             </li>
 
             <li class="list-group-item">
-                <h4 id="ranked-free">
-                    {{$t('faq.ranked_free.header')}}
-                    <a href="#ranked-free" class="header-anchor"></a>
-                </h4>
-                <p>{{{$t('faq.ranked_free.text.p1')}}}</p>
-                <p>{{{$t('faq.ranked_free.text.p2')}}}</p>
-            </li>
-
-            <li class="list-group-item">
                 <h4 id="avatar">
                     {{$t('faq.avatar.header')}}
                     <a href="#avatar" class="header-anchor"></a>

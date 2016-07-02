@@ -20,7 +20,7 @@ import pytest
 from weiqi import settings
 from weiqi.models import Automatch, Game, Challenge
 from weiqi.services import PlayService
-from weiqi.services.play import ChallengeExpiredError
+from weiqi.services.play import ChallengeExpiredError, InvalidBoardSizeError, ChallengePrivateCannotBeRankedError
 from weiqi.test.factories import UserFactory, AutomatchFactory, GameFactory, ChallengeFactory
 
 
@@ -331,7 +331,6 @@ def test_challenge(db, socket):
         'maintime': 10,
         'overtime': 20,
         'overtime_count': 1,
-        'private': False
     })
 
     assert db.query(Challenge).count() == 1
@@ -370,7 +369,6 @@ def test_challenge_correspondence(db, socket):
         'maintime': 24*5,
         'overtime': 24*3,
         'overtime_count': 1,
-        'private': False
     })
 
     assert db.query(Challenge).count() == 1
@@ -410,7 +408,7 @@ def test_challenge_private(db, socket):
     assert challenge.is_private
 
 
-def test_private_challenge_generates_private_game(db, socket):
+def test_accept_private_challenge(db, socket):
     user = UserFactory(rating=1500)
     challenge = ChallengeFactory(is_private=True, owner=user)
 
@@ -420,6 +418,97 @@ def test_private_challenge_generates_private_game(db, socket):
     game = db.query(Game).first()
 
     assert game.is_private
+
+
+def test_challenge_private_ranked(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+
+    svc = PlayService(db, socket, user)
+
+    with pytest.raises(ChallengePrivateCannotBeRankedError):
+        svc.execute('challenge', {
+            'user_id': other.id,
+            'size': 19,
+            'handicap': 0,
+            'komi': 7.5,
+            'owner_is_black': None,
+            'speed': 'correspondence',
+            'timing': 'fischer',
+            'maintime': 24*5,
+            'overtime': 24*3,
+            'overtime_count': 1,
+            'private': True,
+            'ranked': True,
+        })
+
+    assert db.query(Challenge).count() == 0
+
+
+def test_challenge_ranked(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+
+    svc = PlayService(db, socket, user)
+
+    svc.execute('challenge', {
+        'user_id': other.id,
+        'size': 19,
+        'handicap': 1,
+        'komi': 0.5,
+        'owner_is_black': True,
+        'speed': 'correspondence',
+        'timing': 'fischer',
+        'maintime': 24*5,
+        'overtime': 24*3,
+        'overtime_count': 1,
+        'ranked': True,
+    })
+
+    assert db.query(Challenge).count() == 1
+
+    challenge = db.query(Challenge).first()
+    assert challenge.is_ranked
+    assert challenge.board_size == 19
+    assert challenge.handicap == 0
+    assert challenge.komi == settings.DEFAULT_KOMI
+    assert challenge.owner_is_black is not None
+
+
+def test_challenge_ranked_board_size(db, socket):
+    user = UserFactory(rating=1500)
+    other = UserFactory(rating=1500)
+
+    svc = PlayService(db, socket, user)
+
+    with pytest.raises(InvalidBoardSizeError):
+        svc.execute('challenge', {
+            'user_id': other.id,
+            'size': 13,
+            'handicap': 0,
+            'komi': 7.5,
+            'owner_is_black': None,
+            'speed': 'correspondence',
+            'timing': 'fischer',
+            'maintime': 24*5,
+            'overtime': 24*3,
+            'overtime_count': 1,
+            'ranked': True,
+        })
+
+    assert db.query(Challenge).count() == 0
+
+
+def test_accept_ranked_challenge(db, socket):
+    user = UserFactory(rating=1500)
+    challenge = ChallengeFactory(is_ranked=True, owner=user)
+
+    svc = PlayService(db, socket, challenge.challengee)
+    svc.execute('accept_challenge', {'challenge_id': challenge.id})
+
+    game = db.query(Game).first()
+
+    assert game.is_ranked
 
 
 def test_challenge_again_replaces(db, socket):

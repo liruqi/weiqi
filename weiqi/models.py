@@ -550,6 +550,7 @@ class Challenge(Base):
     overtime_count = Column(Integer, nullable=False, default=0)
 
     is_private = Column(Boolean, nullable=False, default=False)
+    is_ranked = Column(Boolean, nullable=False, default=False)
 
     __table_args__ = (
         CheckConstraint('owner_id != challengee_id'),
@@ -592,7 +593,8 @@ class Challenge(Base):
             'maintime': self.maintime.total_seconds(),
             'overtime': self.overtime.total_seconds(),
             'overtime_count': self.overtime_count,
-            'is_private': self.is_private
+            'is_private': self.is_private,
+            'is_ranked': self.is_ranked,
         }
 
 
