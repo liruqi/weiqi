@@ -208,6 +208,14 @@ def test_game_players_handicap():
     assert svc.game_players_handicap(other, user) == (other, user, 2)
 
 
+def test_game_player_handicap_limit():
+    svc = PlayService()
+
+    user = UserFactory(rating=2000)
+    other = UserFactory(rating=100)
+    assert svc.game_players_handicap(other, user)[2] == 9
+
+
 def test_game_players_random():
     user = UserFactory(rating=1500)
     other = UserFactory(rating=1500)

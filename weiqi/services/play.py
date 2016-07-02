@@ -34,6 +34,10 @@ class InvalidBoardSizeError(ServiceError):
     pass
 
 
+class InvalidHandicapError(ServiceError):
+    pass
+
+
 class ChallengePrivateCannotBeRankedError(ServiceError):
     pass
 
@@ -220,6 +224,9 @@ class PlayService(BaseService):
         if (handicap is not None and handicap != 0) and owner_is_black is None:
             raise ServiceError('handicap defined but not black/white')
 
+        if handicap is not None and handicap < 0 or handicap > 9:
+            raise InvalidHandicapError()
+
         if (ranked and size != 19) or size not in [9, 13, 19]:
             raise InvalidBoardSizeError()
 
@@ -322,6 +329,7 @@ class PlayService(BaseService):
 
     def game_players_handicap(self, user: User, other: User):
         handicap = rank_diff(user.rating, other.rating)
+        handicap = min(9, handicap)
 
         if handicap == 0:
             if random.choice([0, 1]) == 0:
