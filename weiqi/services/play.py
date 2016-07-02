@@ -224,7 +224,7 @@ class PlayService(BaseService):
         if (handicap is not None and handicap != 0) and owner_is_black is None:
             raise ServiceError('handicap defined but not black/white')
 
-        if handicap is not None and handicap < 0 or handicap > 9:
+        if handicap is not None and (handicap < 0 or handicap > 9):
             raise InvalidHandicapError()
 
         if (ranked and size != 19) or size not in [9, 13, 19]:
