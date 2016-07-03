@@ -6,6 +6,9 @@
 }
 
 .room-logs {
+  position: relative;
+  overflow: hidden;
+
   .panel-body {
     padding: 5px 20px 5px 10px;
   }
@@ -53,4 +56,38 @@
 .room-logs .message .coord {
   color: $link-color;
   cursor: pointer;
+}
+
+.room-logs-users-toggle {
+  cursor: pointer;
+}
+
+.room-logs-users {
+  position: absolute;
+  top: 37px;
+  bottom: 54px;
+  left: 100%;
+  right: -75%;
+
+  padding-left: 5px;
+
+  overflow: auto;
+  transition: all $transition-speed $transition-fn;
+
+  .room-users {
+    height: 100%;
+    margin-bottom: 0;
+    box-shadow: -1px 1px 3px #ccc;
+  }
+}
+
+.room-logs-users-visible {
+  > .panel-body {
+    overflow: hidden;
+  }
+
+  .room-logs-users {
+    left: 25%;
+    right: 0;
+  }
 }

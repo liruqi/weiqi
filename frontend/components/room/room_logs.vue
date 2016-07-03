@@ -1,5 +1,5 @@
 <template>
-    <div class="panel panel-default flex-column room-logs fixed-dropdowns">
+    <div class="panel panel-default flex-column room-logs fixed-dropdowns" :class="{'room-logs-users-visible': show_users}">
         <div class="panel-heading flex-fixed">
             <h3 class="panel-title">
                 <i class="fa fa-comments-o"></i>
@@ -8,6 +8,12 @@
                     <span v-if="room.type=='main'">{{room.name}}</span>
                     <span v-else>{{$t('room_logs.chat')}}</span>
                 </span>
+
+                <template v-if="embed_users">
+                    <span  class="room-logs-users-toggle pull-right" @click="toggle_users">
+                        <i class="fa fa-users"></i> ({{room_user_count}})
+                    </span>
+                </template>
             </h3>
         </div>
 
@@ -49,6 +55,10 @@
                 {{$t('room_logs.to_chat')}}
             </span>
         </div>
+
+        <div v-if="embed_users" class="room-logs-users">
+            <qi-room-users :room_id="room_id"></qi-room-users>
+        </div>
     </div>
 </template>
 
@@ -57,10 +67,13 @@
     import * as socket from '../../socket';
 
     export default {
-        props: ['room_id', 'title', 'show_only_user_ids', 'layout', 'format_coords', 'board_size', 'message'],
+        props: ['room_id', 'title', 'show_only_user_ids', 'layout', 'format_coords', 'board_size', 'message',
+                'embed_users'],
 
         data() {
-            return {}
+            return {
+                show_users: false
+            }
         },
 
         vuex: {
@@ -68,7 +81,8 @@
                 logged_in: function(state) { return state.auth.user.logged_in; },
                 rooms: function(state) { return state.rooms; },
                 all_logs: function(state) { return state.room_logs; },
-                room_has_update: function(state) { return state.room_has_update; }
+                room_has_update: function(state) { return state.room_has_update; },
+                room_users: function(state) { return state.room_users; }
             }
         },
 
@@ -93,6 +107,10 @@
 
             is_narrow() {
                 return this.layout == 'narrow';
+            },
+
+            room_user_count() {
+                return (this.room_users[this.room_id] || []).length;
             }
         },
 
@@ -143,6 +161,10 @@
 
                     return log;
                 }.bind(this));
+            },
+
+            toggle_users() {
+                this.show_users = !this.show_users;
             }
         }
     }

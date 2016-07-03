@@ -80,13 +80,13 @@
                 </div>
             </div>
 
-            <qi-room-users :room_id="game.room_id"></qi-room-users>
             <qi-room-logs :room_id="game.room_id"
                           :show_only_user_ids="room_logs_show_only"
                           layout="narrow"
                           :format_coords="true"
                           :board_size="game.board.size"
-                          :message.sync="room_message"></qi-room-logs>
+                          :message.sync="room_message"
+                          :embed_users="true"></qi-room-logs>
         </div>
     </div>
     <div v-else>
