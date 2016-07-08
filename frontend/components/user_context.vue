@@ -7,15 +7,15 @@
         <ul class="dropdown-menu" :class="{'dropdown-menu-right': align=='right'}">
             <li>
                 <a tabindex="-1" v-link="{name: 'user', params: {user_id: user_id}}">
-                    {{$t('user.view_profile')}}
+                    <i class="fa fa-user fa-fw"></i> {{$t('user.view_profile')}}
                 </a>
 
                 <template v-if="auth_user.logged_in && !is_self">
                     <a tabindex="-1" v-link="{name: 'user_message', params: {user_id: user_id}}">
-                        {{$t('user.send_message')}}
+                        <i class="fa fa-envelope fa-fw"></i> {{$t('user.send_message')}}
                     </a>
                     <a tabindex="-1" href="javascript:void(0)" @click="challenge_user">
-                        {{$t('user.challenge')}}
+                        <i class="fa fa-trophy fa-fw"></i> {{$t('user.challenge')}}
                     </a>
                 </template>
             </li>
