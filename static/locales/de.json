@@ -1,0 +1,372 @@
+{
+  "general": {
+    "yes": "Ja",
+    "no": "Nein",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "success": "Erfolgreich",
+    "error": "Fehler"
+  },
+
+  "game": {
+    "black": "Schwarz",
+    "white": "Weiß",
+    "board_size": "Brettgröße",
+    "handicap": "Vorgabe",
+    "komi": "Komi",
+    "timing": "Zeitmessungssystem",
+    "maintime": "Grundbedenkzeit",
+    "overtime": "Nachspielzeit",
+    "result": "Ergebniss",
+    "size": "Größe",
+    "date": "Datum",
+    "title": "Titel",
+    "options": "Optionen",
+    "info": "Info",
+    "edit_info": "Info bearbeiten",
+    "observers": "Beobachter",
+    "started": "Gestartet",
+    "type": "Typ",
+    "demo": "Demo",
+    "ranked": "Gewertet",
+    "free": "Frei",
+    "speed": "Geschwindigkeit",
+    "live": "Live",
+    "correspondence": "Korrespondenz",
+    "private": "Privat",
+    "resign": "Aufgeben",
+    "confirm_resign": "Wirklich aufgeben?",
+    "pass": "Passen",
+    "resume_from_counting": "Fortsetzen",
+    "confirm_pass": "Sind Sie sicher, dass Sie passen möchten?<br>Bedenken Sie, dass sie alle neutralen Punkte besetzen müssen. (Chinesische Regeln)",
+    "confirm_score": "Spielstand bestätigen",
+    "will_start_in": "Das Spiel beginnt in ...",
+    "back_to_game": "Zurück zum Spiel",
+    "open": "Öffnen",
+    "download_sgf": "Download SGF",
+    "clone_demo": "Als Demo klonen"
+  },
+
+  "demo": {
+    "title": "Titel",
+    "tool": {
+      "move": "(v) Spielzug Werkzeug",
+      "edit": "(e) Editier Werkzeug",
+      "triangle": "(t) Dreieck",
+      "square": "(s) Quadrat",
+      "circle": "(c) Kreis",
+      "label": "(a) Bezeichnung",
+      "number": "(1) Zahl"
+    }
+  },
+
+  "user": {
+    "view_profile": "Profil anzeigen",
+    "send_message": "Nachricht senden",
+    "challenge": "Herausfordern",
+    "display": "Name",
+    "rank": "Rang",
+    "member_since": "Mitglied seit",
+    "last_activity": "Zuletzt aktiv",
+    "online": "Jetzt online"
+  },
+
+  "header": {
+    "search": "Suche ...",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "logout": "Ausloggen",
+    "help": "Hilfe"
+  },
+
+  "sidebar": {
+    "search": "Suche",
+    "play": "Spielen",
+    "searching_automatch": "Suche Spiel...",
+    "sign_in": "Einloggen",
+    "create_demo": "Demo erstellen",
+    "upload_sgf": "SGF hochladen",
+    "challenge": "Herausfordern",
+
+    "challenges": "Herausforderungen",
+    "games": "Spiele",
+    "no_games": "Sie haben keine offenen Spiele",
+    "active_games": "Aktive Spiele",
+    "rooms": "Räume",
+    "people": "Benutzer",
+    "no_direct_rooms": "Kein Chat offen"
+  },
+
+  "sign_in": {
+    "header": "Einloggen",
+    "close": "Schließen",
+    "error": "Ungültiger Username oder Passwort",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "sign_in": "Einloggen",
+    "forgot": "Passwort vergessen?",
+    "or": "oder",
+    "new_account": "Neuer Account"
+  },
+
+  "sign_up": {
+    "header": "Registrieren",
+    "user_info": "Ihre Nutzerseite",
+    "display": "Wähle angezeigten Namen",
+    "display_invalid": "Nur Buchstaben und Zahlen. 2-12 Zeichen.",
+    "display_help": "Sie können das später noch ändern.",
+    "email": "Ihre E-Mail-Adresse",
+    "email_exists": "E-Mail-Adresse bereits vergeben.",
+    "password": "Erstelle ein Passwort",
+    "rank": {
+      "header": "Rang",
+      "r20k": "Ich habe noch nie gespielt",
+      "r19k": "19k",
+      "r18k": "18k",
+      "r17k": "17k",
+      "r16k": "16k",
+      "r15k": "(15k) Ich kenne die Regeln und habe bereits ein paar Mal auf dem großen Brett gespielt",
+      "r14k": "14k",
+      "r13k": "13k",
+      "r12k": "12k",
+      "r11k": "11k",
+      "r10k": "(10k) Beim Go-Spielabend sind noch viele stärker als ich",
+      "r9k": "9k",
+      "r8k": "8k",
+      "r7k": "7k",
+      "r6k": "6k",
+      "r5k": "5k",
+      "r4k": "4k",
+      "r3k": "3k",
+      "r2k": "2k",
+      "r1k": "1k",
+      "r1d": "1d",
+      "r2d": "2d",
+      "r3d": "3d"
+    },
+    "recaptcha": "Zeigen Sie, dass Sie ein Mensch sind",
+    "sign_up": "Registrieren",
+    "confirm_email": "Bitte rufen Sie den Link auf den wir Ihnen per E-Mail geschickt haben, um Ihren Account zu aktivieren."
+  },
+
+  "forgot_password": {
+    "header": "Passwort vergessen",
+    "email": "Ihre E-Mail-Adresse",
+    "reset": "Passwort zurücksetzen",
+    "instructions": "Eine Anleitung, wie Sie Ihr Passwort zurückzusetzen wurde per E-Mail an Sie geschickt."
+  },
+
+  "play": {
+    "header": "Spiel",
+    "subheader": "gewertetes Spiel",
+    "play": "Spielen",
+    "cancel": "Abbrechen",
+
+    "fast": {
+      "header": "Schnell",
+      "l1": "Bis zu 30 Minuten Spielzeit",
+      "l2": "5min + 10s/Zug"
+    },
+
+    "medium": {
+      "header": "Medium",
+      "l1": "Bis zu einer Stunde Spielzeit",
+      "l2": "10min + 20s/Zug"
+    },
+
+    "slow": {
+      "header": "Langsam",
+      "l1": "Ungefähr 1-2 Stunden Spielzeit",
+      "l2": "15min + 30s/Zug"
+    },
+
+    "corr": {
+      "header": "Korrespondenz",
+      "l1": "Mehrere Wochen oder Monate Spielzeit",
+      "l2": "3d + 1d/Zug und maximal 6 Tage Bedenkzeit für einen Zug"
+    },
+
+    "options": {
+      "max_hc": "Maximaler Rangunterschied",
+      "no_hc": "Nur gleichauf Spiele"
+    }
+  },
+
+  "room_logs": {
+    "chat": "Chat",
+    "sign_in": "Einloggen",
+    "to_chat": "zum chat",
+    "type_msg": "Schreibe eine Nachricht ..."
+  },
+
+  "room_users": {
+    "username": "Benutzer",
+    "rank": "Rang"
+  },
+
+  "gamelist": {
+    "header": "Aktive Spiele",
+    "no_games": "Keine aktiven Spiele"
+  },
+
+  "faq": {
+    "header": "F.A.Q.",
+    "subheader": "Häufig gestellte Fragen",
+    "ratings": {
+      "header": "Wie funktioniert das Wertungssystem?",
+      "text": {
+        "p1": "Wir benutzen <a href=\"http://www.glicko.net/glicko.html\" target=\"_blank\">Glicko-2</a> als Wertungssystem. Zudem bündeln wir Spielergebnisse in Wertungsperioden einiger Tage/Wochen.",
+        "p2": "Der angezeigte Rang und und die Wertung basieren auf einer Projektion der aktuellen Wertungsperiode."
+      }
+    },
+    "contribute": {
+      "header": "Wie kann ich mich einbringen?",
+      "text": {
+        "p1": "weiqi.gs ist open source, jeder der möchte hat die Gelegenheit mitzuwirken.",
+        "p2": "Selbst ohne Programmierkenntisse gibt es viele Möglichkeiten etwas beizutragen. Falls Sie Interesse haben, werfen Sie einen Blick auf unser <a href=\"http://gitlab.com/mibitzi/weiqi.gs#contribute\" target=\"_blank\">GitLab repository</a> um mehr Informationen zu erhalten."
+      }
+    },
+    "bug": {
+      "header": "Ich habe einen Bug gefunden",
+      "text": {
+        "p1": "Bitte teilen Sie uns Bugs auf unserem <a href=\"http://gitlab.com/mibitzi/weiqi.gs/issues\" target=\"_blank\">issue tracker</a> auf GitLab mit.",
+        "p2": "Bitte überprüfen Sie ob für dieses Problem bereits ein Beitrag erstellt wurde und tragen Sie ggf. zu diesem bei."
+      }
+    },
+    "ruleset": {
+      "header": "Welche Regeln werden benutzt?",
+      "text": {
+        "p1": "Alle Spiele werden mit chinesischen Regeln gespielt. Daher sollten Sie am Ende einer Partie alle neutralen Punkte spielen."
+      }
+    },
+    "avatar": {
+      "header": "Woher kommt mein Profilbild?",
+      "text": "Für jeden Nutzer wird ein einzigartiger <em>Identicon</em> erstellt. Dieser wird vorläufig benutzt bis ein Nutzer sich entschließt selber ein Bild hochzuladen."
+    }
+  },
+
+  "user_detail": {
+    "rank": "Rang",
+    "games": "Spiele"
+  },
+
+  "settings": {
+    "header": "Einstellungen",
+
+    "info": {
+      "header": "Benutzerinfo",
+      "email": "E-mail",
+      "correspondence_emails": "Erhalte E-Mails für Korrespondenzspiele",
+      "text": "Info Text",
+      "text_too_long": "Info Text ist zu lang",
+      "saved": "User Info gespeichert"
+    },
+
+    "password": {
+      "change": "Passwort ändern",
+      "new": "Passwort",
+      "new_confirm": "Passwort bestätigen",
+      "saved": "Neues Passwort gespeichert"
+    },
+
+    "avatar": {
+      "header": "Profilbild",
+      "new": "Neues Bild hochladen",
+      "delete": "Lösche mein Bild",
+      "confirm_delete": "Sind Sie sicher, dass Sie Ihr Profilbild LÖSCHEN wollen?<br><br>Bitte beachten Sie, dass Sie Ihr voreingestelltes Profilbild nicht löschen können.",
+      "crop_help": "Sie können Ihr Bild verschieben und zoomen. Alles außerhalb des umrahmten Bereichs wird weggeschnitten.",
+      "cancel": "Abbrechen"
+    },
+
+    "save": "Speichern"
+  },
+
+  "create_demo": {
+    "header": "Demo erstellen",
+    "title": "Titel Ihrer Demo",
+    "create": "Erstellen",
+    "cancel": "Abbrechen"
+  },
+
+  "upload_sgf": {
+    "header": "SGF hochladen",
+    "upload": "Hochladen",
+    "choose_file": "SGF Datei",
+    "cancel": "Abbrechen"
+  },
+
+  "password_reset_confirm": {
+    "header": "Passwort zurücksetzen",
+    "sent": "Eine E-Mail mit einem neuen Passwort wurde an Sie geschickt.",
+    "failed": "Dieser Link ist nicht länger gültig."
+  },
+
+  "disconnected": {
+    "header": "Ups, sieht so aus als ob wir die Verbindung verloren haben ...",
+    "body": "Die Verbindung zum Server wurde unterbrochen.<br><br>Das kann vorkommen wenn ein Update eingespielt wird. In diesem Fall bitten wir Sie um etwas Geduld bis der Server wieder bereitsteht.",
+    "trying_connect": "Versuche Verbindung wieder herzustellen..."
+  },
+
+  "dashboard": {
+    "popular_games": "Populäre Spiele",
+    "stats": {
+      "heading": "Statistik",
+      "users": "Benutzer",
+      "online": "Online",
+      "games": "Spiele"
+    }
+  },
+
+  "challenge": {
+    "opponent": "Gegner",
+
+    "dialog": {
+      "header": "Herausfordern",
+      "subheader": "anderer Benutzer",
+      "user": "Benutzer",
+
+      "handicap": {
+        "auto": "Automatisch",
+        "none": "Kein Handicap",
+        "no_komi": "1 (Kein Komi)"
+      },
+
+      "black_white": "Schwarz / Weiß",
+
+      "bw": {
+        "auto": "Automatisch",
+        "black": "Ich spiele Schwarz",
+        "white": "Ich spiele Weiß"
+      },
+      "private": "Privat",
+      "ranked": "Gewertet",
+      "submit": "Herausfordern",
+      "cancel": "Abbrechen"
+    },
+
+    "view": {
+      "heading": "Herausforderung",
+      "not_found": "Herausforderung existiert nicht oder ist abgelaufen.",
+      "free_game": "Freies Spiel - wirkt sich nicht auf die Wertung aus",
+      "expires_in": "Läuft ab in",
+      "cancel": "Herausforderung abbrechen",
+      "accept": "Annehmen",
+      "decline": "Ablehnen"
+    }
+  },
+
+  "notify": {
+    "challenge": "Neue Herausforderung von {opponent}",
+    "move_played": "Ein Zug im Spiel gegen {opponent} wurde gespielt"
+  },
+
+  "search": {
+    "header": "Suchergebnisse",
+    "users": "Benutzer",
+    "games": "Spiele",
+    "prev": "Vorherige",
+    "next": "Nächste",
+    "no_results": "Keine Ergebnisse für \"{query}\""
+  }
+}
