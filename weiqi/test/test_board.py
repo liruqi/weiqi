@@ -221,7 +221,30 @@ def test_ko_rule():
     assert board.ko == coord2d(4, 4)
 
     with pytest.raises(IllegalMoveError):
-        board.validate_legal(coord2d(4, 4))
+        board.play(coord2d(4, 4))
+
+
+def test_snapback_not_ko():
+    board = board_from_string(
+        '.........'
+        '.........'
+        '.........'
+        '.........'
+        '.........'
+        '.........'
+        'ooo......'
+        'xxo.x....'
+        '..xx.....')
+
+    board.current = WHITE
+    board.play(coord2d(2, 9))
+    board.play(coord2d(1, 9))
+    board.play(coord2d(2, 9))
+
+    assert board.at(coord2d(1, 8)) == EMPTY
+    assert board.at(coord2d(2, 8)) == EMPTY
+    assert board.at(coord2d(2, 9)) == WHITE
+    assert board.at(coord2d(1, 9)) == EMPTY
 
 
 def test_chain():

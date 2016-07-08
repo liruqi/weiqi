@@ -274,20 +274,26 @@ class Board:
             self._add_move(move)
             return
 
-        self.validate_legal(move)
-
         caps = self._find_captures(move)
+
+        self._validate_legal(move, caps)
+
         for c in caps:
             self.pos[c] = EMPTY
 
         self.pos[move] = self.current
         self._add_move(move, caps)
 
-    def validate_legal(self, coord):
+    def _validate_legal(self, coord, captures):
+        """Checks if the given move is valid for the current player.
+
+        A non-passing move is legal if the point is unoccupied, the point is not illegal due to the Ko rule, and the
+        move is not suicide.
+        """
         if self.at(coord) != EMPTY:
             raise IllegalMoveError('coordinate is not empty')
 
-        if coord == self.ko:
+        if len(captures) == 1 and coord == self.ko:
             raise IllegalMoveError('coordinate is a ko point')
 
         if self.is_suicide(coord, self.current):
