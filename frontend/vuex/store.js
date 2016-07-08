@@ -299,7 +299,7 @@ export const mutations = {
         Vue.delete(state.game_has_update, game_id);
 
         if(state.route.name == "game" && state.route.params.game_id == game_id) {
-            state.route.router.go({name: 'root'});
+            state.route.router.go({name: 'active_games'});
         }
     },
     
@@ -318,7 +318,7 @@ export const mutations = {
         Vue.delete(state.room_has_update, room.room_id);
 
         if(state.route.name == "user_message" && state.route.params.user_id == user_id) {
-            state.route.router.go({name: 'root'});
+            state.route.router.go({name: 'active_games'});
         }
     },
     
